@@ -58,3 +58,6 @@ flycheck_*.el
 # Custom rules (everything added below won't be overriden when running gitignore-gen.generate)
 
 
+
+eln-cache
+tutorial
