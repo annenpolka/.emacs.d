@@ -10,10 +10,11 @@
 
 (setq frame-resize-pixelwise t) 
 
-(when load-file-name
-  (setq user-emacs-directory (file-name-directory load-file-name)))
 ;; disable bars
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
+
+;; (when load-file-name
+;;   (setq user-emacs-directory (file-name-directory load-file-name)))
 
 ;;; early-init.el ends here
