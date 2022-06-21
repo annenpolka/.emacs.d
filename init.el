@@ -190,6 +190,26 @@
     ("<leader>k" . windmove-up)
     ("<leader>l" . windmove-right))))
 
+
+; ╭──────────────────────────────────────────────────────────╮
+; │                           Git                            │
+; ╰──────────────────────────────────────────────────────────╯
+(leaf magit
+  :doc "great git client"
+  :ensure t)
+
+(leaf forge
+  :doc "remote repo control with magit"
+  :ensure t
+  :after magit
+  :custom ((bug-reference-mode . 0)))
+
+(leaf magit-todos
+  :doc "manage TODO keywords with magit"
+  :ensure t
+  :after magit
+  :hook (magit-mode-hook . magit-todos-mode))
+
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       input method                       │
 ; ╰──────────────────────────────────────────────────────────╯
