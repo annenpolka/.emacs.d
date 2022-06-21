@@ -61,3 +61,6 @@ flycheck_*.el
 
 eln-cache
 tutorial
+
+forge-database.sqlite
+transient
