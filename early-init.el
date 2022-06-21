@@ -9,6 +9,7 @@
 (setq use-dialog-box nil)
 
 (setq frame-resize-pixelwise t) 
+(setq frame-inhibit-implied-resize t)
 
 ;; disable bars
 (push '(menu-bar-lines . 0) default-frame-alist)
