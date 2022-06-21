@@ -120,10 +120,29 @@
   :global-minor-mode global-auto-revert-mode)
 
 ; ╭──────────────────────────────────────────────────────────╮
+; │                      editing modal                       │
+; ╰──────────────────────────────────────────────────────────╯
+(leaf evil
+  :doc "Extensible vi layer for Emacs."
+  :require evil windmove
+  :ensure t
+  :bind
+  ((:evil-normal-state-map
+     ;; move to window by windmove
+    ("<SPC>h" . windmove-left)
+    ("<SPC>j" . windmove-down)
+    ("<SPC>k" . windmove-up)
+    ("<SPC>l" . windmove-right)))
+  :config
+  (evil-mode 1)
+  (turn-on-evil-mode))
+
+; ╭──────────────────────────────────────────────────────────╮
 ; │                       input method                       │
 ; ╰──────────────────────────────────────────────────────────╯
 ;; mozc ime
 (leaf mozc
+  ;; :depends emacs-mozc
   :bind* (("<zenkaku-hankaku>" . toggle-input-method))
   :custom ((default-input-method . "japanese-mozc")
 	   (mozc-candidate-style quote overlay))
