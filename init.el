@@ -136,6 +136,20 @@
     (add-to-list 'default-frame-alist `(font . ,fontset)))
   (add-to-list 'default-frame-alist `(cursor-type . (hbar . ,(1+ (ceiling (/ my/font-size 2)))))))
 
+;; modus theme
+(leaf modus-themes
+  :custom
+  (modus-themes-completions . 'moderate)
+  (modus-themes-fringes . 'subtle)
+  (modus-themes-italic-constructs . t)
+  (modus-themes-bold-constructs . nil)
+  (modus-themes-hl-line . '(intense underline))
+  (modus-themes-region . '(bg-only no-extend))
+  (modus-themes-scale-headings . t)
+  (modus-themes-prompts . '(background bold gray intense italic))
+  (modus-themes-syntax . '(faint alt-syntax green-strings))
+  :config
+   (load-theme 'modus-vivendi))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                     helper interface                     │
 ; ╰──────────────────────────────────────────────────────────╯
