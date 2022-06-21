@@ -120,6 +120,23 @@
   :global-minor-mode global-auto-revert-mode)
 
 ; ╭──────────────────────────────────────────────────────────╮
+; │                          themes                          │
+; ╰──────────────────────────────────────────────────────────╯
+;; font config
+(defvar my/font-family "Iosevka Term")
+(defvar my/font-size
+  (let ((size-by-hostname
+         '(("DESKTOP-B6V868U" . 12.5))))
+    (or (cdr (assoc (system-name) size-by-hostname))
+        13.5)))
+
+(when window-system
+  ;; http://d.hatena.ne.jp/kitokitoki/20110502/p2
+  (let ((fontset (format "%s-%.1f" my/font-family my/font-size)))
+    (add-to-list 'default-frame-alist `(font . ,fontset)))
+  (add-to-list 'default-frame-alist `(cursor-type . (hbar . ,(1+ (ceiling (/ my/font-size 2)))))))
+
+; ╭──────────────────────────────────────────────────────────╮
 ; │                     helper interface                     │
 ; ╰──────────────────────────────────────────────────────────╯
 (leaf which-key
@@ -162,6 +179,9 @@
   :config
   (leaf-handler-package mozc mozc nil))
 
+; ╭──────────────────────────────────────────────────────────╮
+; │                       boilerplate                        │
+; ╰──────────────────────────────────────────────────────────╯
 (provide 'init)
 
 (custom-set-variables
