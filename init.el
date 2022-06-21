@@ -170,19 +170,25 @@
   :doc "Extensible vi layer for Emacs."
   :require evil windmove
   :ensure t
+  :custom
+  ;; <C-u> to scroll (replace universal-argument)
+  (evil-want-C-u-scroll . t)
+  :config
+  ;; leader-key
+  (evil-set-leader 'normal (kbd "<SPC>"))
+  ;; activate evil
+  (evil-mode 1)
+  (turn-on-evil-mode)
   :bind
+  ; ╭──────────────────────────────────────────────────────────╮
+  ; │                       normal state                       │
+  ; ╰──────────────────────────────────────────────────────────╯
   ((:evil-normal-state-map
      ;; move to window by windmove
     ("<leader>h" . windmove-left)
     ("<leader>j" . windmove-down)
     ("<leader>k" . windmove-up)
-    ("<leader>l" . windmove-right)))
-  :custom
-  (evil-want-C-u-scroll . t)
-  :config
-  (evil-set-leader 'normal (kbd "<SPC>"))
-  (evil-mode 1)
-  (turn-on-evil-mode))
+    ("<leader>l" . windmove-right))))
 
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       input method                       │
