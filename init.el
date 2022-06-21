@@ -194,7 +194,6 @@
     ("<leader>k" . windmove-up)
     ("<leader>l" . windmove-right))))
 
-
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -214,6 +213,50 @@
   :after magit
   :hook (magit-mode-hook . magit-todos-mode))
 
+; ╭──────────────────────────────────────────────────────────╮
+; │                        completion                        │
+; ╰──────────────────────────────────────────────────────────╯
+(leaf vertico
+  :ensure t
+  :init (vertico-mode)
+  :custom ((vertico-cycle . t))
+  :bind ((:minibuffer-local-map
+          ("C-j" . next-line-or-history-element)
+          ("C-k" . previous-line-or-history-element))))
+
+;;; orderless
+(leaf orderless
+  :ensure t
+  :custom ((completion-styles . '(orderless))
+         (orderless-smart-case . t)
+         (orderless-matching-styles . '(orderless-prefixes
+                                        orderless-initialism
+                                        orderless-regexp))))
+
+(leaf savehist
+  :ensure t
+  :init (savehist-mode))
+
+;;; marginalia
+(leaf marginalia
+  :ensure t
+  :init (marginalia-mode))
+
+;;; embark
+(leaf embark
+  :ensure t)
+
+;;; consult
+(leaf consult
+  :ensure t
+  :setq ((completion-in-region-function . (lambda (&rest args)
+                                            (apply (if vertico-mode
+                                                       #'consult-completion-in-region
+                                                     #'completion--in-region)
+                                                   args)))
+         (consult-buffer-sources . '(consult--source-hidden-buffer
+                                     consult--source-buffer)))
+  )
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       input method                       │
 ; ╰──────────────────────────────────────────────────────────╯
