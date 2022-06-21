@@ -177,6 +177,8 @@
     ("<SPC>j" . windmove-down)
     ("<SPC>k" . windmove-up)
     ("<SPC>l" . windmove-right)))
+  :custom
+  (evil-want-C-u-scroll . t)
   :config
   (evil-mode 1)
   (turn-on-evil-mode))
