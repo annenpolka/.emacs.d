@@ -163,6 +163,10 @@
   (which-key-setup-minibuffer)
   (which-key-mode t))
 
+(leaf hl-todo
+  :doc "TODO keywords highlighting"
+  :ensure t
+  :global-minor-mode global-hl-todo-mode)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
