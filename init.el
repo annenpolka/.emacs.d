@@ -120,6 +120,19 @@
   :global-minor-mode global-auto-revert-mode)
 
 ; ╭──────────────────────────────────────────────────────────╮
+; │                     helper interface                     │
+; ╰──────────────────────────────────────────────────────────╯
+(leaf which-key
+  :doc "which-key in emacs"
+  :ensure t
+  :blackout which-key-mode
+  :custom
+  (which-key-idle-delay . 1.0)
+  :init
+  (which-key-setup-minibuffer)
+  (which-key-mode t))
+
+; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
 (leaf evil
