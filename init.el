@@ -486,7 +486,7 @@
   (add-to-list 'completion-at-point-functions #'cape-abbrev)
   (add-to-list 'completion-at-point-functions #'cape-ispell)
   (add-to-list 'completion-at-point-functions #'cape-dict)
-  (add-to-list 'completion-at-point-functions #'cape-line)
+  ;(add-to-list 'completion-at-point-functions #'cape-line)
   (add-to-list 'completion-at-point-functions #'cape-symbol))
 
 (leaf kind-icon
