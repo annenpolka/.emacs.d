@@ -126,6 +126,55 @@
   :global-minor-mode global-auto-revert-mode)
 
 ; ╭──────────────────────────────────────────────────────────╮
+; │                      language tools                      │
+; ╰──────────────────────────────────────────────────────────╯
+;;; lsp
+(leaf lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  (c++-mode-hook . lsp)
+  :custom
+  ((lsp-idle-delay . 0.5)
+  (lsp-log-io . t)
+  (lsp-completion-provider . :none)
+  (lsp-keymap-prefix . "C-c l"))
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))) ;; Configure orderless
+  :hook
+  (lsp-completion-mode . my/lsp-mode-setup-completion))
+
+;; TODO: setup lsp ui tools
+(leaf lsp-ui
+    :doc "UI modules for lsp-mode"
+    :url "https://github.com/emacs-lsp/lsp-ui"
+    :ensure t
+    :after lsp-mode
+    :custom
+    ((lsp-ui-doc-enable            . t)
+     (lsp-ui-doc-deley             . 0.5)
+     (lsp-ui-doc-header            . t)
+     (lsp-ui-doc-include-signature . t)
+     (lsp-ui-doc-position          . 'at-point)
+     (lsp-ui-doc-max-width         . 150)
+     (lsp-ui-doc-max-height        . 30)
+     (lsp-ui-doc-use-childframe    . nil)
+     (lsp-ui-doc-use-webkit        . nil)
+     (lsp-ui-flycheck-enable       . t)
+     (lsp-ui-peek-enable           . t)
+     (lsp-ui-peek-peek-height      . 20)
+     (lsp-ui-peek-list-width       . 50)
+     (lsp-ui-peek-fontify          . 'on-demand) ;; never, on-demand, or always
+     )
+    :hook ((lsp-mode-hook . lsp-ui-mode))
+    )
+
+;; TODO: add cpp clangd setup
+;; TODO: add rust-mode setup
+
+; ╭──────────────────────────────────────────────────────────╮
 ; │                          themes                          │
 ; ╰──────────────────────────────────────────────────────────╯
 ;; font config
