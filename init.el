@@ -277,11 +277,21 @@
   :ensure t
   :require smartparens-config
   :global-minor-mode smartparens-global-mode)
-
 (leaf evil-smartparens
   :ensure t
   :after smartparens
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
+
+(leaf evil-surround
+  :require embrace evil-embrace
+  :config
+  (global-evil-surround-mode 1)
+  (evil-embrace-enable-evil-surround-integration))
+(leaf embrace
+      :ensure t)
+(leaf evil-embrace
+      :require embrace
+      :ensure t)
 
 ;; TODO: add jk escape
 ; ╭──────────────────────────────────────────────────────────╮
