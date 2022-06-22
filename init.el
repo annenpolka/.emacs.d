@@ -68,6 +68,14 @@
   :ensure t
   :bind (("C-c e" . macrostep-expand)))
 
+;; flycheck syntax checking
+(leaf flycheck
+  :ensure t
+  :global-minor-mode global-flycheck-mode)
+
+;; (leaf flycheck-inline
+;;   :ensure t
+;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       basic, chore                       │
 ; ╰──────────────────────────────────────────────────────────╯
