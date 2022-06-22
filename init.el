@@ -256,7 +256,19 @@
   :after evil
   :ensure t
   :config
-    (evil-collection-init '(magit)))
+    (evil-collection-init))
+
+(leaf smartparens
+  :ensure t
+  :require smartparens-config
+  :global-minor-mode smartparens-global-mode)
+
+(leaf evil-smartparens
+  :ensure t
+  :after smartparens
+  :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
+
+;; TODO: add jk escape
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
