@@ -313,6 +313,11 @@
   :after magit
   :hook (magit-mode-hook . magit-todos-mode))
 
+(leaf git-gutter
+  :ensure t
+  :global-minor-mode global-git-gutter-mode
+  :custom
+  '(git-gutter:ask-p . nil))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                        completion                        │
 ; ╰──────────────────────────────────────────────────────────╯
