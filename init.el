@@ -190,6 +190,7 @@
   (turn-on-evil-mode)
   :bind
   ((:evil-normal-state-map
+    ("C-s" . save-buffer)
      ;; move to window by windmove
     ("<leader>h" . windmove-left)
     ("<leader>j" . windmove-down)
@@ -223,6 +224,7 @@
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                        completion                        │
 ; ╰──────────────────────────────────────────────────────────╯
+;; ----- minibuffer -----
 (leaf vertico
   :ensure t
   :init (vertico-mode)
@@ -236,6 +238,7 @@
   :ensure t
   :custom ((completion-styles . '(orderless))
          (orderless-smart-case . t)
+         (completion-category-overrides . '((file (styles . (partial-completion)))))
          (orderless-matching-styles . '(orderless-prefixes
                                         orderless-initialism
                                         orderless-regexp))))
@@ -264,6 +267,66 @@
          (consult-buffer-sources . '(consult--source-hidden-buffer
                                      consult--source-buffer)))
   )
+
+;; ----- auto completion -----
+(leaf corfu
+  :after evil
+  :ensure t
+  :hook (after-init-hook . global-corfu-mode)
+  :custom
+  (corfu-cycle . t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto . t)                 ;; Enable auto completion
+  (corfu-auto-delay . 0.01)                 ;; Enable auto completion
+  (corfu-count . 15)                        ;; show more candidates
+  (corfu-quit-at-boundary . nil) ;; nil: スペースを入れてもquitしない
+  (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
+  ;; (corfu-auto-prefix . 3)
+  (corfu-preview-current . t)    ;; current candidate preview
+  (corfu-preselect-first . t)    ;; candidate preselection
+  (corfu-quit-no-match . 'separator)
+  (corfu-separator . ?\s)
+  :bind ((:corfu-map
+          ("TAB" . corfu-next)
+          ("<tab>" . corfu-next)
+          ("S-TAB" . corfu-previous)
+          ("<backtab>" . corfu-previous)
+		  ("C-n" . corfu-next)
+		  ("C-p" . corfu-previous)))
+  :config
+  (evil-make-overriding-map corfu-map)
+  (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
+  (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
+
+(leaf corfu-doc
+  :ensure t
+  :hook (corfu-mode-hook . corfu-doc-mode))
+
+(leaf yasnippet
+  :ensure t
+  :bind (:yas-keymap
+         ("<tab>" . nil)
+         ("TAB" . nil)
+         ("<backtab>" . nil)
+         ("S-TAB" . nil)
+         ("C-o" . yas-next-field-or-maybe-expand))
+  :global-minor-mode yas-global-mode)
+
+(leaf cape
+  :ensure t
+  :config
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-tex)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-abbrev)
+  (add-to-list 'completion-at-point-functions #'cape-ispell)
+  (add-to-list 'completion-at-point-functions #'cape-symbol))
+
+(leaf kind-icon
+  :ensure t
+  :custom (kind-icon-default-face . 'corfu-default)
+  )
+
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       input method                       │
 ; ╰──────────────────────────────────────────────────────────╯
