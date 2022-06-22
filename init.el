@@ -341,14 +341,24 @@
 (leaf corfu
   :after evil
   :ensure t
-  :hook (after-init-hook . global-corfu-mode)
+  :init
+  (defun corfu-enable-in-minibuffer nil
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point
+                             (list
+                              (current-local-map)))
+      (corfu-mode 1)))
+
+  :hook
+  ;; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
+  (after-init-hook . global-corfu-mode)
   :custom
   (corfu-cycle . t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto . t)                 ;; Enable auto completion
   (corfu-auto-delay . 0.01)                 ;; Enable auto completion
   (corfu-count . 15)                        ;; show more candidates
   (corfu-quit-at-boundary . nil) ;; nil: スペースを入れてもquitしない
-  (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
+  ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
   ;; (corfu-auto-prefix . 3)
   (corfu-preview-current . t)    ;; current candidate preview
   (corfu-preselect-first . t)    ;; candidate preselection
