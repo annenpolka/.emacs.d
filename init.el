@@ -233,6 +233,12 @@
     :custom
     (display-line-numbers-width . 3))
 
+(leaf hl-line
+    :config
+    (make-variable-buffer-local 'global-hl-line-mode)
+    (add-hook 'dashboard-mode-hook (lambda() (setq global-hl-line-mode nil)))
+    :global-minor-mode global-hl-line-mode)
+
 (leaf which-key
   :doc "which-key in emacs"
   :ensure t
