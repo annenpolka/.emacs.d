@@ -389,7 +389,10 @@
                                                      #'completion--in-region)
                                                    args)))
          (consult-buffer-sources . '(consult--source-hidden-buffer
-                                     consult--source-buffer)))
+                                      consult--source-buffer
+                                      consult--source-recent-file
+                                      consult--source-bookmark
+                                      consult--source-project-buffer)))
   )
 
 ;; ----- auto completion -----
