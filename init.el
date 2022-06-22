@@ -227,6 +227,12 @@
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                     helper interface                     │
 ; ╰──────────────────────────────────────────────────────────╯
+(leaf display-line-numbers
+    :bind ("<f9>" . display-line-numbers-mode)
+    :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
+    :custom
+    (display-line-numbers-width . 3))
+
 (leaf which-key
   :doc "which-key in emacs"
   :ensure t
