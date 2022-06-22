@@ -103,10 +103,8 @@
             (ring-bell-function . 'ignore)
             (text-quoting-style . 'straight)
             (truncate-lines . t)
-            ;; (use-dialog-box . nil)
-            ;; (use-file-dialog . nil)
-            ;; (menu-bar-mode . t)
-            ;; (tool-bar-mode . nil)
+            (completion-cycle-threshold . 3)
+            (tab-always-indent . 'complete)
             (scroll-bar-mode . nil)
             (indent-tabs-mode . nil))
   :config
@@ -158,7 +156,7 @@
   :ensure t
   :blackout which-key-mode
   :custom
-  (which-key-idle-delay . 1.0)
+  (which-key-idle-delay . 0.5)
   :init
   (which-key-setup-minibuffer)
   (which-key-mode t))
