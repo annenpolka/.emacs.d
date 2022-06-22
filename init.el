@@ -140,10 +140,38 @@
   			(lambda (file) (file-in-directory-p file package-user-dir))))
   	(push (expand-file-name recentf-save-file) recentf-exclude))
 
-(setq-default ispell-program-name "aspell")
-(with-eval-after-load "ispell"
-  (setq ispell-local-dictionary "en_US")
-  (add-to-list 'ispell-skip-region-alist '("[^\000-\377]+")))
+;;; spellcheck
+(leaf flyspell
+  :blackout (flyspell-mode flyspell-prog-mode)
+  :hook
+  (text-mode-hook . flyspell-mode)
+  (prog-mode-hook . flyspell-prog-mode)
+  (conf-mode-hook . flyspell-prog-mode)
+  (yaml-mode-hook . flyspell-prog-mode)
+  :config
+  (pcase (cond ((executable-find "aspell")    'aspell)
+               ((executable-find "hunspell")  'hunspell)
+               ((executable-find "enchant-2") 'enchant))
+    (`aspell
+     (setq ispell-program-name "aspell"
+           ispell-extra-args '("--sug-mode=ultra"
+                               "--run-together"))
+
+     (unless ispell-aspell-dict-dir
+       (setq ispell-aspell-dict-dir
+             (ispell-get-aspell-config-value "dict-dir")))
+     (unless ispell-aspell-data-dir
+       (setq ispell-aspell-data-dir
+             (ispell-get-aspell-config-value "data-dir"))))
+    (`hunspell
+     (setq ispell-program-name "hunspell"))
+    (`enchant
+     (setq ispell-program-name "enchant-2"))
+    (_ (system-packages-ensure "aspell"))))
+(leaf flyspell-correct
+  :ensure t
+  :bind
+  ([remap ispell-word] . flyspell-correct-at-point))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -286,7 +314,7 @@
   :bind
   ((:evil-normal-state-map
     ("C-s" . save-buffer)
-     ;; move to window by windmove
+    ("zg" . flyspell-correct-at-point)
     ("<leader>h" . windmove-left)
     ("<leader>j" . windmove-down)
     ("<leader>k" . windmove-up)
