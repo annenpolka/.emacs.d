@@ -125,6 +125,21 @@
   :custom ((auto-revert-interval . 1))
   :global-minor-mode global-auto-revert-mode)
 
+  (leaf recentf
+    :doc "save recent file history"
+    :global-minor-mode t
+    :config
+    (setq recentf-save-file "~/.emacs.d/recentf"
+		  recentf-max-saved-items 2000
+		  recentf-auto-cleanup 'never
+
+
+		  recentf-exclude
+  		  '("recentf" "COMMIT_EDITMSG" "bookmarks" "\\.gitignore"
+  			"\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$" ".howm-keys" "\\.emacs.d/" "^/tmp/" "^/scp:"
+  			(lambda (file) (file-in-directory-p file package-user-dir))))
+  	(push (expand-file-name recentf-save-file) recentf-exclude))
+
 (setq-default ispell-program-name "aspell")
 (with-eval-after-load "ispell"
   (setq ispell-local-dictionary "en_US")
