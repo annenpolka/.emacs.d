@@ -2,6 +2,9 @@
 
 ;;; Code:
 
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.5)
+
 (set-language-environment 'Japanese)
 (prefer-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
