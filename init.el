@@ -222,6 +222,15 @@
   :doc "TODO keywords highlighting"
   :ensure t
   :global-minor-mode global-hl-todo-mode)
+
+(leaf highlight-indent-guides
+  :ensure t
+  :blackout t
+  :hook (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
+  :custom (
+           (highlight-indent-guides-method . 'bitmap)
+           (highlight-indent-guides-auto-enabled . t)
+           (highlight-indent-guides-responsive . t)))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
