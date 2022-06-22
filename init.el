@@ -174,9 +174,14 @@
   :doc "Extensible vi layer for Emacs."
   :require evil windmove
   :ensure t
+  :pre-setq
+  ;; for evil-collection
+  (evil-want-keybinding . nil)
   :custom
   ;; <C-u> to scroll (replace universal-argument)
   (evil-want-C-u-scroll . t)
+  ;; serach module
+  (evil-search-module 'evil-search)
   :config
   ;; leader-key
   (evil-set-leader 'normal (kbd "<SPC>"))
@@ -184,9 +189,6 @@
   (evil-mode 1)
   (turn-on-evil-mode)
   :bind
-  ; ╭──────────────────────────────────────────────────────────╮
-  ; │                       normal state                       │
-  ; ╰──────────────────────────────────────────────────────────╯
   ((:evil-normal-state-map
      ;; move to window by windmove
     ("<leader>h" . windmove-left)
@@ -194,6 +196,11 @@
     ("<leader>k" . windmove-up)
     ("<leader>l" . windmove-right))))
 
+(leaf evil-collection
+  :after evil
+  :ensure t
+  :config
+    (evil-collection-init '(magit)))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
