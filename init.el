@@ -255,6 +255,8 @@
 (leaf evil-collection
   :after evil
   :ensure t
+  :custom
+  (evil-collection-setup-minibuffer . t)
   :config
     (evil-collection-init))
 
