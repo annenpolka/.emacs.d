@@ -172,6 +172,10 @@
   :ensure t
   :bind
   ([remap ispell-word] . flyspell-correct-at-point))
+
+;; undo
+(leaf undo-fu
+  :ensure t)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
