@@ -408,7 +408,8 @@
          (completion-category-overrides . '((file (styles . (partial-completion)))))
          (orderless-matching-styles . '(orderless-prefixes
                                         orderless-initialism
-                                        orderless-regexp))))
+                                        orderless-regexp
+                                        orderless-flex))))
 
 (leaf savehist
   :ensure t
