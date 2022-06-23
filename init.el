@@ -413,13 +413,30 @@
 ;;; orderless
 (leaf orderless
   :ensure t
-  :custom ((completion-styles . '(orderless))
+  :custom (completion-styles . '(orderless))
          (orderless-smart-case . t)
-         (completion-category-overrides . '((file (styles . (partial-completion)))))
-         (orderless-matching-styles . '(orderless-prefixes
+  :defer-config
+  (orderless-define-completion-style orderless-default-style
+         (orderless-matching-styles '(orderless-prefixes
+                                        orderless-initialism
+                                        orderless-regexp)))
+
+  (orderless-define-completion-style orderless-fuzzy-style
+         (orderless-matching-styles '(orderless-prefixes
                                         orderless-initialism
                                         orderless-regexp
-                                        orderless-flex))))
+                                        orderless-flex)))
+  (setq completion-category-overrides
+        '((command (styles orderless-fuzzy-style))
+          (file (styles orderless-fuzzy-style))
+          (buffer (styles orderless-fuzzy-style))
+          (bookmark (styles orderless-fuzzy-style))
+          (symbol (styles orderless-default-style))
+          (consult-location (styles orderless-default-style)) ; category `consult-location' は `consult-line' などに使われる
+          ;(consult-multi (styles orderless-fuzzy-style)) ; category `consult-multi' は `consult-buffer' などに使われる
+          (multi-category (styles orderless-fuzzy-style))
+          (unicode-name (styles orderless-default-style))
+          (variable (styles orderless-default-style)))))
 
 (leaf savehist
   :ensure t
