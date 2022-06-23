@@ -300,6 +300,10 @@
   :doc "blockman thing"
   :ensure t
   :global-minor-mode global-hl-block-mode)
+
+(leaf rainbow-delimiters
+  :ensure t
+  :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
