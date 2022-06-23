@@ -344,6 +344,7 @@
   :custom
   (evil-collection-setup-minibuffer . t)
   :config
+    ;; (evil-collection-init '(magit dired consult)))
     (evil-collection-init))
 
 (leaf smartparens
@@ -365,6 +366,11 @@
 (leaf evil-embrace
       :require embrace
       :ensure t)
+
+(leaf evil-mc
+  :after evil
+  :ensure t
+  :global-minor-mode global-evil-mc-mode)
 
 (leaf key-chord
   :ensure t
