@@ -301,11 +301,13 @@
 ; ╰──────────────────────────────────────────────────────────╯
 (leaf evil
   :doc "Extensible vi layer for Emacs."
-  :require evil windmove
+  :require evil windmove undo-fu
   :ensure t
   :pre-setq
   ;; for evil-collection
   (evil-want-keybinding . nil)
+  ;; undo system
+  (evil-undo-system . 'undo-fu)
   :custom
   ;; <C-u> to scroll (replace universal-argument)
   (evil-want-C-u-scroll . t)
