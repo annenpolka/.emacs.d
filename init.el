@@ -290,6 +290,11 @@
            (highlight-indent-guides-method . 'bitmap)
            (highlight-indent-guides-auto-enabled . t)
            (highlight-indent-guides-responsive . t)))
+
+(leaf hl-block-mode
+  :doc "blockman thing"
+  :ensure t
+  :global-minor-mode global-hl-block-mode)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
