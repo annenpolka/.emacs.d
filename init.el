@@ -283,6 +283,7 @@
   :global-minor-mode global-hl-todo-mode)
 
 (leaf highlight-indent-guides
+  :doc "indent lines"
   :ensure t
   :blackout t
   :hook (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
@@ -319,7 +320,9 @@
   :bind
   ((:evil-normal-state-map
     ("C-s" . save-buffer)
+    ("C-l" . 'evil-ex-nohighlight)
     ("zg" . flyspell-correct-at-point)
+    ("<leader>SPC" . 'consult-buffer)
     ("<leader>h" . windmove-left)
     ("<leader>j" . windmove-down)
     ("<leader>k" . windmove-up)
@@ -353,7 +356,14 @@
       :require embrace
       :ensure t)
 
-;; TODO: add jk escape
+(leaf key-chord
+  :ensure t
+  :global-minor-mode t
+  :custom
+  (key-chord-two-keys-delay . 0.1)
+  ;(key-chord-one-key-delay . 0.1)
+  :config
+  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
