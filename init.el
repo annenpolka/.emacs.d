@@ -120,6 +120,10 @@
   (defalias 'yes-or-no-p 'y-or-n-p)
   (keyboard-translate ?\C-h ?\C-?))
 
+;; undo
+(leaf undo-tree
+  :ensure t)
+
 (leaf autorevert
   :doc "revert buffers when files on disk change"
   :tag "builtin"
@@ -174,9 +178,6 @@
   :bind
   ([remap ispell-word] . flyspell-correct-at-point))
 
-;; undo
-(leaf undo-fu
-  :ensure t)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -310,13 +311,13 @@
 ; ╰──────────────────────────────────────────────────────────╯
 (leaf evil
   :doc "Extensible vi layer for Emacs."
-  :require evil windmove undo-fu
+  :require evil windmove undo-tree evil
   :ensure t
   :pre-setq
   ;; for evil-collection
   (evil-want-keybinding . nil)
   ;; undo system
-  (evil-undo-system . 'undo-fu)
+  (evil-undo-system . 'undo-tree)
   :custom
   ;; <C-u> to scroll (replace universal-argument)
   (evil-want-C-u-scroll . t)
