@@ -375,60 +375,49 @@
   :ensure t
   :global-minor-mode global-evil-mc-mode
   :config
-    (defun evil-mc-toggle-cursors ()
-    "Toggle frozen state of evil-mc cursors."
-    (interactive)
-    (unless (evil-mc-has-cursors-p)
-        (user-error "No cursors exist to be toggled"))
-    (setq evil-mc-frozen (not (and (evil-mc-has-cursors-p)
-                                    evil-mc-frozen)))
-    (if evil-mc-frozen
-        (message "evil-mc paused")
-        (message "evil-mc resumed")))
+   (evil-define-command evil-mc-toggle-cursor-here ()
+   "Create a cursor at point. If in visual block or line mode, then create
+   cursors on each line of the selection, on the column of the cursor. Otherwise
+   pauses cursors."
+   :repeat nil
+   :keep-visual nil
+   :evil-mc t
+   (interactive)
+   (cond ((and (evil-mc-has-cursors-p)
+               (evil-normal-state-p)
+               (let* ((pos (point))
+                       (cursor (cl-find-if (lambda (cursor)
+                                           (eq pos (evil-mc-get-cursor-start cursor)))
+                                           evil-mc-cursor-list)))
+                   (when cursor
+                   (evil-mc-delete-cursor cursor)
+                   (setq evil-mc-cursor-list (delq cursor evil-mc-cursor-list))
+                   t))))
 
-    (evil-define-command evil-mc-toggle-cursor-here ()
-    "Create a cursor at point. If in visual block or line mode, then create
-    cursors on each line of the selection, on the column of the cursor. Otherwise
-    pauses cursors."
-    :repeat nil
-    :keep-visual nil
-    :evil-mc t
-    (interactive)
-    (cond ((and (evil-mc-has-cursors-p)
-                (evil-normal-state-p)
-                (let* ((pos (point))
-                        (cursor (cl-find-if (lambda (cursor)
-                                            (eq pos (evil-mc-get-cursor-start cursor)))
-                                            evil-mc-cursor-list)))
-                    (when cursor
-                    (evil-mc-delete-cursor cursor)
-                    (setq evil-mc-cursor-list (delq cursor evil-mc-cursor-list))
-                    t))))
-
-            ((memq evil-this-type '(block line))
-            (let ((col (evil-column))
-                (line-at-pt (line-number-at-pos)))
-            ;; Fix off-by-one error
-            (when (= evil-visual-direction 1)
-                (cl-decf col)
-                (backward-char))
-            (save-excursion
-                (evil-apply-on-block
-                (lambda (ibeg _)
-                    (unless (or (= line-at-pt (line-number-at-pos ibeg))
-                                (invisible-p ibeg))
-                    (goto-char ibeg)
-                    (move-to-column col)
-                    (when (= (current-column) col)
-                        (evil-mc-make-cursor-here))))
-                evil-visual-beginning
-                (if (eq evil-this-type 'line) (1- evil-visual-end) evil-visual-end)
-                nil)
-                (evil-exit-visual-state))))
-            (t
-            (evil-mc-pause-cursors)
-            ;; I assume I don't want the cursors to move yet
-            (evil-mc-make-cursor-here))))
+           ((memq evil-this-type '(block line))
+           (let ((col (evil-column))
+               (line-at-pt (line-number-at-pos)))
+           ;; Fix off-by-one error
+           (when (= evil-visual-direction 1)
+               (cl-decf col)
+               (backward-char))
+           (save-excursion
+               (evil-apply-on-block
+               (lambda (ibeg _)
+                   (unless (or (= line-at-pt (line-number-at-pos ibeg))
+                               (invisible-p ibeg))
+                   (goto-char ibeg)
+                   (move-to-column col)
+                   (when (= (current-column) col)
+                       (evil-mc-make-cursor-here))))
+               evil-visual-beginning
+               (if (eq evil-this-type 'line) (1- evil-visual-end) evil-visual-end)
+               nil)
+               (evil-exit-visual-state))))
+           (t
+           (evil-mc-pause-cursors)
+           ;; I assume I don't want the cursors to move yet
+           (evil-mc-make-cursor-here))))
 
     (evil-define-command evil-mc-undo-cursor ()
     "Undos last cursor, or all cursors in visual region."
@@ -464,8 +453,8 @@
     _Z_: match all     _J_: make & go down   _z_: toggle here
     _m_: make & next   _K_: make & go up     _r_: remove last
     _M_: make & prev   ^ ^                   _R_: remove all
-    _n_: skip & next   ^ ^                   _p_: pause/resume
-    _N_: skip & prev
+    _n_: skip & next   ^ ^                   _p_: pause
+    _N_: skip & prev   ^ ^                   _P_: resume
 
     Current pattern: %`evil-mc-pattern
 
@@ -480,7 +469,8 @@
     ("z" #'evil-mc-toggle-cursor-here)
     ("r" #'evil-mc-undo-cursor)
     ("R" #'evil-mc-undo-all-cursors)
-    ("p" #'evil-mc-toggle-cursors)
+    ("p" #'evil-mc-pause-cursors)
+    ("P" #'evil-mc-resume-cursors)
     ("q" #'evil-mc-resume-cursors "quit" :color blue)
     ("<escape>" #'evil-mc-resume-cursors "quit" :color blue)))
 
