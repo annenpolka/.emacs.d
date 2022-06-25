@@ -122,7 +122,9 @@
 
 ;; undo
 (leaf undo-tree
-  :ensure t)
+  :ensure t
+  :global-minor-mode global-undo-tree-mode
+  )
 
 (leaf autorevert
   :doc "revert buffers when files on disk change"
@@ -234,7 +236,7 @@
 (defvar my/font-family "Iosevka Term")
 (defvar my/font-size
   (let ((size-by-hostname
-         '(("DESKTOP-B6V868U" . 12.5))))
+         '(("DESKTOP-B6V868U" . 14.0))))
     (or (cdr (assoc (system-name) size-by-hostname))
         13.5)))
 
