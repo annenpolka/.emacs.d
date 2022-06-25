@@ -308,6 +308,12 @@
 (leaf rainbow-delimiters
   :ensure t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
+
+;; Code folding
+(leaf origami
+  :ensure t
+  :after evil
+  :global-minor-mode global-origami-mode)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -335,7 +341,10 @@
   ((:evil-normal-state-map
     ("C-s" . save-buffer)
     ("C-l" . 'evil-ex-nohighlight)
+    ("C-j" . 'evil-open-fold)
+    ("C-k" . 'evil-close-fold)
     ("zg" . flyspell-correct-at-point)
+    ("C-e" . dired)
     ("<leader>SPC" . 'consult-buffer)
     ("<leader>n" . 'my-mc-hydra/body)
     ("<leader>h" . windmove-left)
