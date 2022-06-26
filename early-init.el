@@ -23,5 +23,6 @@
 ;;   (setq user-emacs-directory (file-name-directory load-file-name)))
 
 (setq package-enable-at-startup nil)
+(setq native-comp-async-report-warnings-errors nil) 
 
 ;;; early-init.el ends here
