@@ -67,3 +67,6 @@ transient
 bookmarks
 /.lsp-session-v1
 /*.sql
+
+.cache/svg-lib
+straight
