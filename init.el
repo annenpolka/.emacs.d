@@ -247,6 +247,17 @@
   :require t
   :bind ([remap ispell-word] . flyspell-correct-at-point))
 
+(leaf
+  eldoc
+  :doc "emacs-lisp documentaion"
+  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
+  :blackout t
+  :preface
+  (defun my:shutup-eldoc-message (f &optional string)
+    (unless (active-minibuffer-window)
+      (funcall f string)))
+  :advice (:around eldoc-message my:shutup-eldoc-message))
+
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -458,6 +469,7 @@
   smartparens
   :straight t
   :require smartparens-config
+  :blackout t
   :global-minor-mode smartparens-global-mode)
 (leaf
   evil-smartparens
@@ -678,6 +690,7 @@
   git-gutter
   :straight t
   :require t
+  :blackout t
   :global-minor-mode global-git-gutter-mode
   :custom '(git-gutter:ask-p . nil))
 ; ╭──────────────────────────────────────────────────────────╮
