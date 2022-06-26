@@ -479,6 +479,7 @@
   :straight t
   :require t
   :after smartparens
+  :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
 (leaf embrace :straight t :require t)
