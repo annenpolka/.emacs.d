@@ -41,9 +41,6 @@
       ("melpa" . "https://melpa.org/packages/")
       ("org" . "https://orgmode.org/elpa/")))
   (package-initialize)
-  (unless (package-installed-p 'leaf)
-    (package-refresh-contents)
-    (package-install 'leaf))
 
   ;; setup straight.el
   (defvar bootstrap-version)
@@ -63,17 +60,17 @@
         (goto-char (point-max))
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
+  ;; install leaf requirements by straight
+  (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
 
   (leaf
     leaf-keywords
-    :ensure t
+    :require t
     :init
     ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-    (leaf hydra :ensure t)
-    (leaf major-mode-hydra :ensure t)
-    (leaf el-get :ensure t)
-    (leaf blackout :ensure t)
-
+    (straight-use-package 'hydra)
+    (straight-use-package 'major-mode-hydra)
+    (straight-use-package 'blackout)
     :config
     ;; initialize leaf-keywords.el
     (leaf-keywords-init)))
@@ -81,31 +78,40 @@
 ;; leaf plugins
 (leaf
   leaf
-  :config (leaf leaf-convert :ensure t)
+  :config (leaf leaf-convert :straight t :require t)
   (leaf
     leaf-tree
-    :ensure t
+    :straight t
+    :require t
     :custom ((imenu-list-size . 30) (imenu-list-position . 'left))))
 
 ;; explain macro by step
-(leaf macrostep :ensure t :bind (("C-c e" . macrostep-expand)))
+(leaf
+  macrostep
+  :straight t
+  :require t
+  :bind (("C-c e" . macrostep-expand)))
 
 ;; flycheck syntax checking
-(leaf flycheck :ensure t :global-minor-mode global-flycheck-mode)
+(leaf
+  flycheck
+  :straight t
+  :require t
+  :global-minor-mode global-flycheck-mode)
 
 (leaf
   elisp-autofmt
-  :url https://gitlab.com/ideasman42/emacs-elisp-autofmt
+  :require t
   :straight
   (elisp-autofmt
-    :host gitlab
-    :repo "ideasman42/emacs-elisp-autofmt"
-    :files (:defaults "elisp-autofmt"))
-  :require t
+    :files (:defaults "elisp-autofmt")
+    :host nil
+    :type git
+    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
   :hook (emacs-lisp-mode-hook . elisp-autofmt-mode))
 
 ;; (leaf flycheck-inline
-;;   :ensure t
+;;   :straight t :require t
 ;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       basic, chore                       │
@@ -160,7 +166,11 @@
   (keyboard-translate ?\C-h ?\C-?))
 
 ;; undo
-(leaf undo-tree :ensure t :global-minor-mode global-undo-tree-mode)
+(leaf
+  undo-tree
+  :straight t
+  :require t
+  :global-minor-mode global-undo-tree-mode)
 
 (leaf
   autorevert
@@ -228,7 +238,8 @@
     (_ (system-packages-ensure "aspell"))))
 (leaf
   flyspell-correct
-  :ensure t
+  :straight t
+  :require t
   :bind ([remap ispell-word] . flyspell-correct-at-point))
 
 ; ╭──────────────────────────────────────────────────────────╮
@@ -260,7 +271,8 @@
   lsp-ui
   :doc "UI modules for lsp-mode"
   :url "https://github.com/emacs-lsp/lsp-ui"
-  :ensure t
+  :straight t
+  :require t
   :after lsp-mode
   :custom
   ((lsp-ui-doc-enable . t)
@@ -333,7 +345,8 @@
 (leaf
   which-key
   :doc "which-key in emacs"
-  :ensure t
+  :straight t
+  :require t
   :blackout which-key-mode
   :custom (which-key-idle-delay . 0.5)
   :init
@@ -343,13 +356,15 @@
 (leaf
   hl-todo
   :doc "TODO keywords highlighting"
-  :ensure t
+  :straight t
+  :require t
   :global-minor-mode global-hl-todo-mode)
 
 (leaf
   highlight-indent-guides
   :doc "indent lines"
-  :ensure t
+  :straight t
+  :require t
   :blackout t
   :hook
   (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
@@ -361,18 +376,21 @@
 (leaf
   hl-block-mode
   :doc "blockman thing"
-  :ensure t
+  :straight t
+  :require t
   :global-minor-mode global-hl-block-mode)
 
 (leaf
   rainbow-delimiters
-  :ensure t
+  :straight t
+  :require t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
 ;; Code folding
 (leaf
   origami
-  :ensure t
+  :straight t
+  :require t
   :after evil
   :global-minor-mode global-origami-mode)
 ; ╭──────────────────────────────────────────────────────────╮
@@ -386,7 +404,7 @@
   windmove
   undo-tree
   evil
-  :ensure t
+  :straight t
   :pre-setq
   ;; for evil-collection
   (evil-want-keybinding . nil)
@@ -413,7 +431,7 @@
       ("C-k" . 'evil-close-fold)
       ("zg" . flyspell-correct-at-point)
       ("C-e" . dired)
-      ("/" . consult-line)
+      ("C-f" . consult-line)
       ("<leader>SPC" . 'consult-buffer)
       ("<leader>n" . 'my-mc-hydra/body)
       ("<leader>h" . windmove-left)
@@ -424,7 +442,8 @@
 (leaf
   evil-collection
   :after evil
-  :ensure t
+  :straight t
+  :require t
   :custom (evil-collection-setup-minibuffer . t)
   :config
   ;; (evil-collection-init '(magit dired consult)))
@@ -432,31 +451,35 @@
 
 (leaf
   smartparens
-  :ensure t
+  :straight t
   :require smartparens-config
   :global-minor-mode smartparens-global-mode)
 (leaf
   evil-smartparens
-  :ensure t
+  :straight t
+  :require t
   :after smartparens
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
+(leaf embrace :straight t :require t)
+(leaf evil-embrace :straight t :require t)
 (leaf
   evil-surround
+  :straight t
   :require
   embrace
   evil-embrace
+  evil-surround
   :config
   (global-evil-surround-mode 1)
   (evil-embrace-enable-evil-surround-integration))
-(leaf embrace :ensure t)
-(leaf evil-embrace :require embrace :ensure t)
 
 (leaf
   evil-mc
   :after evil
   :require (smartparens evil-smartparens)
-  :ensure t
+  :straight t
+  :require t
   :global-minor-mode global-evil-mc-mode
   :config
   (evil-define-command
@@ -610,7 +633,8 @@
 
 (leaf
   key-chord
-  :ensure t
+  :straight t
+  :require t
   :global-minor-mode t
   :custom (key-chord-two-keys-delay . 0.15)
   ;(key-chord-one-key-delay . 0.1)
@@ -619,25 +643,29 @@
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
-(leaf magit :doc "great git client" :ensure t)
+(leaf magit :doc "great git client" :straight t :require t)
 
 (leaf
   forge
   :doc "remote repo control with magit"
-  :ensure t
+  :straight t
+  :require t
   :after magit
-  :custom ((bug-reference-mode . 0)))
+  :custom
+  ((bug-reference-mode . 0) (forge-add-default-bindings . nil)))
 
 (leaf
   magit-todos
   :doc "manage TODO keywords with magit"
-  :ensure t
+  :straight t
+  :require t
   :after magit
   :hook (magit-mode-hook . magit-todos-mode))
 
 (leaf
   git-gutter
-  :ensure t
+  :straight t
+  :require t
   :global-minor-mode global-git-gutter-mode
   :custom '(git-gutter:ask-p . nil))
 ; ╭──────────────────────────────────────────────────────────╮
@@ -646,7 +674,8 @@
 ;; ----- minibuffer -----
 (leaf
   vertico
-  :ensure t
+  :straight t
+  :require t
   :init (vertico-mode)
   :custom ((vertico-cycle . t))
   :bind
@@ -658,7 +687,8 @@
 (leaf
   orderless
   :disabled t ; trying fussy
-  :ensure t
+  :straight t
+  :require t
   :custom
   ((completion-styles . '(orderless)) (orderless-smart-case . t))
   :hook ((corfu-mode-hook . my/orderless-for-corfu))
@@ -718,18 +748,19 @@
   :require t
   :config (fuz-bin-load-dyn))
 
-(leaf savehist :ensure t :init (savehist-mode))
+(leaf savehist :straight t :require t :init (savehist-mode))
 
 ;;; marginalia
-(leaf marginalia :ensure t :init (marginalia-mode))
+(leaf marginalia :straight t :require t :init (marginalia-mode))
 
 ;;; embark
-(leaf embark :ensure t)
+(leaf embark :straight t :require t)
 
 ;;; consult
 (leaf
   consult
-  :ensure t
+  :straight t
+  :require t
   :setq
   (
     (completion-in-region-function
@@ -751,7 +782,10 @@
 ;; affe fuzzy-finder
 (leaf
   affe
-  :config (leaf-handler-package affe affe nil)
+  :straight t
+  :ensure t
+  :config
+  (leaf-handler-package affe affe nil)
   (with-eval-after-load 'consult
     (defun affe-orderless-regexp-compiler (input _type _ignorecase)
       (setq input (orderless-pattern-compiler input))
@@ -764,7 +798,8 @@
   corfu
   ;; :disabled t ;; try company
   :after evil
-  :ensure t
+  :straight t
+  :require t
   :init
   (defun corfu-enable-in-minibuffer nil
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
@@ -803,11 +838,16 @@
   (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
   (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
 
-(leaf corfu-doc :ensure t :hook (corfu-mode-hook . corfu-doc-mode))
+(leaf
+  corfu-doc
+  :straight t
+  :require t
+  :hook (corfu-mode-hook . corfu-doc-mode))
 
 (leaf
   yasnippet
-  :ensure t
+  :straight t
+  :require t
   :bind
   (:yas-keymap
     ("<tab>" . nil)
@@ -819,7 +859,8 @@
 
 (leaf
   cape
-  :ensure t
+  :straight t
+  :require t
   :init
   (defun my/basic-super-capf ()
     (add-to-list 'completion-at-point-functions
@@ -840,7 +881,8 @@
 
 (leaf
   kind-icon
-  :ensure t
+  :straight t
+  :require t
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
