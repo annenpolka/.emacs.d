@@ -2,8 +2,10 @@
 
 ;;; Code:
 
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.5)
+(setq
+  gc-cons-threshold
+  most-positive-fixnum
+  gc-cons-percentage 0.5)
 
 (set-language-environment 'Japanese)
 (prefer-coding-system 'utf-8)
@@ -11,7 +13,7 @@
 (set-keyboard-coding-system 'utf-8)
 (setq use-dialog-box nil)
 
-(setq frame-resize-pixelwise t) 
+(setq frame-resize-pixelwise t)
 (setq frame-inhibit-implied-resize t)
 (setq inhibit-splash-screen t)
 
@@ -23,6 +25,8 @@
 ;;   (setq user-emacs-directory (file-name-directory load-file-name)))
 
 (setq package-enable-at-startup nil)
-(setq native-comp-async-report-warnings-errors nil) 
+(setq native-comp-async-report-warnings-errors nil)
+;; (require 'cl) を見逃す
+(setq byte-compile-warnings '(not cl-functions obsolete))
 
 ;;; early-init.el ends here
