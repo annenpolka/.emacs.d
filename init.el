@@ -632,16 +632,16 @@
       (corfu-mode 1)))
 
   :hook
-  ;; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
+  ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
   (after-init-hook . global-corfu-mode)
   :custom
   (corfu-cycle . t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto . t)                 ;; Enable auto completion
-  (corfu-auto-delay . 0.01)                 ;; Enable auto completion
+  (corfu-auto-delay . 0)                 ;; Enable auto completion
   (corfu-count . 15)                        ;; show more candidates
   (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
   ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
-  ;; (corfu-auto-prefix . 3)
+  (corfu-auto-prefix .  1)
   (corfu-preview-current . t)    ;; current candidate preview
   (corfu-preselect-first . t)    ;; candidate preselection
   (corfu-quit-no-match . 'separator)
@@ -680,13 +680,14 @@
                                                 ;; #'lsp-completion-at-point
                                                 #'cape-file
                                                 #'cape-tex
-                                                #'cape-dabbrev
+                                                #'cape-symbol
                                                 #'cape-keyword
+                                                #'cape-dabbrev
                                                 #'cape-abbrev
                                                 ;#'cape-ispell
                                                 ;#'cape-dict
                                                 ;#'cape-line
-                                                #'cape-symbol)))
+                                                )))
   :hook
   (prog-mode-hook . my/basic-super-capf)
   )
