@@ -335,6 +335,7 @@
   (modus-themes-fringes . 'subtle)
   (modus-themes-italic-constructs . t)
   (modus-themes-bold-constructs . nil)
+  (modus-themes-mode-line . '(borderless moody))
   (modus-themes-hl-line . '(underline))
   (modus-themes-region . '(bg-only no-extend))
   (modus-themes-scale-headings . t)
@@ -385,7 +386,7 @@
   :hook
   (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
   :custom
-  ((highlight-indent-guides-method . 'bitmap)
+  ((highlight-indent-guides-method . 'character)
     (highlight-indent-guides-auto-enabled . t)
     (highlight-indent-guides-responsive . t)))
 
