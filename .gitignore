@@ -65,3 +65,5 @@ tutorial
 forge-database.sqlite
 transient
 bookmarks
+/.lsp-session-v1
+/*.sql
