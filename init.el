@@ -345,6 +345,7 @@
     ("C-k" . 'evil-close-fold)
     ("zg" . flyspell-correct-at-point)
     ("C-e" . dired)
+    ("/" . consult-line)
     ("<leader>SPC" . 'consult-buffer)
     ("<leader>n" . 'my-mc-hydra/body)
     ("<leader>h" . windmove-left)
