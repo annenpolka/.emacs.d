@@ -170,7 +170,12 @@
   undo-tree
   :straight t
   :require t
-  :global-minor-mode global-undo-tree-mode)
+  :global-minor-mode global-undo-tree-mode
+  :blackout t
+  :setq
+  (undo-tree-history-directory-alist
+    .
+    '(("." . "~/.emacs.d/undo-history"))))
 
 (leaf
   autorevert
