@@ -26,7 +26,11 @@
 
 (setq package-enable-at-startup nil)
 (setq native-comp-async-report-warnings-errors nil)
-;; (require 'cl) を見逃す
+;; suppress cl deprecation warnings
 (setq byte-compile-warnings '(not cl-functions obsolete))
+
+;; disable straight-process-buffer
+(defvar straight-process-buffer)
+(setq-default straight-process-buffer " *straight-process*")
 
 ;;; early-init.el ends here
