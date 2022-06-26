@@ -179,8 +179,6 @@
     "~/.emacs.d/recentf"
     recentf-max-saved-items 2000
     recentf-auto-cleanup 'never
-
-
     recentf-exclude
     '
     ("recentf"

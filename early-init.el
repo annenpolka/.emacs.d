@@ -22,4 +22,6 @@
 ;; (when load-file-name
 ;;   (setq user-emacs-directory (file-name-directory load-file-name)))
 
+(setq package-enable-at-startup nil)
+
 ;;; early-init.el ends here
