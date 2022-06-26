@@ -632,14 +632,21 @@
       :color blue)))
 
 (leaf
-  key-chord
+  evil-escape
+  :after evil
   :straight t
   :require t
-  :global-minor-mode t
-  :custom (key-chord-two-keys-delay . 0.15)
-  ;(key-chord-one-key-delay . 0.1)
-  :config
-  (key-chord-define evil-insert-state-map "jk" 'evil-normal-state))
+  :blackout t
+  :global-minor-mode evil-escape-mode
+  :setq-default
+  (evil-escape-key-sequence . "jk")
+  (evil-escape-delay . 0.2)
+  (evil-escape-excluded-major-modes
+    .
+    '
+    (magit-status-mode
+      magit-revision-mode magit-diff-mode help-mode)))
+
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
