@@ -186,20 +186,19 @@
 ;;; lsp
 (leaf lsp-mode
   :commands (lsp lsp-deferred)
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  (c++-mode-hook . lsp)
-  :custom
-  ((lsp-idle-delay . 0.5)
-  (lsp-log-io . t)
-  (lsp-completion-provider . :none)
-  (lsp-keymap-prefix . "C-c l"))
   :init
   (defun my/lsp-mode-setup-completion ()
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless))) ;; Configure orderless
   :hook
-  (lsp-completion-mode . my/lsp-mode-setup-completion))
+  (lsp-mode . lsp-enable-which-key-integration)
+  (lsp-completion-mode . my/lsp-mode-setup-completion)
+  (c++-mode-hook . lsp)
+  :custom
+  ((lsp-idle-delay . 0.5)
+  (lsp-log-io . t)
+  (lsp-completion-provider . :none)
+  (lsp-keymap-prefix . "C-c l")))
 
 ;; TODO: setup lsp ui tools
 (leaf lsp-ui
@@ -534,8 +533,14 @@
 ;;; orderless
 (leaf orderless
   :ensure t
-  :custom (completion-styles . '(orderless))
-         (orderless-smart-case . t)
+  :custom ((completion-styles . '(orderless))
+         (orderless-smart-case . t))
+  :hook ((corfu-mode-hook . my/orderless-for-corfu))
+  :init
+  (defun my/orderless-dispatch-flex-first (_pattern index _total)
+    (and (eq index 0) 'orderless-flex))
+  (defun my/orderless-for-corfu ()
+    (setq-local orderless-style-dispatchers '(my/orderless-dispatch-flex-first)))
   :defer-config
   (orderless-define-completion-style orderless-default-style
          (orderless-matching-styles '(orderless-prefixes
@@ -619,7 +624,7 @@
   (corfu-auto . t)                 ;; Enable auto completion
   (corfu-auto-delay . 0.01)                 ;; Enable auto completion
   (corfu-count . 15)                        ;; show more candidates
-  (corfu-quit-at-boundary . nil) ;; nil: スペースを入れてもquitしない
+  (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
   ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
   ;; (corfu-auto-prefix . 3)
   (corfu-preview-current . t)    ;; current candidate preview
@@ -654,16 +659,23 @@
 
 (leaf cape
   :ensure t
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-tex)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev)
-  (add-to-list 'completion-at-point-functions #'cape-ispell)
-  (add-to-list 'completion-at-point-functions #'cape-dict)
-  ;(add-to-list 'completion-at-point-functions #'cape-line)
-  (add-to-list 'completion-at-point-functions #'cape-symbol))
+  :init
+  (defun my/basic-super-capf ()
+    (add-to-list 'completion-at-point-functions (cape-super-capf
+                                                ;; #'lsp-completion-at-point
+                                                #'cape-file
+                                                #'cape-tex
+                                                #'cape-dabbrev
+                                                #'cape-keyword
+                                                #'cape-abbrev
+                                                ;#'cape-ispell
+                                                ;#'cape-dict
+                                                ;#'cape-line
+                                                #'cape-symbol)))
+  :hook
+  (prog-mode-hook . my/basic-super-capf)
+  )
+
 
 (leaf kind-icon
   :ensure t
