@@ -88,6 +88,11 @@
   :ensure t
   :global-minor-mode global-flycheck-mode)
 
+(leaf elfmt
+  :doc "elisp formatter"
+  :straight t
+  :require t)
+
 ;; (leaf flycheck-inline
 ;;   :ensure t
 ;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
