@@ -340,6 +340,7 @@
   :bind
   ((:evil-normal-state-map
     ("C-s" . save-buffer)
+    ("C-q" . 'evil-delete-buffer)
     ("C-l" . 'evil-ex-nohighlight)
     ("C-j" . 'evil-open-fold)
     ("C-k" . 'evil-close-fold)
@@ -484,7 +485,7 @@
     ("p" #'evil-mc-pause-cursors)
     ("P" #'evil-mc-resume-cursors)
     ("q" #'evil-mc-resume-cursors "quit" :color blue)
-    ("<escape>" #'evil-mc-resume-cursors "quit" :color blue)))
+    ("Q" #'evil-mc-undo-all-cursors "quit with remove all" :color blue)))
 
 (leaf key-chord
   :ensure t
