@@ -460,7 +460,9 @@
   :after evil
   :straight t
   :require t
-  :custom (evil-collection-setup-minibuffer . t)
+  :custom
+  (evil-collection-setup-minibuffer . t)
+  (evil-collection-want-unimpaired-p . nil)
   :config
   ;; (evil-collection-init '(magit dired consult)))
   (evil-collection-init))
