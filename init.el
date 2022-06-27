@@ -775,47 +775,6 @@
     (:minibuffer-local-map
       ("C-j" . next-line-or-history-element)
       ("C-k" . previous-line-or-history-element))))
-;;; orderless
-(leaf
-  orderless
-  :disabled t ; trying fussy
-  :straight t
-  :require t
-  :custom
-  ((completion-styles . '(orderless)) (orderless-smart-case . t))
-  :hook ((corfu-mode-hook . my/orderless-for-corfu))
-  :init
-  (defun my/orderless-dispatch-flex-first (_pattern index _total)
-    (and (eq index 0) 'orderless-flex))
-  (defun my/orderless-for-corfu ()
-    (setq-local orderless-style-dispatchers
-      '(my/orderless-dispatch-flex-first)))
-  :defer-config
-  (orderless-define-completion-style
-    orderless-default-style
-    (orderless-matching-styles
-      '(orderless-prefixes orderless-initialism orderless-regexp)))
-
-  (orderless-define-completion-style
-    orderless-fuzzy-style
-    (orderless-matching-styles
-      '
-      (orderless-prefixes
-        orderless-initialism
-        orderless-regexp
-        orderless-flex)))
-  (setq completion-category-overrides
-    '
-    ((command (styles orderless-fuzzy-style))
-      (file (styles orderless-fuzzy-style))
-      (buffer (styles orderless-fuzzy-style))
-      (bookmark (styles orderless-fuzzy-style))
-      (symbol (styles orderless-default-style))
-      (consult-location (styles orderless-default-style)) ; category `consult-location' は `consult-line' などに使われる
-      ;(consult-multi (styles orderless-fuzzy-style)) ; category `consult-multi' は `consult-buffer' などに使われる
-      (multi-category (styles orderless-fuzzy-style))
-      (unicode-name (styles orderless-default-style))
-      (variable (styles orderless-default-style)))))
 
 (leaf
   fussy
