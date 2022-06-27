@@ -450,7 +450,7 @@
     (:evil-normal-state-map
       ("C-s" . save-buffer)
       ("C-q" . 'evil-delete-buffer)
-      ("C-l" . 'evil-ex-nohighlight)
+      ("C-l" . 'my/clear-marks-and-cursors)
       ("C-j" . 'evil-open-fold)
       ("C-k" . 'evil-close-fold)
       ("zg" . flyspell-correct-at-point)
