@@ -681,8 +681,19 @@
   (my-git-actions
     (:color pink :separator "=" :quit-key "q")
     ("Movement"
-      (("J" git-gutter:next-hunk "next hunk")
-        ("K" git-gutter:previous-hunk "previous hunk")))))
+      (("J" diff-hl-next-hunk "next hunk")
+        ("K" diff-hl-previous-hunk "previous hunk"))
+      "Diff"
+      (("d" diff-hl-show-hunk "diff nearest hunk")
+        ("n" diff-hl-show-hunk-next "diff next hunk")
+        ("p" diff-hl-show-hunk-previous "diff previous hunk"))
+      "Operation"
+      (("r" diff-hl-revert-hunk "revert hunk")
+        ("s" diff-hl-stage-current-hunk "stage hunk")
+        ("U" diff-hl-unstage-file "unstage all"))
+      "Magit"
+      (("<RET>" magit-status "open magit" :color blue)
+        ("C" magit-commit "commit" :color blue)))))
 
 (leaf
   forge
