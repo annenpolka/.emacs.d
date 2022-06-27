@@ -492,6 +492,7 @@
   :after evil
   :straight t
   :require t
+  :defun (evil-collection-init)
   :custom
   (evil-collection-setup-minibuffer . t)
   (evil-collection-want-unimpaired-p . nil)
@@ -532,9 +533,8 @@
 (leaf
   evil-mc
   :after evil
-  :require (smartparens evil-smartparens)
   :straight t
-  :require t
+  :require (smartparens evil-smartparens)
   :global-minor-mode global-evil-mc-mode
   :config
   (evil-define-command
