@@ -451,6 +451,7 @@
       ("C-f" . consult-line)
       ("<leader>SPC" . 'consult-buffer)
       ("<leader>n" . 'my-mc-hydra/body)
+      ("<leader>g" . 'my-git-actions/body)
       ("<leader>h" . windmove-left)
       ("<leader>j" . windmove-down)
       ("<leader>k" . windmove-up)
