@@ -257,6 +257,13 @@
       (funcall f string)))
   :advice (:around eldoc-message my:shutup-eldoc-message))
 
+(leaf
+  persistent-scratch
+  :doc "keep scratch buffer state across sessions"
+  :straight t
+  :require t
+  :defun (persistent-scratch-setup-default)
+  :config (persistent-scratch-setup-default))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
