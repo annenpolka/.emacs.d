@@ -71,6 +71,7 @@
     (straight-use-package 'hydra)
     (straight-use-package 'major-mode-hydra)
     (straight-use-package 'blackout)
+    (straight-use-package 'system-packages)
     :config
     ;; initialize leaf-keywords.el
     (leaf-keywords-init)))
