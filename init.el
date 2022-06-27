@@ -449,6 +449,7 @@
   (
     (:evil-normal-state-map
       ("C-s" . save-buffer)
+      (":" . execute-extended-command)
       ("C-q" . 'evil-delete-buffer)
       ("C-l" . 'my/clear-marks-and-cursors)
       ("C-j" . 'evil-open-fold)
