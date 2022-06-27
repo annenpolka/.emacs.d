@@ -173,7 +173,7 @@
   :require t
   :global-minor-mode global-undo-tree-mode
   :blackout t
-  :setq
+  :custom
   (undo-tree-history-directory-alist
     .
     '(("." . "~/.emacs.d/undo-history"))))
@@ -216,6 +216,12 @@
   (prog-mode-hook . flyspell-prog-mode)
   (conf-mode-hook . flyspell-prog-mode)
   (yaml-mode-hook . flyspell-prog-mode)
+  :defvar
+  (ispell-extra-args
+    ispell-aspell-dict-dir
+    ispell-aspell-data-dir
+    ispell-program-name)
+  :defun (ispell-get-aspell-config-value)
   :config
   (pcase
     (cond
@@ -357,19 +363,14 @@
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
   :custom (display-line-numbers-width . 3))
 
-(leaf
-  hl-line
-  :config
-  (make-variable-buffer-local 'global-hl-line-mode)
-  (add-hook 'dashboard-mode-hook
-    (lambda () (setq global-hl-line-mode nil)))
-  :global-minor-mode global-hl-line-mode)
+(leaf hl-line :global-minor-mode global-hl-line-mode)
 
 (leaf
   which-key
   :doc "which-key in emacs"
   :straight t
   :require t
+  :defun (which-key-setup-minibuffer which-key-mode)
   :blackout which-key-mode
   :custom (which-key-idle-delay . 0.5)
   :init
@@ -431,12 +432,25 @@
 (leaf
   evil
   :doc "Extensible vi layer for Emacs."
+  :straight t
   :require
   evil
   windmove
   undo-tree
   evil
-  :straight t
+  :defun
+  (evil-ex-nohighlight
+    evil-mc-undo-all-cursors
+    evil-set-leader
+    evil-mode
+    turn-on-evil-mode
+    evil-define-command)
+  :defvar (evil-want-keybinding evil-undo-system)
+  :init
+  (defun my/clear-marks-and-cursors ()
+    (interactive)
+    (evil-ex-nohighlight)
+    (evil-mc-undo-all-cursors))
   :pre-setq
   ;; for evil-collection
   (evil-want-keybinding . nil)
@@ -508,6 +522,9 @@
   embrace
   evil-embrace
   evil-surround
+  :defun
+  (global-evil-surround-mode
+    evil-embrace-enable-evil-surround-integration)
   :config
   (global-evil-surround-mode 1)
   (evil-embrace-enable-evil-surround-integration))
