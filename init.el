@@ -207,6 +207,11 @@
       "^/scp:"
       (lambda (file) (file-in-directory-p file package-user-dir)))))
 
+(leaf
+  saveplace
+  :doc "save cursor position"
+  :global-minor-mode save-place-mode)
+
 ;;; spellcheck
 (leaf
   flyspell
