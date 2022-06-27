@@ -188,13 +188,12 @@
   recentf
   :doc "save recent file history"
   :global-minor-mode t
-  :config
-  (setq
-    recentf-save-file
-    "~/.emacs.d/recentf"
-    recentf-max-saved-items 2000
-    recentf-auto-cleanup 'never
-    recentf-exclude
+  :custom
+  ((recentf-save-file . "~/.emacs.d/recentf")
+    (recentf-max-saved-items . 2000)
+    (recentf-auto-cleanup . 'never))
+  (recentf-exclude
+    .
     '
     ("recentf"
       "COMMIT_EDITMSG"
@@ -205,8 +204,7 @@
       "\\.emacs.d/"
       "^/tmp/"
       "^/scp:"
-      (lambda (file) (file-in-directory-p file package-user-dir))))
-  (push (expand-file-name recentf-save-file) recentf-exclude))
+      (lambda (file) (file-in-directory-p file package-user-dir)))))
 
 ;;; spellcheck
 (leaf
