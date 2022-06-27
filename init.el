@@ -671,7 +671,17 @@
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                           Git                            │
 ; ╰──────────────────────────────────────────────────────────╯
-(leaf magit :doc "great git client" :straight t :require t)
+(leaf
+  magit
+  :doc "great git client"
+  :straight t
+  :require t
+  :pretty-hydra
+  (my-git-actions
+    (:color pink :separator "=" :quit-key "q")
+    ("Movement"
+      (("J" git-gutter:next-hunk "next hunk")
+        ("K" git-gutter:previous-hunk "previous hunk")))))
 
 (leaf
   forge
@@ -696,7 +706,9 @@
   :require t
   :blackout t
   :global-minor-mode global-git-gutter-mode
-  :custom '(git-gutter:ask-p . nil))
+  :custom
+  (git-gutter:ask-p . nil)
+  (git-gutter:update-interval . 0.02))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                        completion                        │
 ; ╰──────────────────────────────────────────────────────────╯
