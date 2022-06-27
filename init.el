@@ -408,7 +408,16 @@
   :require t
   :after evil
   :global-minor-mode global-origami-mode)
-; ╭──────────────────────────────────────────────────────────╮
+
+;; focus window
+(leaf
+  zoom
+  :straight t
+  :ensure t
+  :global-minor-mode zoom-mode
+  ;; TODO: set ignore major modes
+  :custom (zoom-size . '(0.618 . 0.618)))
+; ╭─────-────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
 ; ╰──────────────────────────────────────────────────────────╯
 (leaf
