@@ -702,14 +702,12 @@
   :hook (magit-mode-hook . magit-todos-mode))
 
 (leaf
-  git-gutter
+  diff-hl
   :straight t
   :require t
-  :blackout t
-  :global-minor-mode global-git-gutter-mode
-  :custom
-  (git-gutter:ask-p . nil)
-  (git-gutter:update-interval . 0.02))
+  :hook (magit-post-refresh-hook . #'diff-hl-magit-post-refresh)
+  :global-minor-mode global-diff-hl-mode
+  :custom (diff-hl-show-staged-changes . nil))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                        completion                        │
 ; ╰──────────────────────────────────────────────────────────╯
