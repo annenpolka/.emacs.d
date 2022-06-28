@@ -918,18 +918,7 @@
         consult--source-bookmark
         consult--source-project-buffer))))
 ;; affe fuzzy-finder
-(leaf
-  affe
-  :straight t
-  :ensure t
-  :config
-  (leaf-handler-package affe affe nil)
-  (with-eval-after-load 'consult
-    (defun affe-orderless-regexp-compiler (input _type _ignorecase)
-      (setq input (orderless-pattern-compiler input))
-      (cons input (lambda (str) (orderless--highlight input str))))
-
-    (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)))
+(leaf affe :straight t :require t)
 
 ;; ----- auto completion -----
 (leaf
