@@ -796,9 +796,9 @@
       (("J" diff-hl-next-hunk "next hunk")
         ("K" diff-hl-previous-hunk "previous hunk"))
       "Diff"
-      (("d" diff-hl-show-hunk "diff nearest hunk")
-        ("n" diff-hl-show-hunk-next "diff next hunk")
-        ("p" diff-hl-show-hunk-previous "diff previous hunk"))
+      (("D" diff-hl-show-hunk "diff nearest hunk")
+        ("N" diff-hl-show-hunk-next "diff next hunk")
+        ("P" diff-hl-show-hunk-previous "diff previous hunk"))
       "Operation"
       (("r" diff-hl-revert-hunk "revert hunk")
         ("s" diff-hl-stage-current-hunk "stage hunk")
