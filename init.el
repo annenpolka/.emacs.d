@@ -625,7 +625,6 @@
     :keep-visual nil
     :evil-mc
     t
-    (interactive)
     (cond
       (
         (and
@@ -682,7 +681,6 @@
     :repeat nil
     :evil-mc
     t
-    (interactive)
     (if (evil-visual-state-p)
       (or
         (mapc
@@ -841,7 +839,8 @@
   vertico
   :straight t
   :require t
-  :init (vertico-mode)
+  :defvar (vertico-mode)
+  :global-minor-mode vertico-mode
   :custom ((vertico-cycle . t))
   :bind
   (
@@ -849,10 +848,23 @@
       ("C-j" . next-line-or-history-element)
       ("C-k" . previous-line-or-history-element))))
 
+;; completion style
 (leaf
   fussy
   :straight t
   :require t
+  :init
+  (leaf
+    fuz-bin
+    :straight
+    '
+    (fuz-bin
+      :repo "jcs-elpa/fuz-bin"
+      :fetcher github
+      :files (:defaults "bin"))
+    :require t
+    :defun (fuz-bin-load-dyn)
+    :config (fuz-bin-load-dyn))
   :custom
   ((completion-styles . '(fussy))
     (completion-category-defaults . nil)
@@ -861,21 +873,22 @@
     (fussy-score-fn . 'fussy-fuz-bin-score)
     (fussy-fuz-use-skim-p . nil)))
 
-(leaf
-  fuz-bin
-  :straight
-  '
-  (fuz-bin
-    :repo "jcs-elpa/fuz-bin"
-    :fetcher github
-    :files (:defaults "bin"))
-  :require t
-  :config (fuz-bin-load-dyn))
 
-(leaf savehist :straight t :require t :init (savehist-mode))
+(leaf
+  savehist
+  :straight t
+  :require t
+  :defvar (savehist-coding-system)
+  :init (savehist-mode)
+  :setq (savehist-coding-system . 'utf-8-emacs))
 
 ;;; marginalia
-(leaf marginalia :straight t :require t :init (marginalia-mode))
+(leaf
+  marginalia
+  :straight t
+  :require t
+  :defvar (marginalia-mode)
+  :global-minor-mode marginalia-mode)
 
 ;;; embark
 (leaf embark :straight t :require t)
@@ -885,6 +898,7 @@
   consult
   :straight t
   :require t
+  :defvar (consult-buffer-sources)
   :setq
   (
     (completion-in-region-function
@@ -932,7 +946,6 @@
         #'completion-at-point
         (list (current-local-map)))
       (corfu-mode 1)))
-
   :hook
   ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
   (after-init-hook . global-corfu-mode)
