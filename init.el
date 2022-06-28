@@ -515,7 +515,6 @@
   evil
   windmove
   undo-tree
-  evil
   :defun
   (evil-ex-nohighlight
     evil-mc-undo-all-cursors
@@ -554,6 +553,7 @@
       ("C-l" . 'my/clear-marks-and-cursors)
       ("C-j" . 'evil-open-fold)
       ("C-k" . 'evil-close-fold)
+      ("C-/" . 'evil-commentary-line)
       ("zg" . flyspell-correct-at-point)
       ("C-e" . find-file)
       ("C-f" . consult-line)
@@ -577,6 +577,13 @@
   :config
   ;; (evil-collection-init '(magit dired consult)))
   (evil-collection-init))
+
+(leaf
+  evil-commentary
+  :after evil
+  :straight t
+  :require t
+  :global-minor-mode evil-commentary-mode)
 
 (leaf
   smartparens
