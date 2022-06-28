@@ -275,6 +275,79 @@
   :require t
   :defun (persistent-scratch-setup-default)
   :config (persistent-scratch-setup-default))
+
+;; icons dependency
+(leaf all-the-icons :straight t :require t)
+
+;; TODO: create files/projects management section
+;; dired extender
+(leaf
+  dirvish
+  :straight t
+  :require (all-the-icons dirvish)
+  :after evil
+  :custom
+  ;; Go back home? Just press `bh'
+  (dirvish-bookmark-entries
+    .
+    '
+    (("h" "~/" "Home")
+      ("d" "~/Downloads/" "Downloads")
+      ("t" "~/.local/share/Trash/files/" "TrashCan")))
+  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
+  (dirvish-mode-line-format ; it's ok to place string inside
+    .
+    '
+    (:left
+      (sort file-time " " file-size symlink)
+      :right (omit yank index)))
+  (dirvish-attributes
+    .
+    '(subtree-state all-the-icons collapse file-size))
+  ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
+  ;; Maybe the icons are too big to your eyes
+  ;; (dirvish-all-the-icons-height 0.8)
+  ;; In case you want the details at startup like `dired'
+  ;; (dirvish-hide-details nil)
+  :config
+  ;; Place this line under :init to ensure the overriding at startup, see #22
+  (dirvish-override-dired-mode)
+  (dirvish-peek-mode)
+  ;; Dired options are respected except a few exceptions,
+  ;; see *In relation to Dired* section above
+  (setq dired-recursive-deletes 'always)
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  ;; Make sure to use the long name of flags when exists
+  ;; eg. use "--almost-all" instead of "-A"
+  ;; Otherwise some commands won't work properly
+  (setq dired-listing-switches
+    "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (evil-make-overriding-map dired-mode-map)
+  :bind
+  (
+    (:dired-mode-map
+      ("h" . dired-up-directory)
+      ;; ("j" . dired-next-line)
+      ;; ("k" . dired-previous-line)
+      ;; ("l" . dired-find-file)
+      ;; ("i" . wdired-change-to-wdired-mode)
+      ;; ("." . dired-omit-mode)
+      ("TAB" . dirvish-subtree-toggle)
+      ("SPC" . dirvish-history-jump)
+      ("M-n" . dirvish-history-go-forward)
+      ("M-p" . dirvish-history-go-backward)
+      ("M-s" . dirvish-setup-menu)
+      ("M-f" . dirvish-toggle-fullscreen)
+      ("*" . dirvish-mark-menu)
+      ("r" . dirvish-fd-roam)
+      ("b" . dirvish-bookmark-goto)
+      ("f" . dirvish-file-info-menu)
+      ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+      ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
+      ([remap dired-summary] . dirvish-dispatch)
+      ([remap dired-do-copy] . dirvish-yank-menu)
+      ([remap mode-line-other-buffer] . dirvish-history-last))))
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
