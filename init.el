@@ -161,7 +161,8 @@
     (completion-cycle-threshold . 3)
     (tab-always-indent . 'complete)
     (scroll-bar-mode . nil)
-    (indent-tabs-mode . nil))
+    (indent-tabs-mode . nil)
+    (vc-follow-symlinks . t))
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
   (keyboard-translate ?\C-h ?\C-?))
@@ -182,7 +183,7 @@
   autorevert
   :doc "revert buffers when files on disk change"
   :tag "builtin"
-  :custom ((auto-revert-interval . 1))
+  :custom ((auto-revert-interval . 1) (auto-revert-check-vc-info . t))
   :global-minor-mode global-auto-revert-mode)
 
 (leaf
