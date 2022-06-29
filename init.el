@@ -859,12 +859,7 @@
   :straight t
   :require t
   :global-minor-mode vertico-mode
-  :custom ((vertico-cycle . t))
-  :bind
-  (
-    (:minibuffer-local-map
-      ("C-j" . next-line-or-history-element)
-      ("C-k" . previous-line-or-history-element))))
+  :custom ((vertico-cycle . t)))
 
 ;; completion style
 (leaf
