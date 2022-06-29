@@ -935,6 +935,19 @@
         consult--source-recent-file
         consult--source-bookmark
         consult--source-project-buffer))))
+;; dir extension
+(leaf
+  consult-dir
+  :straight t
+  :require t
+  :after consult
+  :bind
+  (("C-x C-d" . consult-dir)
+    (:vertico-map
+      ("C-x C-d" . consult-dir)
+      ("C-x C-j" . consult-dir-jump-file)))
+  :custom
+  (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 ;; affe fuzzy-finder
 (leaf affe :straight t :require t)
 
