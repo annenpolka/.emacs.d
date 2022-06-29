@@ -349,6 +349,14 @@
       ([remap dired-summary] . dirvish-dispatch)
       ([remap dired-do-copy] . dirvish-yank-menu)
       ([remap mode-line-other-buffer] . dirvish-history-last))))
+
+;; project management
+(leaf
+  projectile
+  :straight t
+  :require t
+  :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
+  :global-minor-mode t)
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                      language tools                      │
 ; ╰──────────────────────────────────────────────────────────╯
@@ -502,8 +510,9 @@
   zoom
   :straight t
   :ensure t
+  :blackout t
   :global-minor-mode zoom-mode
-  ;; TODO: set ignore major modes
+  ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
 ; ╭─────-────────────────────────────────────────────────────╮
 ; │                      editing modal                       │
@@ -524,6 +533,7 @@
     turn-on-evil-mode
     evil-define-command)
   :defvar (evil-want-keybinding evil-undo-system)
+  :hook (evil-local-mode-hook . turn-on-undo-tree-mode)
   :init
   (defun my/clear-marks-and-cursors ()
     (interactive)
@@ -584,6 +594,7 @@
   :after evil
   :straight t
   :require t
+  :blackout t
   :global-minor-mode evil-commentary-mode)
 
 (leaf
@@ -847,7 +858,6 @@
   vertico
   :straight t
   :require t
-  :defvar (vertico-mode)
   :global-minor-mode vertico-mode
   :custom ((vertico-cycle . t))
   :bind
