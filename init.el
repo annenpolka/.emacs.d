@@ -304,7 +304,7 @@
       :right (omit yank index)))
   (dirvish-attributes
     .
-    '(subtree-state all-the-icons collapse file-size))
+    '(subtree-state all-the-icons collapse file-size vc-state))
   ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
   ;; Maybe the icons are too big to your eyes
   ;; (dirvish-all-the-icons-height 0.8)
