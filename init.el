@@ -252,11 +252,12 @@
   flyspell-correct
   :straight t
   :require t
+  :after flyspell
   :bind ([remap ispell-word] . flyspell-correct-at-point))
 
 (leaf
   eldoc
-  :doc "emacs-lisp documentaion"
+  :doc "emacs-lisp documentation"
   :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
   :blackout t
   :preface
@@ -937,6 +938,7 @@
       ("C-x C-j" . consult-dir-jump-file)))
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+
 ;; affe fuzzy-finder
 (leaf
   affe
