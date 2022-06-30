@@ -444,7 +444,7 @@
   :doc "which-key in emacs"
   :straight t
   :require t
-  :defun (which-key-setup-minibuffer which-key-mode)
+  :defun (which-key-setup-side-window-right which-key-mode)
   :blackout which-key-mode
   :custom (which-key-idle-delay . 0.5)
   :init
