@@ -448,7 +448,7 @@
   :blackout which-key-mode
   :custom (which-key-idle-delay . 0.5)
   :init
-  (which-key-setup-minibuffer)
+  (which-key-setup-side-window-right)
   (which-key-mode t))
 
 (leaf
