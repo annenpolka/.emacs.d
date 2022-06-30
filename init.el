@@ -100,16 +100,12 @@
   :require t
   :global-minor-mode global-flycheck-mode)
 
+;; formatter bindings
 (leaf
-  elisp-autofmt
+  format-all
+  :straight t
   :require t
-  :straight
-  (elisp-autofmt
-    :files (:defaults "elisp-autofmt")
-    :host nil
-    :type git
-    :repo "https://codeberg.org/ideasman42/emacs-elisp-autofmt.git")
-  :hook (emacs-lisp-mode-hook . elisp-autofmt-mode))
+  :hook (prog-modde-hook . format-all-mode))
 
 ;; (leaf flycheck-inline
 ;;   :straight t :require t
