@@ -341,6 +341,8 @@
       ("r" . dirvish-fd-roam)
       ("b" . dirvish-bookmark-goto)
       ("f" . dirvish-file-info-menu)
+      ("y" . dirvish-yank)
+      ("/" . dirvish-fd)
       ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
       ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
       ([remap dired-summary] . dirvish-dispatch)
