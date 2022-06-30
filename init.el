@@ -944,7 +944,16 @@
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 ;; affe fuzzy-finder
-(leaf affe :straight t :require t)
+(leaf
+  affe
+  :straight t
+  :require t
+  :init
+  (leaf orderless :straight t :commands (orderless-pattern-compiler))
+  (defun affe-orderless-regexp-compiler (input _type _ignorecase)
+    (setq input (orderless-pattern-compiler input))
+    (cons input (lambda (str) (orderless--highlight input str))))
+  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
 
 ;; ----- auto completion -----
 (leaf
