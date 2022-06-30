@@ -879,8 +879,7 @@
     (compleiton-category-overrides . nil)
     (fussy-filter-fn . 'fussy-filter-fast)
     (fussy-score-fn . 'fussy-fuz-bin-score)
-    (fussy-fuz-use-skim-p . nil)))
-
+    (fussy-fuz-use-skim-p . t)))
 
 (leaf
   savehist
