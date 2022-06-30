@@ -429,7 +429,7 @@
 (leaf
   modus-themes
   :custom
-  (modus-themes-completions . 'moderate)
+  (modus-themes-completions . 'subtle)
   (modus-themes-fringes . 'subtle)
   (modus-themes-italic-constructs . t)
   (modus-themes-bold-constructs . nil)
