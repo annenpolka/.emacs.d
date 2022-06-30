@@ -158,7 +158,8 @@
     (tab-always-indent . 'complete)
     (scroll-bar-mode . nil)
     (indent-tabs-mode . nil)
-    (vc-follow-symlinks . t))
+    (vc-follow-symlinks . t)
+    (show-paren-style . 'mixed))
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
   (keyboard-translate ?\C-h ?\C-?))
