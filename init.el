@@ -168,16 +168,12 @@
   (keyboard-translate ?\C-h ?\C-?))
 
 ;; undo
+(leaf undo-fu :straight t :require t)
 (leaf
-  undo-tree
+  undo-fu-session
   :straight t
   :require t
-  :global-minor-mode global-undo-tree-mode
-  :blackout t
-  :custom
-  (undo-tree-history-directory-alist
-    .
-    '(("." . "~/.emacs.d/undo-history"))))
+  :global-minor-mode global-undo-fu-session-mode)
 
 (leaf
   autorevert
@@ -524,7 +520,7 @@
   :require
   evil
   windmove
-  undo-tree
+  undo-fu
   :defun
   (evil-ex-nohighlight
     evil-mc-undo-all-cursors
@@ -533,7 +529,6 @@
     turn-on-evil-mode
     evil-define-command)
   :defvar (evil-want-keybinding evil-undo-system)
-  :hook (evil-local-mode-hook . turn-on-undo-tree-mode)
   :init
   (defun my/clear-marks-and-cursors ()
     (interactive)
@@ -543,7 +538,7 @@
   ;; for evil-collection
   (evil-want-keybinding . nil)
   ;; undo system
-  (evil-undo-system . 'undo-tree)
+  (evil-undo-system . 'undo-fu)
   :custom
   ;; <C-u> to scroll (replace universal-argument)
   (evil-want-C-u-scroll . t)
