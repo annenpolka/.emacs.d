@@ -72,6 +72,17 @@
   leaf
   :config (leaf leaf-convert :straight t :require t))
 
+;; garbage collection manager
+(leaf gcmh
+  :straight t
+  :require t
+  :blackout t
+  :defun (gcmh-mode)
+  :custom
+  (gcmh-verbose . t)
+  :config
+  (gcmh-mode 1))
+
  ;; explain macro by step
 (leaf
   macrostep
