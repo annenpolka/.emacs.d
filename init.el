@@ -523,7 +523,8 @@
     evil-set-leader
     evil-mode
     turn-on-evil-mode
-    evil-define-command)
+    evil-define-command
+    evil-define-key)
   :defvar (evil-want-keybinding evil-undo-system)
   :init
   (defun my/clear-marks-and-cursors ()
@@ -585,12 +586,13 @@
   :straight t
   :require t
   :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-agenda-set-keys)
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
   (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-j") 'org-cycle
-    (kbd "C-k") 'org-shifttab)
+    (kbd "C-j") 'org-next-visible-heading
+    (kbd "C-k") 'org-previous-visible-heading)
   )
 
 (leaf
