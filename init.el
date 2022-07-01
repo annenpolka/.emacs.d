@@ -571,6 +571,19 @@
   (evil-collection-init))
 
 (leaf
+  evil-org
+  :straight t
+  :require t
+  :hook (org-mode-hook . evil-org-mode)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-j") 'org-cycle
+    (kbd "C-k") 'org-shifttab)
+  )
+
+(leaf
   evil-commentary
   :after evil
   :straight t
