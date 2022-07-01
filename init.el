@@ -70,14 +70,9 @@
 ;; leaf plugins
 (leaf
   leaf
-  :config (leaf leaf-convert :straight t :require t)
-  (leaf
-    leaf-tree
-    :straight t
-    :require t
-    :custom ((imenu-list-size . 30) (imenu-list-position . 'left))))
+  :config (leaf leaf-convert :straight t :require t))
 
-;; explain macro by step
+ ;; explain macro by step
 (leaf
   macrostep
   :straight t
