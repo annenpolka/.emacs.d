@@ -182,7 +182,6 @@
       "\\.gitignore"
       "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
       ".howm-keys"
-      "\\.emacs.d/"
       "^/tmp/"
       "^/scp:"
       (lambda (file) (file-in-directory-p file package-user-dir)))))
@@ -970,7 +969,7 @@
   :custom
   (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
   (corfu-auto . t) ;; Enable auto completion
-  (corfu-auto-delay . 0) ;; Enable auto completion
+  (corfu-auto-delay . 0.1) ;; Enable auto completion
   (corfu-count . 15) ;; show more candidates
   (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
   ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
