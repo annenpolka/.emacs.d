@@ -784,7 +784,11 @@
 ;; org mode things
 (leaf org
   :straight t
-  :require t)
+  :require org org-tempo
+  :config
+  (defun disable-flycheck-in-org-src-block ()
+    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (add-hook 'org-src-mode-hook 'disable-fylcheck-in-org-src-block))
 
 (leaf org-bullets
   :straight t
