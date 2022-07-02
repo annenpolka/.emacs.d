@@ -131,7 +131,6 @@
   (defun c/redraw-frame nil
     (interactive)
     (redraw-frame))
-
   :bind (("M-ESC ESC" . c/redraw-frame))
   :custom
   '
@@ -284,6 +283,7 @@
    '
    (("h" "~/" "Home")
     ("d" "~/Downloads/" "Downloads")
+    ("e" "~/.emacs.d/" "Emacs")
     ("t" "~/.local/share/Trash/files/" "TrashCan")))
   ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
   (dirvish-mode-line-format ; it's ok to place string inside
