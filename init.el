@@ -1063,11 +1063,14 @@
 (leaf
   mozc
   ;; :depends emacs-mozc
-  :bind* (("<zenkaku-hankaku>" . toggle-input-method))
+  :straight t
+  :require t
+  :bind* (("<zenkaku-hankaku>" . toggle-input-method)
+          ("<eisu-toggle>" . toggle-input-method))
   :custom
   ((default-input-method . "japanese-mozc")
-    (mozc-candidate-style quote overlay))
-  :config (leaf-handler-package mozc mozc nil))
+   (mozc-candidate-style . 'overlay))
+  )
 
 ; ╭──────────────────────────────────────────────────────────╮
 ; │                       boilerplate                        │
