@@ -21,33 +21,33 @@
 
 ;;; Code:
 
-; ╭──────────────────────────────────────────────────────────╮
-; │                           leaf                           │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                           leaf                           │
+;; ╰──────────────────────────────────────────────────────────╯
 (eval-and-compile
   (customize-set-variable
-    'package-archives
-    '
-    (("gnu" . "https://elpa.gnu.org/packages/")
-      ("melpa" . "https://melpa.org/packages/")
-      ("org" . "https://orgmode.org/elpa/")))
+   'package-archives
+   '
+   (("gnu" . "https://elpa.gnu.org/packages/")
+    ("melpa" . "https://melpa.org/packages/")
+    ("org" . "https://orgmode.org/elpa/")))
   (package-initialize)
 
   ;; setup straight.el
   (defvar bootstrap-version)
   (let
-    (
-      (bootstrap-file
+      (
+       (bootstrap-file
         (expand-file-name
-          "straight/repos/straight.el/bootstrap.el"
-          user-emacs-directory))
-      (bootstrap-version 5))
+         "straight/repos/straight.el/bootstrap.el"
+         user-emacs-directory))
+       (bootstrap-version 5))
     (unless (file-exists-p bootstrap-file)
       (with-current-buffer
-        (url-retrieve-synchronously
-          "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-          'silent
-          'inhibit-cookies)
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent
+           'inhibit-cookies)
         (goto-char (point-max))
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
@@ -83,7 +83,7 @@
   :config
   (gcmh-mode 1))
 
- ;; explain macro by step
+;; explain macro by step
 (leaf
   macrostep
   :straight t
@@ -102,14 +102,14 @@
   format-all
   :straight t
   :require t
-  :hook (prog-modde-hook . format-all-mode))
+  :hook (prog-mode-hook . format-all-mode))
 
 ;; (leaf flycheck-inline
 ;;   :straight t :require t
 ;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
-; ╭──────────────────────────────────────────────────────────╮
-; │                       basic, chore                       │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                       basic, chore                       │
+;; ╰──────────────────────────────────────────────────────────╯
 ;; supress leaf's :custom auto append to custom.el
 (leaf
   cus-edit
@@ -136,27 +136,27 @@
   :custom
   '
   ((user-full-name . "annenpolka")
-    (user-mail-address . "lancelbb@gmail.com")
-    (user-login-name . "annenpolka")
-    (create-lockfiles . nil)
-    (debug-on-error . t)
-    (init-file-debug . t)
-    (frame-resize-pixelwise . t)
-    (enable-recursive-minibuffers . t)
-    (history-length . 1000)
-    (history-delete-duplicates . t)
-    (scroll-preserve-screen-position . t)
-    (scroll-conservatively . 100)
-    (mouse-wheel-scroll-amount . '(1 ((control) . 5)))
-    (ring-bell-function . 'ignore)
-    (text-quoting-style . 'straight)
-    (truncate-lines . t)
-    (completion-cycle-threshold . 3)
-    (tab-always-indent . 'complete)
-    (scroll-bar-mode . nil)
-    (indent-tabs-mode . nil)
-    (vc-follow-symlinks . t)
-    (show-paren-style . 'mixed))
+   (user-mail-address . "lancelbb@gmail.com")
+   (user-login-name . "annenpolka")
+   (create-lockfiles . nil)
+   (debug-on-error . t)
+   (init-file-debug . t)
+   (frame-resize-pixelwise . t)
+   (enable-recursive-minibuffers . t)
+   (history-length . 1000)
+   (history-delete-duplicates . t)
+   (scroll-preserve-screen-position . t)
+   (scroll-conservatively . 100)
+   (mouse-wheel-scroll-amount . '(1 ((control) . 5)))
+   (ring-bell-function . 'ignore)
+   (text-quoting-style . 'straight)
+   (truncate-lines . t)
+   (completion-cycle-threshold . 3)
+   (tab-always-indent . 'complete)
+   (scroll-bar-mode . nil)
+   (indent-tabs-mode . nil)
+   (vc-follow-symlinks . t)
+   (show-paren-style . 'mixed))
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
   (keyboard-translate ?\C-h ?\C-?))
@@ -182,20 +182,20 @@
   :global-minor-mode t
   :custom
   ((recentf-save-file . "~/.emacs.d/recentf")
-    (recentf-max-saved-items . 2000)
-    (recentf-auto-cleanup . 'never))
+   (recentf-max-saved-items . 2000)
+   (recentf-auto-cleanup . 'never))
   (recentf-exclude
-    .
-    '
-    ("recentf"
-      "COMMIT_EDITMSG"
-      "bookmarks"
-      "\\.gitignore"
-      "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-      ".howm-keys"
-      "^/tmp/"
-      "^/scp:"
-      (lambda (file) (file-in-directory-p file package-user-dir)))))
+   .
+   '
+   ("recentf"
+    "COMMIT_EDITMSG"
+    "bookmarks"
+    "\\.gitignore"
+    "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+    ".howm-keys"
+    "^/tmp/"
+    "^/scp:"
+    (lambda (file) (file-in-directory-p file package-user-dir)))))
 
 (leaf
   saveplace
@@ -213,31 +213,31 @@
   (yaml-mode-hook . flyspell-prog-mode)
   :defvar
   (ispell-extra-args
-    ispell-aspell-dict-dir
-    ispell-aspell-data-dir
-    ispell-program-name)
+   ispell-aspell-dict-dir
+   ispell-aspell-data-dir
+   ispell-program-name)
   :defun (ispell-get-aspell-config-value)
   :config
   (pcase
-    (cond
-      ((executable-find "aspell")
+      (cond
+       ((executable-find "aspell")
         'aspell)
-      ((executable-find "hunspell")
+       ((executable-find "hunspell")
         'hunspell)
-      ((executable-find "enchant-2")
+       ((executable-find "enchant-2")
         'enchant))
     (`aspell
-      (setq
-        ispell-program-name
-        "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+     (setq
+      ispell-program-name
+      "aspell"
+      ispell-extra-args '("--sug-mode=ultra" "--run-together"))
 
-      (unless ispell-aspell-dict-dir
-        (setq ispell-aspell-dict-dir
-          (ispell-get-aspell-config-value "dict-dir")))
-      (unless ispell-aspell-data-dir
-        (setq ispell-aspell-data-dir
-          (ispell-get-aspell-config-value "data-dir"))))
+     (unless ispell-aspell-dict-dir
+       (setq ispell-aspell-dict-dir
+             (ispell-get-aspell-config-value "dict-dir")))
+     (unless ispell-aspell-data-dir
+       (setq ispell-aspell-data-dir
+             (ispell-get-aspell-config-value "data-dir"))))
     (`hunspell (setq ispell-program-name "hunspell"))
     (`enchant (setq ispell-program-name "enchant-2"))
     (_ (system-packages-ensure "aspell"))))
@@ -280,21 +280,21 @@
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
-    .
-    '
-    (("h" "~/" "Home")
-      ("d" "~/Downloads/" "Downloads")
-      ("t" "~/.local/share/Trash/files/" "TrashCan")))
+   .
+   '
+   (("h" "~/" "Home")
+    ("d" "~/Downloads/" "Downloads")
+    ("t" "~/.local/share/Trash/files/" "TrashCan")))
   ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
   (dirvish-mode-line-format ; it's ok to place string inside
-    .
-    '
-    (:left
-      (sort file-time " " file-size symlink)
-      :right (omit yank index)))
+   .
+   '
+   (:left
+    (sort file-time " " file-size symlink)
+    :right (omit yank index)))
   (dirvish-attributes
-    .
-    '(subtree-state all-the-icons collapse file-size vc-state))
+   .
+   '(subtree-state all-the-icons collapse file-size vc-state))
   ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
   ;; Maybe the icons are too big to your eyes
   ;; (dirvish-all-the-icons-height 0.8)
@@ -313,34 +313,34 @@
   ;; eg. use "--almost-all" instead of "-A"
   ;; Otherwise some commands won't work properly
   (setq dired-listing-switches
-    "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   (evil-make-overriding-map dired-mode-map)
   :bind
   (
-    (:dired-mode-map
-      ("h" . dired-up-directory)
-      ;; ("j" . dired-next-line)
-      ;; ("k" . dired-previous-line)
-      ;; ("l" . dired-find-file)
-      ;; ("i" . wdired-change-to-wdired-mode)
-      ;; ("." . dired-omit-mode)
-      ("TAB" . dirvish-subtree-toggle)
-      ("SPC" . dirvish-history-jump)
-      ("M-n" . dirvish-history-go-forward)
-      ("M-p" . dirvish-history-go-backward)
-      ("M-s" . dirvish-setup-menu)
-      ("M-f" . dirvish-toggle-fullscreen)
-      ("*" . dirvish-mark-menu)
-      ("r" . dirvish-fd-roam)
-      ("b" . dirvish-bookmark-goto)
-      ("f" . dirvish-file-info-menu)
-      ("y" . dirvish-yank)
-      ("/" . dirvish-fd)
-      ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
-      ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
-      ([remap dired-summary] . dirvish-dispatch)
-      ([remap dired-do-copy] . dirvish-yank-menu)
-      ([remap mode-line-other-buffer] . dirvish-history-last))))
+   (:dired-mode-map
+    ("h" . dired-up-directory)
+    ;; ("j" . dired-next-line)
+    ;; ("k" . dired-previous-line)
+    ;; ("l" . dired-find-file)
+    ;; ("i" . wdired-change-to-wdired-mode)
+    ;; ("." . dired-omit-mode)
+    ("TAB" . dirvish-subtree-toggle)
+    ("SPC" . dirvish-history-jump)
+    ("M-n" . dirvish-history-go-forward)
+    ("M-p" . dirvish-history-go-backward)
+    ("M-s" . dirvish-setup-menu)
+    ("M-f" . dirvish-toggle-fullscreen)
+    ("*" . dirvish-mark-menu)
+    ("r" . dirvish-fd-roam)
+    ("b" . dirvish-bookmark-goto)
+    ("f" . dirvish-file-info-menu)
+    ("y" . dirvish-yank)
+    ("/" . dirvish-fd)
+    ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+    ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
+    ([remap dired-summary] . dirvish-dispatch)
+    ([remap dired-do-copy] . dirvish-yank-menu)
+    ([remap mode-line-other-buffer] . dirvish-history-last))))
 
 ;; project management
 (leaf
@@ -349,9 +349,9 @@
   :require t
   :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
   :global-minor-mode t)
-; ╭──────────────────────────────────────────────────────────╮
-; │                      language tools                      │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                      language tools                      │
+;; ╰──────────────────────────────────────────────────────────╯
 ;;; lsp
 (leaf
   lsp-mode
@@ -359,19 +359,19 @@
   :init
   (defun my/lsp-mode-setup-completion ()
     (setf
-      (alist-get
-        'styles
-        (alist-get 'lsp-capf completion-category-defaults))
-      '(orderless))) ;; Configure orderless
+     (alist-get
+      'styles
+      (alist-get 'lsp-capf completion-category-defaults))
+     '(orderless))) ;; Configure orderless
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
   (lsp-completion-mode . my/lsp-mode-setup-completion)
   (c++-mode-hook . lsp)
   :custom
   ((lsp-idle-delay . 0.5)
-    (lsp-log-io . t)
-    (lsp-completion-provider . :none)
-    (lsp-keymap-prefix . "C-c l")))
+   (lsp-log-io . t)
+   (lsp-completion-provider . :none)
+   (lsp-keymap-prefix . "C-c l")))
 
 ;; TODO: setup lsp ui tools
 (leaf
@@ -383,28 +383,28 @@
   :after lsp-mode
   :custom
   ((lsp-ui-doc-enable . t)
-    (lsp-ui-doc-deley . 0.5)
-    (lsp-ui-doc-header . t)
-    (lsp-ui-doc-include-signature . t)
-    (lsp-ui-doc-position . 'at-point)
-    (lsp-ui-doc-max-width . 150)
-    (lsp-ui-doc-max-height . 30)
-    (lsp-ui-doc-use-childframe . nil)
-    (lsp-ui-doc-use-webkit . nil)
-    (lsp-ui-flycheck-enable . t)
-    (lsp-ui-peek-enable . t)
-    (lsp-ui-peek-peek-height . 20)
-    (lsp-ui-peek-list-width . 50)
-    (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
-    )
+   (lsp-ui-doc-deley . 0.5)
+   (lsp-ui-doc-header . t)
+   (lsp-ui-doc-include-signature . t)
+   (lsp-ui-doc-position . 'at-point)
+   (lsp-ui-doc-max-width . 150)
+   (lsp-ui-doc-max-height . 30)
+   (lsp-ui-doc-use-childframe . nil)
+   (lsp-ui-doc-use-webkit . nil)
+   (lsp-ui-flycheck-enable . t)
+   (lsp-ui-peek-enable . t)
+   (lsp-ui-peek-peek-height . 20)
+   (lsp-ui-peek-list-width . 50)
+   (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
+   )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
 
 ;; TODO: add cpp clangd setup
 ;; TODO: add rust-mode setup
 
-; ╭──────────────────────────────────────────────────────────╮
-; │                          themes                          │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                          themes                          │
+;; ╰──────────────────────────────────────────────────────────╯
 ;; font config
 (defvar my/font-family "Iosevka Term")
 (defvar my/font-size
@@ -416,11 +416,10 @@
   (let ((fontset (format "%s-%.1f" my/font-family my/font-size)))
     (add-to-list 'default-frame-alist `(font . ,fontset)))
   (add-to-list 'default-frame-alist
-    `(cursor-type . (hbar . ,(1+ (ceiling (/ my/font-size 2)))))))
+               `(cursor-type . (hbar . ,(1+ (ceiling (/ my/font-size 2)))))))
 
 ;; modus theme
-(leaf
-  modus-themes
+(leaf modus-themes
   :custom
   (modus-themes-completions . 'subtle)
   (modus-themes-fringes . 'subtle)
@@ -433,9 +432,9 @@
   (modus-themes-prompts . '(background bold gray intense italic))
   (modus-themes-syntax . '(faint alt-syntax green-strings))
   :config (load-theme 'modus-vivendi))
-; ╭──────────────────────────────────────────────────────────╮
-; │                     helper interface                     │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                     helper interface                     │
+;; ╰──────────────────────────────────────────────────────────╯
 (leaf
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
@@ -473,8 +472,8 @@
   (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
   :custom
   ((highlight-indent-guides-method . 'character)
-    (highlight-indent-guides-auto-enabled . t)
-    (highlight-indent-guides-responsive . t)))
+   (highlight-indent-guides-auto-enabled . t)
+   (highlight-indent-guides-responsive . t)))
 
 (leaf
   hl-block-mode
@@ -506,9 +505,9 @@
   :global-minor-mode zoom-mode
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
-; ╭─────-────────────────────────────────────────────────────╮
-; │                      editing modal                       │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭─────-────────────────────────────────────────────────────╮
+;; │                      editing modal                       │
+;; ╰──────────────────────────────────────────────────────────╯
 (leaf
   evil
   :doc "Extensible vi layer for Emacs."
@@ -519,12 +518,12 @@
   undo-fu
   :defun
   (evil-ex-nohighlight
-    evil-mc-undo-all-cursors
-    evil-set-leader
-    evil-mode
-    turn-on-evil-mode
-    evil-define-command
-    evil-define-key)
+   evil-mc-undo-all-cursors
+   evil-set-leader
+   evil-mode
+   turn-on-evil-mode
+   evil-define-command
+   evil-define-key)
   :defvar (evil-want-keybinding evil-undo-system)
   :init
   (defun my/clear-marks-and-cursors ()
@@ -549,24 +548,24 @@
   (turn-on-evil-mode)
   :bind
   (
-    (:evil-normal-state-map
-      ("C-s" . save-buffer)
-      (":" . execute-extended-command)
-      ("C-q" . 'evil-quit)
-      ("C-l" . 'my/clear-marks-and-cursors)
-      ("C-j" . 'evil-open-fold)
-      ("C-k" . 'evil-close-fold)
-      ("C-/" . 'evil-commentary-line)
-      ("zg" . flyspell-correct-at-point)
-      ("C-e" . find-file)
-      ("C-f" . consult-line)
-      ("<leader>SPC" . 'consult-buffer)
-      ("<leader>n" . 'my-mc-hydra/body)
-      ("<leader>g" . 'my-git-actions/body)
-      ("<leader>h" . windmove-left)
-      ("<leader>j" . windmove-down)
-      ("<leader>k" . windmove-up)
-      ("<leader>l" . windmove-right))))
+   (:evil-normal-state-map
+    ("C-s" . save-buffer)
+    (":" . execute-extended-command)
+    ("C-q" . 'evil-quit)
+    ("C-l" . 'my/clear-marks-and-cursors)
+    ("C-j" . 'evil-open-fold)
+    ("C-k" . 'evil-close-fold)
+    ("C-/" . 'evil-commentary-line)
+    ("zg" . flyspell-correct-at-point)
+    ("C-e" . find-file)
+    ("C-f" . consult-line)
+    ("<leader>SPC" . 'consult-buffer)
+    ("<leader>n" . 'my-mc-hydra/body)
+    ("<leader>g" . 'my-git-actions/body)
+    ("<leader>h" . windmove-left)
+    ("<leader>j" . windmove-down)
+    ("<leader>k" . windmove-up)
+    ("<leader>l" . windmove-right))))
 
 (leaf
   evil-collection
@@ -628,7 +627,7 @@
   evil-surround
   :defun
   (global-evil-surround-mode
-    evil-embrace-enable-evil-surround-integration)
+   evil-embrace-enable-evil-surround-integration)
   :config
   (global-evil-surround-mode 1)
   (evil-embrace-enable-evil-surround-integration))
@@ -651,53 +650,53 @@
     :evil-mc
     t
     (cond
-      (
-        (and
-          (evil-mc-has-cursors-p) (evil-normal-state-p)
-          (let*
-            (
-              (pos (point))
-              (cursor
-                (cl-find-if
-                  (lambda (cursor)
-                    (eq pos (evil-mc-get-cursor-start cursor)))
-                  evil-mc-cursor-list)))
-            (when cursor
-              (evil-mc-delete-cursor cursor)
-              (setq evil-mc-cursor-list
-                (delq cursor evil-mc-cursor-list))
-              t))))
+     (
+      (and
+       (evil-mc-has-cursors-p) (evil-normal-state-p)
+       (let*
+           (
+            (pos (point))
+            (cursor
+             (cl-find-if
+              (lambda (cursor)
+                (eq pos (evil-mc-get-cursor-start cursor)))
+              evil-mc-cursor-list)))
+         (when cursor
+           (evil-mc-delete-cursor cursor)
+           (setq evil-mc-cursor-list
+                 (delq cursor evil-mc-cursor-list))
+           t))))
 
-      ((memq evil-this-type '(block line))
-        (let
+     ((memq evil-this-type '(block line))
+      (let
           (
-            (col (evil-column))
-            (line-at-pt (line-number-at-pos)))
-          ;; Fix off-by-one error
-          (when (= evil-visual-direction 1)
-            (cl-decf col)
-            (backward-char))
-          (save-excursion
-            (evil-apply-on-block
-              (lambda (ibeg _)
-                (unless
-                  (or
-                    (= line-at-pt (line-number-at-pos ibeg))
-                    (invisible-p ibeg))
-                  (goto-char ibeg)
-                  (move-to-column col)
-                  (when (= (current-column) col)
-                    (evil-mc-make-cursor-here))))
-              evil-visual-beginning
-              (if (eq evil-this-type 'line)
-                (1- evil-visual-end)
-                evil-visual-end)
-              nil)
-            (evil-exit-visual-state))))
-      (t
-        (evil-mc-pause-cursors)
-        ;; I assume I don't want the cursors to move yet
-        (evil-mc-make-cursor-here))))
+           (col (evil-column))
+           (line-at-pt (line-number-at-pos)))
+        ;; Fix off-by-one error
+        (when (= evil-visual-direction 1)
+          (cl-decf col)
+          (backward-char))
+        (save-excursion
+          (evil-apply-on-block
+           (lambda (ibeg _)
+             (unless
+                 (or
+                  (= line-at-pt (line-number-at-pos ibeg))
+                  (invisible-p ibeg))
+               (goto-char ibeg)
+               (move-to-column col)
+               (when (= (current-column) col)
+                 (evil-mc-make-cursor-here))))
+           evil-visual-beginning
+           (if (eq evil-this-type 'line)
+               (1- evil-visual-end)
+             evil-visual-end)
+           nil)
+          (evil-exit-visual-state))))
+     (t
+      (evil-mc-pause-cursors)
+      ;; I assume I don't want the cursors to move yet
+      (evil-mc-make-cursor-here))))
 
   (evil-define-command
     evil-mc-undo-cursor
@@ -707,26 +706,26 @@
     :evil-mc
     t
     (if (evil-visual-state-p)
-      (or
-        (mapc
+        (or
+         (mapc
           (lambda (c)
             (evil-mc-delete-cursor c)
             (setq evil-mc-cursor-list (delq c evil-mc-cursor-list)))
           (cl-remove-if-not
-            (lambda (pos)
-              (and
-                (>= pos evil-visual-beginning)
-                (< pos evil-visual-end)))
-            evil-mc-cursor-list
-            :key #'evil-mc-get-cursor-start))
-        (message "No cursors to undo in region"))
+           (lambda (pos)
+             (and
+              (>= pos evil-visual-beginning)
+              (< pos evil-visual-end)))
+           evil-mc-cursor-list
+           :key #'evil-mc-get-cursor-start))
+         (message "No cursors to undo in region"))
       (evil-mc-undo-last-added-cursor)))
 
   ;; smartparens integration
   (dolist
-    (sp-command
-      '
-      (sp-up-sexp
+      (sp-command
+       '
+       (sp-up-sexp
         sp-copy-sexp
         sp-down-sexp
         sp-join-sexp
@@ -753,11 +752,11 @@
         sp-splice-sexp-killing-forward
         sp-splice-sexp-killing-backward))
     (add-to-list 'evil-mc-custom-known-commands
-      `(,sp-command (:default . evil-mc-execute-call))))
+                 `(,sp-command (:default . evil-mc-execute-call))))
   :hydra
   (my-mc-hydra
-    (:color pink :hint nil :pre (evil-mc-pause-cursors))
-    "
+   (:color pink :hint nil :pre (evil-mc-pause-cursors))
+   "
     ^Match^            ^Line-wise^           ^Manual^
     ^^^^^^----------------------------------------------------
     _Z_: match all     _J_: make & go down   _z_: toggle here
@@ -769,23 +768,23 @@
     Current pattern: %`evil-mc-pattern
 
     "
-    ("Z" #'evil-mc-make-all-cursors)
-    ("m" #'evil-mc-make-and-goto-next-match)
-    ("M" #'evil-mc-make-and-goto-prev-match)
-    ("n" #'evil-mc-skip-and-goto-next-match)
-    ("N" #'evil-mc-skip-and-goto-prev-match)
-    ("J" #'evil-mc-make-cursor-move-next-line)
-    ("K" #'evil-mc-make-cursor-move-prev-line)
-    ("z" #'evil-mc-toggle-cursor-here)
-    ("r" #'evil-mc-undo-cursor)
-    ("R" #'evil-mc-undo-all-cursors)
-    ("p" #'evil-mc-pause-cursors)
-    ("P" #'evil-mc-resume-cursors)
-    ("q" #'evil-mc-resume-cursors "quit" :color blue)
-    ("Q"
-      #'evil-mc-undo-all-cursors
-      "quit with remove all"
-      :color blue)))
+   ("Z" #'evil-mc-make-all-cursors)
+   ("m" #'evil-mc-make-and-goto-next-match)
+   ("M" #'evil-mc-make-and-goto-prev-match)
+   ("n" #'evil-mc-skip-and-goto-next-match)
+   ("N" #'evil-mc-skip-and-goto-prev-match)
+   ("J" #'evil-mc-make-cursor-move-next-line)
+   ("K" #'evil-mc-make-cursor-move-prev-line)
+   ("z" #'evil-mc-toggle-cursor-here)
+   ("r" #'evil-mc-undo-cursor)
+   ("R" #'evil-mc-undo-all-cursors)
+   ("p" #'evil-mc-pause-cursors)
+   ("P" #'evil-mc-resume-cursors)
+   ("q" #'evil-mc-resume-cursors "quit" :color blue)
+   ("Q"
+    #'evil-mc-undo-all-cursors
+    "quit with remove all"
+    :color blue)))
 
 (leaf
   evil-escape
@@ -799,14 +798,14 @@
   (evil-escape-delay . 0.2)
   (evil-escape-excluded-states . '(normal visual motion emacs))
   (evil-escape-excluded-major-modes
-    .
-    '
-    (magit-status-mode
-      magit-revision-mode magit-diff-mode help-mode)))
+   .
+   '
+   (magit-status-mode
+    magit-revision-mode magit-diff-mode help-mode)))
 
-; ╭──────────────────────────────────────────────────────────╮
-; │                           Git                            │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                           Git                            │
+;; ╰──────────────────────────────────────────────────────────╯
 (leaf
   magit
   :doc "great git client"
@@ -814,21 +813,21 @@
   :require t
   :pretty-hydra
   (my-git-actions
-    (:color pink :separator "=" :quit-key "q")
-    ("Movement"
-      (("J" diff-hl-next-hunk "next hunk")
-        ("K" diff-hl-previous-hunk "previous hunk"))
-      "Diff"
-      (("D" diff-hl-show-hunk "diff nearest hunk")
-        ("N" diff-hl-show-hunk-next "diff next hunk")
-        ("P" diff-hl-show-hunk-previous "diff previous hunk"))
-      "Operation"
-      (("r" diff-hl-revert-hunk "revert hunk")
-        ("s" diff-hl-stage-current-hunk "stage hunk")
-        ("U" diff-hl-unstage-file "unstage all"))
-      "Magit"
-      (("<RET>" magit-status "open magit" :color blue)
-        ("C" magit-commit "commit" :color blue)))))
+   (:color pink :separator "=" :quit-key "q")
+   ("Movement"
+    (("J" diff-hl-next-hunk "next hunk")
+     ("K" diff-hl-previous-hunk "previous hunk"))
+    "Diff"
+    (("D" diff-hl-show-hunk "diff nearest hunk")
+     ("N" diff-hl-show-hunk-next "diff next hunk")
+     ("P" diff-hl-show-hunk-previous "diff previous hunk"))
+    "Operation"
+    (("r" diff-hl-revert-hunk "revert hunk")
+     ("s" diff-hl-stage-current-hunk "stage hunk")
+     ("U" diff-hl-unstage-file "unstage all"))
+    "Magit"
+    (("<RET>" magit-status "open magit" :color blue)
+     ("C" magit-commit "commit" :color blue)))))
 
 (leaf
   forge
@@ -853,12 +852,12 @@
   :require t
   :hook
   ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
-    (magit-post-refresh-hook . diff-hl-magit-post-refresh))
+   (magit-post-refresh-hook . diff-hl-magit-post-refresh))
   :global-minor-mode global-diff-hl-mode
   :custom (diff-hl-show-staged-changes . nil))
-; ╭──────────────────────────────────────────────────────────╮
-; │                        completion                        │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                        completion                        │
+;; ╰──────────────────────────────────────────────────────────╯
 ;; ----- minibuffer -----
 (leaf
   vertico
@@ -878,19 +877,19 @@
     :straight
     '
     (fuz-bin
-      :repo "jcs-elpa/fuz-bin"
-      :fetcher github
-      :files (:defaults "bin"))
+     :repo "jcs-elpa/fuz-bin"
+     :fetcher github
+     :files (:defaults "bin"))
     :require t
     :defun (fuz-bin-load-dyn)
     :config (fuz-bin-load-dyn))
   :custom
   ((completion-styles . '(fussy))
-    (completion-category-defaults . nil)
-    (compleiton-category-overrides . nil)
-    (fussy-filter-fn . 'fussy-filter-fast)
-    (fussy-score-fn . 'fussy-fuz-bin-score)
-    (fussy-fuz-use-skim-p . t)))
+   (completion-category-defaults . nil)
+   (compleiton-category-overrides . nil)
+   (fussy-filter-fn . 'fussy-filter-fast)
+   (fussy-score-fn . 'fussy-fuz-bin-score)
+   (fussy-fuz-use-skim-p . t)))
 
 (leaf
   savehist
@@ -919,22 +918,22 @@
   :defvar (consult-buffer-sources)
   :setq
   (
-    (completion-in-region-function
-      .
-      (lambda (&rest args)
-        (apply
-          (if vertico-mode
-            #'consult-completion-in-region
-            #'completion--in-region)
-          args)))
-    (consult-buffer-sources
-      .
-      '
-      (consult--source-hidden-buffer
-        consult--source-buffer
-        consult--source-recent-file
-        consult--source-bookmark
-        consult--source-project-buffer))))
+   (completion-in-region-function
+    .
+    (lambda (&rest args)
+      (apply
+       (if vertico-mode
+           #'consult-completion-in-region
+         #'completion--in-region)
+       args)))
+   (consult-buffer-sources
+    .
+    '
+    (consult--source-hidden-buffer
+     consult--source-buffer
+     consult--source-recent-file
+     consult--source-bookmark
+     consult--source-project-buffer))))
 ;; dir extension
 (leaf
   consult-dir
@@ -943,9 +942,9 @@
   :after consult
   :bind
   (("C-x C-d" . consult-dir)
-    (:vertico-map
-      ("C-x C-d" . consult-dir)
-      ("C-x C-j" . consult-dir-jump-file)))
+   (:vertico-map
+    ("C-x C-d" . consult-dir)
+    ("C-x C-j" . consult-dir-jump-file)))
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 
@@ -972,12 +971,12 @@
   (defun corfu-enable-in-minibuffer nil
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
     (when
-      (where-is-internal
-        #'completion-at-point
-        (list (current-local-map)))
+        (where-is-internal
+         #'completion-at-point
+         (list (current-local-map)))
       (corfu-mode 1)))
   :hook
-  ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
+                                        ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
   (after-init-hook . global-corfu-mode)
   :custom
   (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
@@ -993,13 +992,13 @@
   (corfu-separator . ?\s)
   :bind
   (
-    (:corfu-map
-      ("TAB" . corfu-next)
-      ("<tab>" . corfu-next)
-      ("S-TAB" . corfu-previous)
-      ("<backtab>" . corfu-previous)
-      ("C-n" . corfu-next)
-      ("C-p" . corfu-previous)))
+   (:corfu-map
+    ("TAB" . corfu-next)
+    ("<tab>" . corfu-next)
+    ("S-TAB" . corfu-previous)
+    ("<backtab>" . corfu-previous)
+    ("C-n" . corfu-next)
+    ("C-p" . corfu-previous)))
   :config
   (evil-make-overriding-map corfu-map)
   (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
@@ -1017,11 +1016,11 @@
   :require t
   :bind
   (:yas-keymap
-    ("<tab>" . nil)
-    ("TAB" . nil)
-    ("<backtab>" . nil)
-    ("S-TAB" . nil)
-    ("C-o" . yas-next-field-or-maybe-expand))
+   ("<tab>" . nil)
+   ("TAB" . nil)
+   ("<backtab>" . nil)
+   ("S-TAB" . nil)
+   ("C-o" . yas-next-field-or-maybe-expand))
   :global-minor-mode yas-global-mode)
 
 (leaf
@@ -1031,18 +1030,18 @@
   :init
   (defun my/basic-super-capf ()
     (add-to-list 'completion-at-point-functions
-      (cape-super-capf
-        ;; #'lsp-completion-at-point
-        #'cape-file
-        #'cape-tex
-        #'cape-symbol
-        #'cape-keyword
-        #'cape-dabbrev
-        #'cape-abbrev
-        ;#'cape-ispell
-        ;#'cape-dict
-        ;#'cape-line
-        )))
+                 (cape-super-capf
+                  ;; #'lsp-completion-at-point
+                  #'cape-file
+                  #'cape-tex
+                  #'cape-symbol
+                  #'cape-keyword
+                  #'cape-dabbrev
+                  #'cape-abbrev
+                                        ;#'cape-ispell
+                                        ;#'cape-dict
+                                        ;#'cape-line
+                  )))
   :hook (prog-mode-hook . my/basic-super-capf))
 
 
@@ -1056,9 +1055,9 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
-; ╭──────────────────────────────────────────────────────────╮
-; │                       input method                       │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                       input method                       │
+;; ╰──────────────────────────────────────────────────────────╯
 ;; mozc ime
 (leaf
   mozc
@@ -1072,23 +1071,23 @@
    (mozc-candidate-style . 'overlay))
   )
 
-; ╭──────────────────────────────────────────────────────────╮
-; │                       boilerplate                        │
-; ╰──────────────────────────────────────────────────────────╯
+;; ╭──────────────────────────────────────────────────────────╮
+;; │                       boilerplate                        │
+;; ╰──────────────────────────────────────────────────────────╯
 (provide 'init)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(package-selected-packages '(hydra leaf-keywords leaf)))
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(hydra leaf-keywords leaf)))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  )
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:
