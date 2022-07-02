@@ -406,17 +406,9 @@
 ;; │                          themes                          │
 ;; ╰──────────────────────────────────────────────────────────╯
 ;; font config
-(defvar my/font-family "Iosevka Term")
-(defvar my/font-size
-  (let ((size-by-hostname '(("DESKTOP-B6V868U" . 14.0))))
-    (or (cdr (assoc (system-name) size-by-hostname)) 13.5)))
-
-(when window-system
-  ;; http://d.hatena.ne.jp/kitokitoki/20110502/p2
-  (let ((fontset (format "%s-%.1f" my/font-family my/font-size)))
-    (add-to-list 'default-frame-alist `(font . ,fontset)))
-  (add-to-list 'default-frame-alist
-               `(cursor-type . (hbar . ,(1+ (ceiling (/ my/font-size 2)))))))
+(set-face-attribute 'default nil :font "Iosevka Term-14")
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "PlemolJP Console NF" :height 1.0)
 
 ;; modus theme
 (leaf modus-themes
