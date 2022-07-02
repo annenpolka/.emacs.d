@@ -1,0 +1,166 @@
+#+title: Annenpolka's Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ./test.el :mkdirp yes
+
+
+* Emacs configuration
+My configuration managed by leaf.el + straight.el
+** Greeeting Documentation
+- elispファイルの頭のドキュメント
+#+begin_src emacs-lisp
+
+  ;;; init.el --- My init.el  -*- lexical-binding: t; -*-
+
+  ;; Author: annenpolka <lancelbb@gmail.com>
+
+  ;; This program is free software: you can redistribute it and/or modify
+  ;; it under the terms of the GNU General Public License as published by
+  ;; the Free Software Foundation, either version 3 of the License, or
+  ;; (at your option) any later version.
+
+  ;; This program is distributed in the hope that it will be useful,
+  ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ;; GNU General Public License for more details.
+
+  ;; You should have received a copy of the GNU General Public License
+  ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+  ;;; Commentary:
+
+  ;; My init.el.
+
+  ;;; Code:
+  
+#+end_src
+
+** Package Manager Setup
+- package-archivesのURL設定
+- straight.elとleaf.elのインストール
+#+begin_src emacs-lisp :tangle ./test.el
+
+  (eval-and-compile
+    (customize-set-variable
+     'package-archives
+     '
+     (("gnu" . "https://elpa.gnu.org/packages/")
+      ("melpa" . "https://melpa.org/packages/")
+      ("org" . "https://orgmode.org/elpa/")))
+    (package-initialize)
+
+    ;; setup straight.el
+    (defvar bootstrap-version)
+    (let
+        (
+         (bootstrap-file
+          (expand-file-name
+           "straight/repos/straight.el/bootstrap.el"
+           user-emacs-directory))
+         (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent
+             'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage))
+    ;; install leaf requirements by straight
+    (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
+
+    (leaf leaf-keywords
+      :require t
+      :init
+      ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+      (straight-use-package 'hydra)
+      (straight-use-package 'major-mode-hydra)
+      (straight-use-package 'blackout)
+      (straight-use-package 'system-packages)
+      :config
+      ;; initialize leaf-keywords.el
+      (leaf-keywords-init)))
+  ;; leaf plugins
+  (leaf leaf
+    :config (leaf leaf-convert :straight t :require t))
+  
+#+end_src
+
+
+** Emacs Basic Configuration
+*** cus-start (基本的な設定)
+#+begin_src emacs-lisp
+
+  ;; set builtin configs via leaf
+  (leaf
+    cus-start
+    :doc "define customization properties of builtins"
+    :tag
+    "builtin"
+    "internal"
+    :preface
+    (defun c/redraw-frame nil
+      (interactive)
+      (redraw-frame))
+    :bind (("M-ESC ESC" . c/redraw-frame))
+    :custom
+    '
+    ((user-full-name . "annenpolka")
+     (user-mail-address . "lancelbb@gmail.com")
+     (user-login-name . "annenpolka")
+     (create-lockfiles . nil)
+     (debug-on-error . t)
+     (init-file-debug . t)
+     (frame-resize-pixelwise . t)
+     (enable-recursive-minibuffers . t)
+     (history-length . 1000)
+     (history-delete-duplicates . t)
+     (scroll-preserve-screen-position . t)
+     (scroll-conservatively . 100)
+     (mouse-wheel-scroll-amount . '(1 ((control) . 5)))
+     (ring-bell-function . 'ignore)
+     (text-quoting-style . 'straight)
+     (truncate-lines . t)
+     (completion-cycle-threshold . 3)
+     (tab-always-indent . 'complete)
+     (scroll-bar-mode . nil)
+     (indent-tabs-mode . nil)
+     (vc-follow-symlinks . t)
+     (show-paren-style . 'mixed))
+    :config
+    (defalias 'yes-or-no-p 'y-or-n-p)
+    (keyboard-translate ?\C-h ?\C-?))
+  
+#+end_src
+
+*** Garbage Collection
+- gcmhは操作していない間にGCを済ませる
+#+begin_src emacs-lisp
+
+  (leaf gcmh
+    :straight t
+    :require t
+    :blackout t
+    :defun (gcmh-mode)
+    :custom
+    (gcmh-verbose . t)
+    :config
+    (gcmh-mode 1))
+  
+#+end_src
+
+*** cus-edit(custom.elの二重管理抑止)
+#+begin_src emacs-lisp
+  
+  (leaf
+    cus-edit
+    :doc "tools for customizing Emacs and Lisp packages"
+    :tag
+    "builtin"
+    "faces"
+    "help"
+    :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
+
+#+end_src
+  
+** Syntax Check/Formatting
+** Languages/Modes Specific Settings
