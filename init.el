@@ -803,6 +803,33 @@
    (magit-status-mode
     magit-revision-mode magit-diff-mode help-mode)))
 
+;; org mode things
+(leaf org
+  :straight t
+  :require t)
+
+(leaf org-bullets
+  :straight t
+  :require t
+  :after org
+  :hook (org-mode-hook . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
+
+(leaf
+  evil-org
+  :straight t
+  :require t
+  :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-agenda-set-keys)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-j") 'org-next-visible-heading
+    (kbd "C-k") 'org-previous-visible-heading)
+  )
+
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                           Git                            │
 ;; ╰──────────────────────────────────────────────────────────╯
