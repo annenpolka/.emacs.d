@@ -561,6 +561,19 @@
     ("<leader>k" . windmove-up)
     ("<leader>l" . windmove-right))))
 
+;; indent textobject
+(leaf
+  evil-indent-plus
+  :straight t
+  :require t
+  :bind
+  ((:evil-inner-text-objects-map
+    ("i" . 'evil-indent-plus-i-indent-up)
+    ("I" . 'evil-indent-plus-i-indent))
+   (:evil-outer-text-objects-map
+    ("i" . 'evil-indent-plus-a-indent-up)
+    ("I" . 'evil-indent-plus-a-indent))))
+
 (leaf
   evil-collection
   :after evil
