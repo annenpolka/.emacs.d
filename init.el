@@ -431,7 +431,7 @@
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 3))
+  :custom (display-line-numbers-width . 4))
 
 (leaf hl-line :global-minor-mode global-hl-line-mode)
 
