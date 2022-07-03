@@ -158,7 +158,8 @@
    (show-paren-style . 'mixed))
   :config
   (defalias 'yes-or-no-p 'y-or-n-p)
-  (keyboard-translate ?\C-h ?\C-?))
+  (define-key key-translation-map [?\C-h] [?\C-?])
+  (global-set-key (kbd "C-?") 'help-for-help))
 
 ;; undo
 (leaf undo-fu :straight t :require t)
