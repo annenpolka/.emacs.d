@@ -497,9 +497,11 @@
   :global-minor-mode zoom-mode
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
+
 ;; ╭─────-────────────────────────────────────────────────────╮
 ;; │                      editing modal                       │
 ;; ╰──────────────────────────────────────────────────────────╯
+
 (leaf
   evil
   :doc "Extensible vi layer for Emacs."
@@ -785,10 +787,12 @@
 (leaf org
   :straight t
   :require org org-tempo
+  :custom
+  (org-catch-invisible-edits . 'smart)
   :config
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  (add-hook 'org-src-mode-hook 'disable-fylcheck-in-org-src-block))
+  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
 
 (leaf org-bullets
   :straight t
@@ -808,8 +812,12 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
   (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-a") 'org-edit-special
     (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading)
+    (kbd "C-k") 'org-previous-visible-heading
+    (kbd "C-S-j") 'org-move-subtree-down
+    (kbd "C-S-k") 'org-move-subtree-up
+    )
   )
 
 ;; ╭──────────────────────────────────────────────────────────╮
