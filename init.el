@@ -912,9 +912,7 @@
     (kbd "C-j") 'org-next-visible-heading
     (kbd "C-k") 'org-previous-visible-heading
     (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up
-    )
-  )
+    (kbd "C-S-k") 'org-move-subtree-up))
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
@@ -1008,6 +1006,7 @@
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                        completion                        │
 ;; ╰──────────────────────────────────────────────────────────╯
+
 ;; ----- minibuffer -----
 (leaf
   vertico
