@@ -569,6 +569,31 @@
     ("<leader>k" . windmove-up)
     ("<leader>l" . windmove-right))))
 
+;; vim-textobj-user
+(leaf
+  targets
+  :straight
+  (targets
+   :type git
+   :host github
+   :repo "noctuid/targets.el")
+  :require t
+  :defun (targets-setup targets-define-composite-to)
+  :config
+  (targets-setup)
+  ;; vim-textobj-anyblock
+  (targets-define-composite-to anyblock
+    (("(" ")" pair)
+     ("[" "]" pair)
+     ("{" "}" pair)
+     ("<" ">" pair)
+     ("\"" "\"" quote)
+     ("'" "'" quote)
+     ("`" "`" quote)
+     ("“" "”" quote))
+    :bind t
+    :keys "b"))
+
 ;; indent textobject
 (leaf
   evil-indent-plus
