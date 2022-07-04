@@ -583,10 +583,12 @@
     ("<leader>SPC" . 'consult-buffer)
     ("<leader>n" . 'my-mc-hydra/body)
     ("<leader>g" . 'my-git-actions/body)
-    ("<leader>h" . windmove-left)
-    ("<leader>j" . windmove-down)
-    ("<leader>k" . windmove-up)
-    ("<leader>l" . windmove-right))))
+    ("<leader>h" . 'move-or-create-window-left)
+    ("<leader>j" . 'move-or-create-window-below)
+    ("<leader>k" . 'move-or-create-window-above)
+    ("<leader>l" . 'move-or-create-window-right))
+   (:evil-visual-state-map
+    ("<leader>n". 'my-mc-hydra/body))))
 
 ;; vim-textobj-user
 (leaf
@@ -883,6 +885,42 @@
     (kbd "C-S-j") 'org-move-subtree-down
     (kbd "C-S-k") 'org-move-subtree-up
     )
+  )
+
+(leaf move-or-create-window
+  :doc "focus.nvim in emacs"
+  :init
+  (defun move-or-create-window-above nil
+    (interactive)
+    (if (window-in-direction 'above)
+        (windmove-up)
+      (progn
+        (split-window-below)
+        (windmove-up))))
+
+  (defun move-or-create-window-below nil
+    (interactive)
+    (if (window-in-direction 'below)
+        (windmove-down)
+      (progn
+        (split-window-below)
+        (windmove-down))))
+
+  (defun move-or-create-window-left nil
+    (interactive)
+    (if (window-in-direction 'left)
+        (windmove-left)
+      (progn
+        (split-window-right)
+        (windmove-left))))
+
+  (defun move-or-create-window-right nil
+    (interactive)
+    (if (window-in-direction 'right)
+        (windmove-right)
+      (progn
+        (split-window-right)
+        (windmove-right))))
   )
 
 ;; ╭──────────────────────────────────────────────────────────╮
