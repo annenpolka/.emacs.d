@@ -1051,7 +1051,6 @@
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   )
 
-;;; consult
 (leaf
   consult
   :straight t
@@ -1075,6 +1074,7 @@
      consult--source-recent-file
      consult--source-bookmark
      consult--source-project-buffer))))
+
 ;; dir extension
 (leaf
   consult-dir
