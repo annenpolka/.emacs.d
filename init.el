@@ -1084,9 +1084,9 @@
     '
     (consult--source-hidden-buffer
      consult--source-buffer
-     consult--source-recent-file
+     consult--source-project-buffer
      consult--source-bookmark
-     consult--source-project-buffer))))
+     consult--source-recent-file))))
 
 ;; dir extension
 (leaf
