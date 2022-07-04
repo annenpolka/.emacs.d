@@ -173,7 +173,7 @@
    (indent-tabs-mode . nil)
    (vc-follow-symlinks . t)
    (show-paren-style . 'mixed))
-  :config
+  :init
   (defalias 'yes-or-no-p 'y-or-n-p)
   (define-key key-translation-map [?\C-h] [?\C-?])
   (global-set-key (kbd "C-?") 'help-for-help))
