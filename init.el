@@ -850,6 +850,21 @@
    (magit-status-mode
     magit-revision-mode magit-diff-mode help-mode)))
 
+;; display registers
+(leaf evil-owl
+  :straight t
+  :require t
+  :global-minor-mode evil-owl-mode
+  :custom
+  (evil-owl-max-string-length . 500)
+  (evil-owl-idle-delay . 0.2)
+  :config
+  (add-to-list 'display-buffer-alist
+               '("*evil-owl*"
+                 (display-buffer-in-side-window)
+                 (side . bottom)
+                 (window-height . 0.25))))
+
 ;; org mode things
 (leaf org
   :straight t
