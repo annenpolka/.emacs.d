@@ -104,6 +104,13 @@
   :require t
   :hook (prog-mode-hook . format-all-mode))
 
+;; EditorConfig support
+(leaf
+  editorconfig
+  :straight t
+  :require t
+  :global-minor-mode editorconfig-mode)
+
 ;; (leaf flycheck-inline
 ;;   :straight t :require t
 ;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
