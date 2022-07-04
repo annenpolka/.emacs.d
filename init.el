@@ -287,6 +287,15 @@
 ;; icons dependency
 (leaf all-the-icons :straight t :require t)
 
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
+
 ;; TODO: create files/projects management section
 ;; dired extender
 (leaf
