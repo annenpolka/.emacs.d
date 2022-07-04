@@ -330,7 +330,7 @@
   :config
   ;; Place this line under :init to ensure the overriding at startup, see #22
   (dirvish-override-dired-mode)
-  (dirvish-peek-mode)
+  ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions,
   ;; see *In relation to Dired* section above
   (setq dired-recursive-deletes 'always)
@@ -342,6 +342,10 @@
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   (evil-make-overriding-map dired-mode-map)
+  :hook
+  ;; show file preview in minibuffer browsing
+  ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
+  (emacs-startup-hook . dirvish-peek-mode)
   :bind
   (
    (:dired-mode-map
