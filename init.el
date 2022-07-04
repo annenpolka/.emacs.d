@@ -111,6 +111,16 @@
   :require t
   :global-minor-mode editorconfig-mode)
 
+;; Tangle the code blocks on save.
+(defun my/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'my/org-babel-tangle-config)))
+
 ;; (leaf flycheck-inline
 ;;   :straight t :require t
 ;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
