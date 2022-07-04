@@ -357,6 +357,15 @@
   :require t
   :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
   :global-minor-mode t)
+
+;; sessions as bookmark
+(leaf burly
+  :straight
+  (burly
+   :type git
+   :host github
+   :repo "alphapapa/burly.el"))
+
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                      language tools                      │
 ;; ╰──────────────────────────────────────────────────────────╯
