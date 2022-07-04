@@ -990,6 +990,7 @@
    (magit-post-refresh-hook . diff-hl-magit-post-refresh))
   :global-minor-mode global-diff-hl-mode
   :custom (diff-hl-show-staged-changes . nil))
+
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                        completion                        │
 ;; ╰──────────────────────────────────────────────────────────╯
