@@ -102,7 +102,9 @@
   format-all
   :straight t
   :require t
-  :hook (prog-mode-hook . format-all-mode))
+  :hook
+  (prog-mode-hook . format-all-mode)
+  (prog-mode-hook . format-all-ensure-formatter))
 
 ;; EditorConfig support
 (leaf
