@@ -577,6 +577,7 @@
   :config
   ;; leader-key
   (evil-set-leader 'normal (kbd "<SPC>"))
+  (evil-set-leader 'visual (kbd "<SPC>"))
   ;; activate evil
   (evil-mode 1)
   (turn-on-evil-mode)
@@ -584,9 +585,9 @@
   (
    (:evil-normal-state-map
     ("C-s" . save-buffer)
-    (":" . execute-extended-command)
     ("C-q" . 'evil-quit)
     ("C-l" . 'my/clear-marks-and-cursors)
+    ("K" . 'helpful-at-point)
     ("C-j" . 'evil-open-fold)
     ("C-k" . 'evil-close-fold)
     ("C-/" . 'evil-commentary-line)
