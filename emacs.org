@@ -1385,6 +1385,25 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       (kbd "C-S-j") 'org-move-subtree-down
       (kbd "C-S-k") 'org-move-subtree-up))
 #+end_src
+*** org-appear
+#+begin_src emacs-lisp
+  (leaf
+    org-appear
+    :require t
+    :straight
+    (org-appear
+     :type git
+     :host github
+     :repo "awth13/org-appear")
+    :hook
+    (org-mode-hook . org-appear-mode)
+    :custom
+    (org-appear-autolinks . t)
+    (org-appear-autosubmarkers . t)
+    (org-appear-autoentities . t)
+    (org-appear-autokeywords . t)
+    (org-appear-inside-latex . t))
+#+end_src
 ** LSP Mode
 *** lsp-mode
 #+begin_src emacs-lisp
