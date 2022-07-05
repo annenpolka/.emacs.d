@@ -1121,14 +1121,6 @@
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
 
-(leaf org-bullets
-  :straight t
-  :require t
-  :after org
-  :hook (org-mode-hook . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
-
 (leaf
   evil-org
   :straight t
@@ -1144,6 +1136,14 @@
     (kbd "C-k") 'org-previous-visible-heading
     (kbd "C-S-j") 'org-move-subtree-down
     (kbd "C-S-k") 'org-move-subtree-up))
+
+(leaf org-bullets
+  :straight t
+  :require t
+  :after org
+  :hook (org-mode-hook . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
 
 (leaf
   org-appear

@@ -1357,16 +1357,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
 #+end_src
-*** org-bullets
-#+begin_src emacs-lisp
-(leaf org-bullets
-  :straight t
-  :require t
-  :after org
-  :hook (org-mode-hook . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
-#+end_src
 *** evil-org
 #+begin_src emacs-lisp
   (leaf
@@ -1384,6 +1374,16 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       (kbd "C-k") 'org-previous-visible-heading
       (kbd "C-S-j") 'org-move-subtree-down
       (kbd "C-S-k") 'org-move-subtree-up))
+#+end_src
+*** org-bullets
+#+begin_src emacs-lisp
+(leaf org-bullets
+  :straight t
+  :require t
+  :after org
+  :hook (org-mode-hook . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
 *** org-appear
 #+begin_src emacs-lisp
