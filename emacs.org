@@ -301,27 +301,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     )
 #+end_src
 * Helper Interfaces
-** display-line-numbers
-#+begin_src emacs-lisp
-(leaf
-  display-line-numbers
-  :bind ("<f9>" . display-line-numbers-mode)
-  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 4))
-#+end_src
-** hl-line
-#+begin_src emacs-lisp
-(leaf hl-line :global-minor-mode global-hl-line-mode)
-#+end_src
-** hl-todo
-#+begin_src emacs-lisp
-(leaf
-  hl-todo
-  :doc "TODO keywords highlighting"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-todo-mode)
-#+end_src
 ** which-key
 #+begin_src emacs-lisp
 (leaf
@@ -335,6 +314,36 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   :init
   (which-key-setup-side-window-right)
   (which-key-mode t))
+#+end_src
+** display-line-numbers
+#+begin_src emacs-lisp
+(leaf
+  display-line-numbers
+  :bind ("<f9>" . display-line-numbers-mode)
+  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
+  :custom (display-line-numbers-width . 4))
+#+end_src
+** hl-line
+#+begin_src emacs-lisp
+(leaf hl-line :global-minor-mode global-hl-line-mode)
+#+end_src
+** hl-block-mode
+#+begin_src emacs-lisp
+  (leaf
+    hl-block-mode
+    :doc "blockman thing"
+    :straight t
+    :require t
+    :global-minor-mode global-hl-block-mode)
+#+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(leaf
+  hl-todo
+  :doc "TODO keywords highlighting"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-todo-mode)
 #+end_src
 ** highlight-indent-guides
 #+begin_src emacs-lisp
@@ -350,15 +359,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     ((highlight-indent-guides-method . 'character)
      (highlight-indent-guides-auto-enabled . t)
      (highlight-indent-guides-responsive . t)))
-#+end_src
-** hl-block-mode
-#+begin_src emacs-lisp
-  (leaf
-    hl-block-mode
-    :doc "blockman thing"
-    :straight t
-    :require t
-    :global-minor-mode global-hl-block-mode)
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
@@ -379,17 +379,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   :global-minor-mode zoom-mode
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
-#+end_src
-** helpful
-#+begin_src emacs-lisp
-  ;; enhanced help
-  (leaf helpful
-    :straight t
-    :require t
-    :bind
-    ("C-h f" . helpful-callable)
-    ("C-h k" . helpful-key)
-    ("C-h v" . helpful-variable))
 #+end_src
 * Filer
 ** Dirvish
@@ -1027,6 +1016,17 @@ Diredをオーバーホールするファイラ。
         (windmove-right))))
   )
 #+end_src
+*** helpful
+#+begin_src emacs-lisp
+  ;; enhanced help
+  (leaf helpful
+    :straight t
+    :require t
+    :bind
+    ("C-h f" . helpful-callable)
+    ("C-h k" . helpful-key)
+    ("C-h v" . helpful-variable))
+#+end_src
 ** Syntax Check/Formatting
 *** flycheck
 
@@ -1457,7 +1457,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
    )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
-
 * Boilerplate
 #+begin_src emacs-lisp
 ;; ╭──────────────────────────────────────────────────────────╮

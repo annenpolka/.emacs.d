@@ -199,21 +199,6 @@
   )
 
 (leaf
-  display-line-numbers
-  :bind ("<f9>" . display-line-numbers-mode)
-  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 4))
-
-(leaf hl-line :global-minor-mode global-hl-line-mode)
-
-(leaf
-  hl-todo
-  :doc "TODO keywords highlighting"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-todo-mode)
-
-(leaf
   which-key
   :doc "which-key in emacs"
   :straight t
@@ -224,6 +209,28 @@
   :init
   (which-key-setup-side-window-right)
   (which-key-mode t))
+
+(leaf
+  display-line-numbers
+  :bind ("<f9>" . display-line-numbers-mode)
+  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
+  :custom (display-line-numbers-width . 4))
+
+(leaf hl-line :global-minor-mode global-hl-line-mode)
+
+(leaf
+  hl-block-mode
+  :doc "blockman thing"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-block-mode)
+
+(leaf
+  hl-todo
+  :doc "TODO keywords highlighting"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-todo-mode)
 
 (leaf
   highlight-indent-guides
@@ -237,13 +244,6 @@
   ((highlight-indent-guides-method . 'character)
    (highlight-indent-guides-auto-enabled . t)
    (highlight-indent-guides-responsive . t)))
-
-(leaf
-  hl-block-mode
-  :doc "blockman thing"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-block-mode)
 
 (leaf
   rainbow-delimiters
@@ -260,15 +260,6 @@
   :global-minor-mode zoom-mode
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
-
-;; enhanced help
-(leaf helpful
-  :straight t
-  :require t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
 
 (leaf
   dirvish
@@ -842,6 +833,15 @@
         (split-window-right)
         (windmove-right))))
   )
+
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
 
 ;; flycheck syntax checking
 (leaf
