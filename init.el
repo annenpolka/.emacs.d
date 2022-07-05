@@ -21,9 +21,6 @@
 
 ;;; Code:
 
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                           leaf                           │
-;; ╰──────────────────────────────────────────────────────────╯
 (eval-and-compile
   (customize-set-variable
    'package-archives
@@ -54,8 +51,7 @@
   ;; install leaf requirements by straight
   (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
 
-  (leaf
-    leaf-keywords
+  (leaf leaf-keywords
     :require t
     :init
     ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
@@ -66,78 +62,9 @@
     :config
     ;; initialize leaf-keywords.el
     (leaf-keywords-init)))
-
 ;; leaf plugins
-(leaf
-  leaf
+(leaf leaf
   :config (leaf leaf-convert :straight t :require t))
-
-;; garbage collection manager
-(leaf gcmh
-  :straight t
-  :require t
-  :blackout t
-  :defun (gcmh-mode)
-  :custom
-  (gcmh-verbose . t)
-  :config
-  (gcmh-mode 1))
-
-;; explain macro by step
-(leaf
-  macrostep
-  :straight t
-  :require t
-  :bind (("C-c e" . macrostep-expand)))
-
-;; flycheck syntax checking
-(leaf
-  flycheck
-  :straight t
-  :require t
-  :global-minor-mode global-flycheck-mode)
-
-;; formatter bindings
-(leaf
-  format-all
-  :straight t
-  :require t
-  :hook
-  (prog-mode-hook . format-all-mode)
-  (prog-mode-hook . format-all-ensure-formatter))
-
-;; EditorConfig support
-(leaf
-  editorconfig
-  :straight t
-  :require t
-  :global-minor-mode editorconfig-mode)
-
-;; Tangle the code blocks on save.
-(defun my/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
-                      (expand-file-name user-emacs-directory))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'my/org-babel-tangle-config)))
-
-;; (leaf flycheck-inline
-;;   :straight t :require t
-;;   :hook ((flycheck-mode-hook . flycheck-inline-mode)))
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                       basic, chore                       │
-;; ╰──────────────────────────────────────────────────────────╯
-;; supress leaf's :custom auto append to custom.el
-(leaf
-  cus-edit
-  :doc "tools for customizing Emacs and Lisp packages"
-  :tag
-  "builtin"
-  "faces"
-  "help"
-  :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
 
 ;; set builtin configs via leaf
 (leaf
@@ -180,103 +107,14 @@
   (define-key key-translation-map [?\C-h] [?\C-?])
   (global-set-key (kbd "C-?") 'help-for-help))
 
-;; undo
-(leaf undo-fu :straight t :require t)
 (leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
-(leaf
-  autorevert
-  :doc "revert buffers when files on disk change"
-  :tag "builtin"
-  :custom ((auto-revert-interval . 1) (auto-revert-check-vc-info . t))
-  :global-minor-mode global-auto-revert-mode)
-
-(leaf
-  recentf
-  :doc "save recent file history"
-  :global-minor-mode t
-  :custom
-  ((recentf-save-file . "~/.emacs.d/recentf")
-   (recentf-max-saved-items . 2000)
-   (recentf-auto-cleanup . 'never))
-  (recentf-exclude
-   .
-   '
-   ("recentf"
-    "COMMIT_EDITMSG"
-    "bookmarks"
-    "\\.gitignore"
-    "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-    ".howm-keys"
-    "^/tmp/"
-    "^/scp:"
-    (lambda (file) (file-in-directory-p file package-user-dir)))))
-
-(leaf
-  saveplace
-  :doc "save cursor position"
-  :global-minor-mode save-place-mode)
-
-;;; spellcheck
-(leaf
-  flyspell
-  :blackout (flyspell-mode flyspell-prog-mode)
-  :hook
-  (text-mode-hook . flyspell-mode)
-  (prog-mode-hook . flyspell-prog-mode)
-  (conf-mode-hook . flyspell-prog-mode)
-  (yaml-mode-hook . flyspell-prog-mode)
-  :defvar
-  (ispell-extra-args
-   ispell-aspell-dict-dir
-   ispell-aspell-data-dir
-   ispell-program-name)
-  :defun (ispell-get-aspell-config-value)
-  :config
-  (pcase
-      (cond
-       ((executable-find "aspell")
-        'aspell)
-       ((executable-find "hunspell")
-        'hunspell)
-       ((executable-find "enchant-2")
-        'enchant))
-    (`aspell
-     (setq
-      ispell-program-name
-      "aspell"
-      ispell-extra-args '("--sug-mode=ultra" "--run-together"))
-
-     (unless ispell-aspell-dict-dir
-       (setq ispell-aspell-dict-dir
-             (ispell-get-aspell-config-value "dict-dir")))
-     (unless ispell-aspell-data-dir
-       (setq ispell-aspell-data-dir
-             (ispell-get-aspell-config-value "data-dir"))))
-    (`hunspell (setq ispell-program-name "hunspell"))
-    (`enchant (setq ispell-program-name "enchant-2"))
-    (_ (system-packages-ensure "aspell"))))
-(leaf
-  flyspell-correct
-  :straight t
-  :require t
-  :after flyspell
-  :bind ([remap ispell-word] . flyspell-correct-at-point))
-
-(leaf
-  eldoc
-  :doc "emacs-lisp documentation"
-  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
-  :blackout t
-  :preface
-  (defun my:shutup-eldoc-message (f &optional string)
-    (unless (active-minibuffer-window)
-      (funcall f string)))
-  :advice (:around eldoc-message my:shutup-eldoc-message))
+  cus-edit
+  :doc "tools for customizing Emacs and Lisp packages"
+  :tag
+  "builtin"
+  "faces"
+  "help"
+  :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
 
 (leaf
   persistent-scratch
@@ -286,8 +124,135 @@
   :defun (persistent-scratch-setup-default)
   :config (persistent-scratch-setup-default))
 
+;; Tangle the code blocks on save.
+(defun my/org-babel-tangle-config ()
+  (when (string-equal (file-name-directory (buffer-file-name))
+                      (expand-file-name user-emacs-directory))
+
+    ;; Dynamic scoping to the rescue
+    (let ((org-confirm-babel-evaluate nil))
+      (org-babel-tangle))))
+
+(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'my/org-babel-tangle-config)))
+
+(leaf gcmh
+  :straight t
+  :require t
+  :blackout t
+  :defun (gcmh-mode)
+  :custom
+  (gcmh-verbose . t)
+  :config
+  (gcmh-mode 1))
+
+;; explain macro by step
+(leaf
+  macrostep
+  :straight t
+  :require t
+  :bind (("C-c e" . macrostep-expand)))
+
+;; font config
+(set-face-attribute 'default nil :font "Iosevka Term-14")
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "PlemolJP Console NF" :height 1.0)
+
+;; modus theme
+(leaf modus-themes
+  :custom
+  (modus-themes-completions . 'subtle)
+  (modus-themes-fringes . 'subtle)
+  (modus-themes-italic-constructs . t)
+  (modus-themes-bold-constructs . nil)
+  (modus-themes-mode-line . '(borderless moody))
+  (modus-themes-hl-line . '(underline))
+  (modus-themes-region . '(bg-only no-extend))
+  (modus-themes-scale-headings . t)
+  (modus-themes-prompts . '(background bold gray intense italic))
+  (modus-themes-syntax . '(faint alt-syntax green-strings))
+  :config (load-theme 'modus-vivendi))
+
 ;; icons dependency
 (leaf all-the-icons :straight t :require t)
+
+(leaf
+  kind-icon
+  :straight t
+  :require t
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+;; mozc ime
+(leaf
+  mozc
+  ;; :depends emacs-mozc
+  :straight t
+  :require t
+  :bind* (("<zenkaku-hankaku>" . toggle-input-method)
+          ("<eisu-toggle>" . toggle-input-method))
+  :custom
+  ((default-input-method . "japanese-mozc")
+   (mozc-candidate-style . 'overlay))
+  )
+
+(leaf
+  display-line-numbers
+  :bind ("<f9>" . display-line-numbers-mode)
+  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
+  :custom (display-line-numbers-width . 4))
+
+(leaf hl-line :global-minor-mode global-hl-line-mode)
+
+(leaf
+  which-key
+  :doc "which-key in emacs"
+  :straight t
+  :require t
+  :defun (which-key-setup-side-window-right which-key-mode)
+  :blackout which-key-mode
+  :custom (which-key-idle-delay . 0.5)
+  :init
+  (which-key-setup-side-window-right)
+  (which-key-mode t))
+
+(leaf
+  highlight-indent-guides
+  :doc "indent lines"
+  :straight t
+  :require t
+  :blackout t
+  :hook
+  (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
+  :custom
+  ((highlight-indent-guides-method . 'character)
+   (highlight-indent-guides-auto-enabled . t)
+   (highlight-indent-guides-responsive . t)))
+
+(leaf
+  hl-block-mode
+  :doc "blockman thing"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-block-mode)
+
+(leaf
+  rainbow-delimiters
+  :straight t
+  :require t
+  :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
+
+;; focus window
+(leaf
+  zoom
+  :straight t
+  :ensure t
+  :blackout t
+  :global-minor-mode zoom-mode
+  ;; TODO: set ignore major modes like dired
+  :custom (zoom-size . '(0.618 . 0.618)))
 
 ;; enhanced help
 (leaf helpful
@@ -298,8 +263,6 @@
   ("C-h k" . helpful-key)
   ("C-h v" . helpful-variable))
 
-;; TODO: create files/projects management section
-;; dired extender
 (leaf
   dirvish
   :straight t
@@ -343,7 +306,7 @@
   ;; Otherwise some commands won't work properly
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  (evil-make-overriding-map dired-mode-map)
+  ;; (evil-make-overriding-map dired-mode-map)
   :hook
   ;; show file preview in minibuffer browsing
   ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
@@ -375,6 +338,84 @@
     ([remap dired-do-copy] . dirvish-yank-menu)
     ([remap mode-line-other-buffer] . dirvish-history-last))))
 
+(leaf
+  magit
+  :doc "great git client"
+  :straight t
+  :require t
+  :pretty-hydra
+  (my-git-actions
+   (:color pink :separator "=" :quit-key "q")
+   ("Movement"
+    (("J" diff-hl-next-hunk "next hunk")
+     ("K" diff-hl-previous-hunk "previous hunk"))
+    "Diff"
+    (("D" diff-hl-show-hunk "diff nearest hunk")
+     ("N" diff-hl-show-hunk-next "diff next hunk")
+     ("P" diff-hl-show-hunk-previous "diff previous hunk"))
+    "Operation"
+    (("r" diff-hl-revert-hunk "revert hunk")
+     ("s" diff-hl-stage-current-hunk "stage hunk")
+     ("U" diff-hl-unstage-file "unstage all"))
+    "Magit"
+    (("<RET>" magit-status "open magit" :color blue)
+     ("C" magit-commit "commit" :color blue)))))
+
+(leaf
+  forge
+  :doc "remote repo control with magit"
+  :straight t
+  :require t
+  :after magit
+  :custom
+  ((bug-reference-mode . 0) (forge-add-default-bindings . nil)))
+
+(leaf
+  magit-todos
+  :doc "manage TODO keywords with magit"
+  :straight t
+  :require t
+  :after magit
+  :hook (magit-mode-hook . magit-todos-mode))
+
+(leaf
+  diff-hl
+  :straight t
+  :require t
+  :hook
+  ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
+   (magit-post-refresh-hook . diff-hl-magit-post-refresh))
+  :global-minor-mode global-diff-hl-mode
+  :custom (diff-hl-show-staged-changes . nil))
+
+(leaf
+  autorevert
+  :doc "revert buffers when files on disk change"
+  :tag "builtin"
+  :custom ((auto-revert-interval . 1) (auto-revert-check-vc-info . t))
+  :global-minor-mode global-auto-revert-mode)
+
+(leaf
+  recentf
+  :doc "save recent file history"
+  :global-minor-mode t
+  :custom
+  ((recentf-save-file . "~/.emacs.d/recentf")
+   (recentf-max-saved-items . 2000)
+   (recentf-auto-cleanup . 'never))
+  (recentf-exclude
+   .
+   '
+   ("recentf"
+    "COMMIT_EDITMSG"
+    "bookmarks"
+    "\\.gitignore"
+    "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+    ".howm-keys"
+    "^/tmp/"
+    "^/scp:"
+    (lambda (file) (file-in-directory-p file package-user-dir)))))
+
 ;; project management
 (leaf
   projectile
@@ -391,159 +432,6 @@
    :host github
    :repo "alphapapa/burly.el"))
 
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                      language tools                      │
-;; ╰──────────────────────────────────────────────────────────╯
-;;; lsp
-(leaf
-  lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (defun my/lsp-mode-setup-completion ()
-    (setf
-     (alist-get
-      'styles
-      (alist-get 'lsp-capf completion-category-defaults))
-     '(orderless))) ;; Configure orderless
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  (lsp-completion-mode . my/lsp-mode-setup-completion)
-  (c++-mode-hook . lsp)
-  :custom
-  ((lsp-idle-delay . 0.5)
-   (lsp-log-io . t)
-   (lsp-completion-provider . :none)
-   (lsp-keymap-prefix . "C-c l")))
-
-;; TODO: setup lsp ui tools
-(leaf
-  lsp-ui
-  :doc "UI modules for lsp-mode"
-  :url "https://github.com/emacs-lsp/lsp-ui"
-  :straight t
-  :require t
-  :after lsp-mode
-  :custom
-  ((lsp-ui-doc-enable . t)
-   (lsp-ui-doc-deley . 0.5)
-   (lsp-ui-doc-header . t)
-   (lsp-ui-doc-include-signature . t)
-   (lsp-ui-doc-position . 'at-point)
-   (lsp-ui-doc-max-width . 150)
-   (lsp-ui-doc-max-height . 30)
-   (lsp-ui-doc-use-childframe . nil)
-   (lsp-ui-doc-use-webkit . nil)
-   (lsp-ui-flycheck-enable . t)
-   (lsp-ui-peek-enable . t)
-   (lsp-ui-peek-peek-height . 20)
-   (lsp-ui-peek-list-width . 50)
-   (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
-   )
-  :hook ((lsp-mode-hook . lsp-ui-mode)))
-
-;; TODO: add cpp clangd setup
-;; TODO: add rust-mode setup
-
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                          themes                          │
-;; ╰──────────────────────────────────────────────────────────╯
-;; font config
-(set-face-attribute 'default nil :font "Iosevka Term-14")
-(set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
-(set-face-attribute 'variable-pitch nil :family "PlemolJP Console NF" :height 1.0)
-
-;; modus theme
-(leaf modus-themes
-  :custom
-  (modus-themes-completions . 'subtle)
-  (modus-themes-fringes . 'subtle)
-  (modus-themes-italic-constructs . t)
-  (modus-themes-bold-constructs . nil)
-  (modus-themes-mode-line . '(borderless moody))
-  (modus-themes-hl-line . '(underline))
-  (modus-themes-region . '(bg-only no-extend))
-  (modus-themes-scale-headings . t)
-  (modus-themes-prompts . '(background bold gray intense italic))
-  (modus-themes-syntax . '(faint alt-syntax green-strings))
-  :config (load-theme 'modus-vivendi))
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                     helper interface                     │
-;; ╰──────────────────────────────────────────────────────────╯
-(leaf
-  display-line-numbers
-  :bind ("<f9>" . display-line-numbers-mode)
-  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 4))
-
-(leaf hl-line :global-minor-mode global-hl-line-mode)
-
-(leaf
-  which-key
-  :doc "which-key in emacs"
-  :straight t
-  :require t
-  :defun (which-key-setup-side-window-right which-key-mode)
-  :blackout which-key-mode
-  :custom (which-key-idle-delay . 0.5)
-  :init
-  (which-key-setup-side-window-right)
-  (which-key-mode t))
-
-(leaf
-  hl-todo
-  :doc "TODO keywords highlighting"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-todo-mode)
-
-(leaf
-  highlight-indent-guides
-  :doc "indent lines"
-  :straight t
-  :require t
-  :blackout t
-  :hook
-  (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
-  :custom
-  ((highlight-indent-guides-method . 'character)
-   (highlight-indent-guides-auto-enabled . t)
-   (highlight-indent-guides-responsive . t)))
-
-(leaf
-  hl-block-mode
-  :doc "blockman thing"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-block-mode)
-
-(leaf
-  rainbow-delimiters
-  :straight t
-  :require t
-  :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
-
-;; Code folding
-(leaf
-  origami
-  :straight t
-  :require t
-  :after evil
-  :global-minor-mode global-origami-mode)
-
-;; focus window
-(leaf
-  zoom
-  :straight t
-  :ensure t
-  :blackout t
-  :global-minor-mode zoom-mode
-  ;; TODO: set ignore major modes like dired
-  :custom (zoom-size . '(0.618 . 0.618)))
-
-;; ╭─────-────────────────────────────────────────────────────╮
-;; │                      editing modal                       │
-;; ╰──────────────────────────────────────────────────────────╯
-
 (leaf
   evil
   :doc "Extensible vi layer for Emacs."
@@ -551,7 +439,6 @@
   :require
   evil
   windmove
-  undo-fu
   :defun
   (evil-ex-nohighlight
    evil-mc-undo-all-cursors
@@ -580,9 +467,9 @@
   ;; leader-key
   (evil-set-leader 'normal (kbd "<SPC>"))
   (evil-set-leader 'visual (kbd "<SPC>"))
-  ;; activate evil
-  (evil-mode 1)
-  (turn-on-evil-mode)
+;; activate evil
+(evil-mode 1)
+(turn-on-evil-mode)
   :bind
   (
    (:evil-normal-state-map
@@ -604,16 +491,45 @@
     ("<leader>k" . 'move-or-create-window-above)
     ("<leader>l" . 'move-or-create-window-right))
    (:evil-visual-state-map
-    ("<leader>n". 'my-mc-hydra/body))))
+    ("<leader>n" . 'my-mc-hydra/body)
+    ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match))))
 
-;; vim-textobj-user
+(leaf
+  evil-collection
+  :after evil
+  :straight t
+  :require t
+  :defun (evil-collection-init)
+  :custom
+  (evil-collection-setup-minibuffer . t)
+  (evil-collection-want-unimpaired-p . nil)
+  :config
+  ;; (evil-collection-init '(magit dired consult)))
+  (evil-collection-init))
+
+(leaf
+  evil-org
+  :straight t
+  :require t
+  :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-agenda-set-keys)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-a") 'org-edit-special
+    (kbd "C-j") 'org-next-visible-heading
+    (kbd "C-k") 'org-previous-visible-heading
+    (kbd "C-S-j") 'org-move-subtree-down
+    (kbd "C-S-k") 'org-move-subtree-up))
+
 (leaf
   targets
   :straight
   (targets
-   :type git
-   :host github
-   :repo "noctuid/targets.el")
+    :type git
+    :host github
+    :repo "noctuid/targets.el")
   :require t
   :defun (targets-setup targets-define-composite-to)
   :config
@@ -644,18 +560,38 @@
     ("i" . 'evil-indent-plus-a-indent-up)
     ("I" . 'evil-indent-plus-a-indent))))
 
+;; undo
+(leaf undo-fu :straight t :require t)
 (leaf
-  evil-collection
+  undo-fu-session
+  :straight t
+  :require t
+  :global-minor-mode global-undo-fu-session-mode)
+
+;; Code folding
+(leaf
+  origami
+  :straight t
+  :require t
+  :after evil
+  :global-minor-mode global-origami-mode)
+
+(leaf
+  evil-escape
   :after evil
   :straight t
   :require t
-  :defun (evil-collection-init)
-  :custom
-  (evil-collection-setup-minibuffer . t)
-  (evil-collection-want-unimpaired-p . nil)
-  :config
-  ;; (evil-collection-init '(magit dired consult)))
-  (evil-collection-init))
+  :blackout t
+  :global-minor-mode evil-escape-mode
+  :setq-default
+  (evil-escape-key-sequence . "jk")
+  (evil-escape-delay . 0.2)
+  (evil-escape-excluded-states . '(normal visual motion emacs))
+  (evil-escape-excluded-major-modes
+   .
+   '
+   (magit-status-mode
+    magit-revision-mode magit-diff-mode help-mode)))
 
 (leaf
   evil-commentary
@@ -666,40 +602,10 @@
   :global-minor-mode evil-commentary-mode)
 
 (leaf
-  smartparens
-  :straight t
-  :require smartparens-config
-  :blackout t
-  :global-minor-mode smartparens-global-mode)
-(leaf
-  evil-smartparens
-  :straight t
-  :require t
-  :after smartparens
-  :blackout t
-  :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
-
-(leaf embrace :straight t :require t)
-(leaf evil-embrace :straight t :require t)
-(leaf
-  evil-surround
-  :straight t
-  :require
-  embrace
-  evil-embrace
-  evil-surround
-  :defun
-  (global-evil-surround-mode
-   evil-embrace-enable-evil-surround-integration)
-  :config
-  (global-evil-surround-mode 1)
-  (evil-embrace-enable-evil-surround-integration))
-
-(leaf
   evil-mc
   :after evil
   :straight t
-  :require (smartparens evil-smartparens)
+  :require t
   :global-minor-mode global-evil-mc-mode
   :config
   (evil-define-command
@@ -849,23 +755,6 @@
     "quit with remove all"
     :color blue)))
 
-(leaf
-  evil-escape
-  :after evil
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-escape-mode
-  :setq-default
-  (evil-escape-key-sequence . "jk")
-  (evil-escape-delay . 0.2)
-  (evil-escape-excluded-states . '(normal visual motion emacs))
-  (evil-escape-excluded-major-modes
-   .
-   '
-   (magit-status-mode
-    magit-revision-mode magit-diff-mode help-mode)))
-
 ;; display registers
 (leaf evil-owl
   :straight t
@@ -881,40 +770,35 @@
                  (side . bottom)
                  (window-height . 0.25))))
 
-;; org mode things
-(leaf org
+(leaf embrace :straight t :require t)
+(leaf evil-embrace :straight t :require t)
+(leaf
+  evil-surround
   :straight t
-  :require org org-tempo
-  :custom
-  (org-catch-invisible-edits . 'smart)
+  :require
+  embrace
+  evil-embrace
+  evil-surround
+  :defun
+  (global-evil-surround-mode
+   evil-embrace-enable-evil-surround-integration)
   :config
-  (defun disable-flycheck-in-org-src-block ()
-    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
-
-(leaf org-bullets
-  :straight t
-  :require t
-  :after org
-  :hook (org-mode-hook . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
+  (global-evil-surround-mode 1)
+  (evil-embrace-enable-evil-surround-integration))
 
 (leaf
-  evil-org
+  smartparens
+  :straight t
+  :require t smartparens-config
+  :blackout t
+  :global-minor-mode smartparens-global-mode)
+(leaf
+  evil-smartparens
   :straight t
   :require t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
+  :after smartparens
+  :blackout t
+  :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
@@ -952,70 +836,83 @@
         (windmove-right))))
   )
 
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                           Git                            │
-;; ╰──────────────────────────────────────────────────────────╯
+;; flycheck syntax checking
 (leaf
-  magit
-  :doc "great git client"
+  flycheck
   :straight t
   :require t
-  :pretty-hydra
-  (my-git-actions
-   (:color pink :separator "=" :quit-key "q")
-   ("Movement"
-    (("J" diff-hl-next-hunk "next hunk")
-     ("K" diff-hl-previous-hunk "previous hunk"))
-    "Diff"
-    (("D" diff-hl-show-hunk "diff nearest hunk")
-     ("N" diff-hl-show-hunk-next "diff next hunk")
-     ("P" diff-hl-show-hunk-previous "diff previous hunk"))
-    "Operation"
-    (("r" diff-hl-revert-hunk "revert hunk")
-     ("s" diff-hl-stage-current-hunk "stage hunk")
-     ("U" diff-hl-unstage-file "unstage all"))
-    "Magit"
-    (("<RET>" magit-status "open magit" :color blue)
-     ("C" magit-commit "commit" :color blue)))))
+  :global-minor-mode global-flycheck-mode)
 
 (leaf
-  forge
-  :doc "remote repo control with magit"
+    flyspell
+    :blackout (flyspell-mode flyspell-prog-mode)
+    :hook
+    (text-mode-hook . flyspell-mode)
+    (prog-mode-hook . flyspell-prog-mode)
+    (conf-mode-hook . flyspell-prog-mode)
+    (yaml-mode-hook . flyspell-prog-mode)
+    :defvar
+    (ispell-extra-args
+     ispell-aspell-dict-dir
+     ispell-aspell-data-dir
+     ispell-program-name)
+    :defun (ispell-get-aspell-config-value)
+    :config
+    (pcase
+        (cond
+         ((executable-find "aspell")
+          'aspell)
+         ((executable-find "hunspell")
+          'hunspell)
+         ((executable-find "enchant-2")
+          'enchant))
+      (`aspell
+       (setq
+        ispell-program-name
+        "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+
+       (unless ispell-aspell-dict-dir
+         (setq ispell-aspell-dict-dir
+               (ispell-get-aspell-config-value "dict-dir")))
+       (unless ispell-aspell-data-dir
+         (setq ispell-aspell-data-dir
+               (ispell-get-aspell-config-value "data-dir"))))
+      (`hunspell (setq ispell-program-name "hunspell"))
+      (`enchant (setq ispell-program-name "enchant-2"))
+      (_ (system-packages-ensure "aspell"))))
+(leaf
+  flyspell-correct
   :straight t
   :require t
-  :after magit
-  :custom
-  ((bug-reference-mode . 0) (forge-add-default-bindings . nil)))
+  :after flyspell
+  :bind ([remap ispell-word] . flyspell-correct-at-point))
 
 (leaf
-  magit-todos
-  :doc "manage TODO keywords with magit"
-  :straight t
-  :require t
-  :after magit
-  :hook (magit-mode-hook . magit-todos-mode))
+  eldoc
+  :doc "hovered element documentation"
+  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
+  :blackout t
+  :preface
+  (defun my:shutup-eldoc-message (f &optional string)
+    (unless (active-minibuffer-window) (funcall f string)))
+  :advice (:around eldoc-message my:shutup-eldoc-message))
 
+;; formatter bindings
 (leaf
-  diff-hl
+  format-all
   :straight t
   :require t
   :hook
-  ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
-   (magit-post-refresh-hook . diff-hl-magit-post-refresh))
-  :global-minor-mode global-diff-hl-mode
-  :custom (diff-hl-show-staged-changes . nil))
+  (prog-mode-hook . format-all-mode)
+  (prog-mode-hook . format-all-ensure-formatter))
 
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                        completion                        │
-;; ╰──────────────────────────────────────────────────────────╯
-
-;; ----- minibuffer -----
+;; EditorConfig support
 (leaf
-  vertico
+  editorconfig
   :straight t
   :require t
-  :global-minor-mode vertico-mode
-  :custom ((vertico-cycle . t)))
+  :global-minor-mode editorconfig-mode)
 
 ;; completion style
 (leaf
@@ -1043,83 +940,7 @@
    (fussy-fuz-use-skim-p . t)))
 
 (leaf
-  savehist
-  :straight t
-  :require t
-  :defvar (savehist-coding-system)
-  :init (savehist-mode)
-  :setq (savehist-coding-system . 'utf-8-emacs))
-
-;;; marginalia
-(leaf
-  marginalia
-  :straight t
-  :require t
-  :defvar (marginalia-mode)
-  :global-minor-mode marginalia-mode)
-
-;;; embark
-(leaf embark :straight t :require t
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  )
-
-(leaf
-  consult
-  :straight t
-  :require t
-  :defvar (consult-buffer-sources)
-  :setq
-  (
-   (completion-in-region-function
-    .
-    (lambda (&rest args)
-      (apply
-       (if vertico-mode
-           #'consult-completion-in-region
-         #'completion--in-region)
-       args)))
-   (consult-buffer-sources
-    .
-    '
-    (consult--source-hidden-buffer
-     consult--source-buffer
-     consult--source-project-buffer
-     consult--source-bookmark
-     consult--source-recent-file))))
-
-;; dir extension
-(leaf
-  consult-dir
-  :straight t
-  :require t
-  :after consult
-  :bind
-  (("C-x C-d" . consult-dir)
-   (:vertico-map
-    ("C-x C-d" . consult-dir)
-    ("C-x C-j" . consult-dir-jump-file)))
-  :custom
-  (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
-
-;; affe fuzzy-finder
-(leaf
-  affe
-  :straight t
-  :require t
-  :init
-  (leaf orderless :straight t :commands (orderless-pattern-compiler))
-  (defun affe-orderless-regexp-compiler (input _type _ignorecase)
-    (setq input (orderless-pattern-compiler input))
-    (cons input (lambda (str) (orderless--highlight input str))))
-  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
-
-;; ----- auto completion -----
-(leaf
   corfu
-  ;; :disabled t ;; try company
   :after evil
   :straight t
   :require t
@@ -1200,32 +1021,169 @@
                   )))
   :hook (prog-mode-hook . my/basic-super-capf))
 
-
 (leaf
-  kind-icon
+  vertico
   :straight t
   :require t
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+  :global-minor-mode vertico-mode
+  :custom ((vertico-cycle . t)))
 
-;; ╭──────────────────────────────────────────────────────────╮
-;; │                       input method                       │
-;; ╰──────────────────────────────────────────────────────────╯
-;; mozc ime
 (leaf
-  mozc
-  ;; :depends emacs-mozc
+  consult
   :straight t
   :require t
-  :bind* (("<zenkaku-hankaku>" . toggle-input-method)
-          ("<eisu-toggle>" . toggle-input-method))
+  :defvar (consult-buffer-sources)
+  :setq
+  (
+   (completion-in-region-function
+    .
+    (lambda (&rest args)
+      (apply
+       (if vertico-mode
+           #'consult-completion-in-region
+         #'completion--in-region)
+       args)))
+   (consult-buffer-sources
+    .
+    '
+    (consult--source-hidden-buffer
+     consult--source-buffer
+     consult--source-project-buffer
+     consult--source-bookmark
+     consult--source-recent-file))))
+
+;; dir extension
+(leaf
+  consult-dir
+  :straight t
+  :require t
+  :after consult
+  :bind
+  (("C-x C-d" . consult-dir)
+   (:vertico-map
+    ("C-x C-d" . consult-dir)
+    ("C-x C-j" . consult-dir-jump-file)))
   :custom
-  ((default-input-method . "japanese-mozc")
-   (mozc-candidate-style . 'overlay))
+  (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+
+;;; embark
+(leaf embark :straight t :require t
+  :doc "minibuffer actions"
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   )
+
+;; marginalia
+(leaf
+  marginalia
+  :straight t
+  :require t
+  :defvar (marginalia-mode)
+  :global-minor-mode marginalia-mode)
+
+;; affe fuzzy-finder
+(leaf
+  affe
+  :straight t
+  :require t
+  :init
+  (leaf orderless :straight t :commands (orderless-pattern-compiler))
+  (defun affe-orderless-regexp-compiler (input _type _ignorecase)
+    (setq input (orderless-pattern-compiler input))
+    (cons input (lambda (str) (orderless--highlight input str))))
+  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
+
+(leaf
+  savehist
+  :straight t
+  :require t
+  :defvar (savehist-coding-system)
+  :init (savehist-mode)
+  :setq (savehist-coding-system . 'utf-8-emacs))
+
+;; org mode things
+(leaf org
+  :straight t
+  :require org org-tempo
+  :custom
+  (org-catch-invisible-edits . 'smart)
+  :config
+  (defun disable-flycheck-in-org-src-block ()
+    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
+
+(leaf org-bullets
+  :straight t
+  :require t
+  :after org
+  :hook (org-mode-hook . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
+
+(leaf
+  evil-org
+  :straight t
+  :require t
+  :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-agenda-set-keys)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-a") 'org-edit-special
+    (kbd "C-j") 'org-next-visible-heading
+    (kbd "C-k") 'org-previous-visible-heading
+    (kbd "C-S-j") 'org-move-subtree-down
+    (kbd "C-S-k") 'org-move-subtree-up))
+
+;;; lsp
+(leaf
+  lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf
+     (alist-get
+      'styles
+      (alist-get 'lsp-capf completion-category-defaults))
+     '(orderless))) ;; Configure orderless
+  :hook
+  (lsp-mode . lsp-enable-which-key-integration)
+  (lsp-completion-mode . my/lsp-mode-setup-completion)
+  (c++-mode-hook . lsp)
+  :custom
+  ((lsp-idle-delay . 0.5)
+   (lsp-log-io . t)
+   (lsp-completion-provider . :none)
+   (lsp-keymap-prefix . "C-c l")))
+
+;; TODO: setup lsp ui tools
+(leaf
+  lsp-ui
+  :doc "UI modules for lsp-mode"
+  :url "https://github.com/emacs-lsp/lsp-ui"
+  :straight t
+  :require t
+  :after lsp-mode
+  :custom
+  ((lsp-ui-doc-enable . t)
+   (lsp-ui-doc-deley . 0.5)
+   (lsp-ui-doc-header . t)
+   (lsp-ui-doc-include-signature . t)
+   (lsp-ui-doc-position . 'at-point)
+   (lsp-ui-doc-max-width . 150)
+   (lsp-ui-doc-max-height . 30)
+   (lsp-ui-doc-use-childframe . nil)
+   (lsp-ui-doc-use-webkit . nil)
+   (lsp-ui-flycheck-enable . t)
+   (lsp-ui-peek-enable . t)
+   (lsp-ui-peek-peek-height . 20)
+   (lsp-ui-peek-list-width . 50)
+   (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
+   )
+  :hook ((lsp-mode-hook . lsp-ui-mode)))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
