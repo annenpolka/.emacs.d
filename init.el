@@ -207,6 +207,13 @@
 (leaf hl-line :global-minor-mode global-hl-line-mode)
 
 (leaf
+  hl-todo
+  :doc "TODO keywords highlighting"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-todo-mode)
+
+(leaf
   which-key
   :doc "which-key in emacs"
   :straight t
@@ -1137,6 +1144,23 @@
     (kbd "C-k") 'org-previous-visible-heading
     (kbd "C-S-j") 'org-move-subtree-down
     (kbd "C-S-k") 'org-move-subtree-up))
+
+(leaf
+  org-appear
+  :require t
+  :straight
+  (org-appear
+   :type git
+   :host github
+   :repo "awth13/org-appear")
+  :hook
+  (org-mode-hook . org-appear-mode)
+  :custom
+  (org-appear-autolinks . t)
+  (org-appear-autosubmarkers . t)
+  (org-appear-autoentities . t)
+  (org-appear-autokeywords . t)
+  (org-appear-inside-latex . t))
 
 ;;; lsp
 (leaf
