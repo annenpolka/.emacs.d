@@ -313,6 +313,15 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+begin_src emacs-lisp
 (leaf hl-line :global-minor-mode global-hl-line-mode)
 #+end_src
+** hl-todo
+#+begin_src emacs-lisp
+(leaf
+  hl-todo
+  :doc "TODO keywords highlighting"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-todo-mode)
+#+end_src
 ** which-key
 #+begin_src emacs-lisp
 (leaf
