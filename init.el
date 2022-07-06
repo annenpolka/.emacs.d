@@ -526,9 +526,9 @@
   targets
   :straight
   (targets
-    :type git
-    :host github
-    :repo "noctuid/targets.el")
+   :type git
+   :host github
+   :repo "noctuid/targets.el")
   :require t
   :defun (targets-setup targets-define-composite-to)
   :config
@@ -852,43 +852,43 @@
   :global-minor-mode global-flycheck-mode)
 
 (leaf
-    flyspell
-    :blackout (flyspell-mode flyspell-prog-mode)
-    :hook
-    (text-mode-hook . flyspell-mode)
-    (prog-mode-hook . flyspell-prog-mode)
-    (conf-mode-hook . flyspell-prog-mode)
-    (yaml-mode-hook . flyspell-prog-mode)
-    :defvar
-    (ispell-extra-args
-     ispell-aspell-dict-dir
-     ispell-aspell-data-dir
-     ispell-program-name)
-    :defun (ispell-get-aspell-config-value)
-    :config
-    (pcase
-        (cond
-         ((executable-find "aspell")
-          'aspell)
-         ((executable-find "hunspell")
-          'hunspell)
-         ((executable-find "enchant-2")
-          'enchant))
-      (`aspell
-       (setq
-        ispell-program-name
-        "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+  flyspell
+  :blackout (flyspell-mode flyspell-prog-mode)
+  :hook
+  (text-mode-hook . flyspell-mode)
+  (prog-mode-hook . flyspell-prog-mode)
+  (conf-mode-hook . flyspell-prog-mode)
+  (yaml-mode-hook . flyspell-prog-mode)
+  :defvar
+  (ispell-extra-args
+   ispell-aspell-dict-dir
+   ispell-aspell-data-dir
+   ispell-program-name)
+  :defun (ispell-get-aspell-config-value)
+  :config
+  (pcase
+      (cond
+       ((executable-find "aspell")
+        'aspell)
+       ((executable-find "hunspell")
+        'hunspell)
+       ((executable-find "enchant-2")
+        'enchant))
+    (`aspell
+     (setq
+      ispell-program-name
+      "aspell"
+      ispell-extra-args '("--sug-mode=ultra" "--run-together"))
 
-       (unless ispell-aspell-dict-dir
-         (setq ispell-aspell-dict-dir
-               (ispell-get-aspell-config-value "dict-dir")))
-       (unless ispell-aspell-data-dir
-         (setq ispell-aspell-data-dir
-               (ispell-get-aspell-config-value "data-dir"))))
-      (`hunspell (setq ispell-program-name "hunspell"))
-      (`enchant (setq ispell-program-name "enchant-2"))
-      (_ (system-packages-ensure "aspell"))))
+     (unless ispell-aspell-dict-dir
+       (setq ispell-aspell-dict-dir
+             (ispell-get-aspell-config-value "dict-dir")))
+     (unless ispell-aspell-data-dir
+       (setq ispell-aspell-data-dir
+             (ispell-get-aspell-config-value "data-dir"))))
+    (`hunspell (setq ispell-program-name "hunspell"))
+    (`enchant (setq ispell-program-name "enchant-2"))
+    (_ (system-packages-ensure "aspell"))))
 (leaf
   flyspell-correct
   :straight t

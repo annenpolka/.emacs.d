@@ -380,6 +380,55 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
 #+end_src
+** move-or-create-window
+#+begin_src emacs-lisp
+(leaf move-or-create-window
+  :doc "focus.nvim in emacs"
+  :init
+  (defun move-or-create-window-above nil
+    (interactive)
+    (if (window-in-direction 'above)
+        (windmove-up)
+      (progn
+        (split-window-below)
+        (windmove-up))))
+
+  (defun move-or-create-window-below nil
+    (interactive)
+    (if (window-in-direction 'below)
+        (windmove-down)
+      (progn
+        (split-window-below)
+        (windmove-down))))
+
+  (defun move-or-create-window-left nil
+    (interactive)
+    (if (window-in-direction 'left)
+        (windmove-left)
+      (progn
+        (split-window-right)
+        (windmove-left))))
+
+  (defun move-or-create-window-right nil
+    (interactive)
+    (if (window-in-direction 'right)
+        (windmove-right)
+      (progn
+        (split-window-right)
+        (windmove-right))))
+  )
+#+end_src
+** helpful
+#+begin_src emacs-lisp
+  ;; enhanced help
+  (leaf helpful
+    :straight t
+    :require t
+    :bind
+    ("C-h f" . helpful-callable)
+    ("C-h k" . helpful-key)
+    ("C-h v" . helpful-variable))
+#+end_src
 * Filer
 ** Dirvish
 
@@ -977,55 +1026,6 @@ Diredをオーバーホールするファイラ。
   :after smartparens
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
-#+end_src
-*** move-or-create-window
-#+begin_src emacs-lisp
-(leaf move-or-create-window
-  :doc "focus.nvim in emacs"
-  :init
-  (defun move-or-create-window-above nil
-    (interactive)
-    (if (window-in-direction 'above)
-        (windmove-up)
-      (progn
-        (split-window-below)
-        (windmove-up))))
-
-  (defun move-or-create-window-below nil
-    (interactive)
-    (if (window-in-direction 'below)
-        (windmove-down)
-      (progn
-        (split-window-below)
-        (windmove-down))))
-
-  (defun move-or-create-window-left nil
-    (interactive)
-    (if (window-in-direction 'left)
-        (windmove-left)
-      (progn
-        (split-window-right)
-        (windmove-left))))
-
-  (defun move-or-create-window-right nil
-    (interactive)
-    (if (window-in-direction 'right)
-        (windmove-right)
-      (progn
-        (split-window-right)
-        (windmove-right))))
-  )
-#+end_src
-*** helpful
-#+begin_src emacs-lisp
-  ;; enhanced help
-  (leaf helpful
-    :straight t
-    :require t
-    :bind
-    ("C-h f" . helpful-callable)
-    ("C-h k" . helpful-key)
-    ("C-h v" . helpful-variable))
 #+end_src
 ** Syntax Check/Formatting
 *** flycheck
