@@ -251,6 +251,11 @@
   :require t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
+(leaf rainbow-mode
+  :straight t
+  :require t
+  :global-minor-mode rainbow-mode)
+
 ;; focus window
 (leaf
   zoom
