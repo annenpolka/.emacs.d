@@ -253,7 +253,9 @@
 (leaf rainbow-mode
   :straight t
   :require t
-  :global-minor-mode rainbow-mode)
+  :hook
+  (prog-mode-hook . rainbow-mode)
+  (org-mode-hook . rainbow-mode))
 
 ;; focus window
 (leaf

@@ -370,7 +370,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   (leaf rainbow-mode
     :straight t
     :require t
-    :global-minor-mode rainbow-mode)
+    :hook
+    (prog-mode-hook . rainbow-mode)
+    (org-mode-hook . rainbow-mode))
 #+end_src
 ** zoom
 #+begin_src emacs-lisp
