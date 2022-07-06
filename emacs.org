@@ -713,17 +713,30 @@ Diredをオーバーホールするファイラ。
     :require t
     :defun (evil-collection-init)
     :init
+    (defun my/evil-move-or-create-window-mapset (map)
+      (evil-collection-define-key 'normal map (kbd "<SPC>h") 'move-or-create-window-left)
+      (evil-collection-define-key 'normal map (kbd "<SPC>j") 'move-or-create-window-below)
+      (evil-collection-define-key 'normal map (kbd "<SPC>k") 'move-or-create-window-above)
+      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'move-or-create-window-right)
+      )
+    (defun my/evil-windmove-mapset (map)
+      (evil-collection-define-key 'normal map (kbd "<SPC>h") 'windmove-left)
+      (evil-collection-define-key 'normal map (kbd "<SPC>j") 'windmove-down)
+      (evil-collection-define-key 'normal map (kbd "<SPC>k") 'windmove-up)
+      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'windmove-right)
+      )
     (defun my/evil-minibuffer-map nil
       (dolist (map '(minibuffer-local-map
                      minibuffer-local-ns-map
                      minibuffer-local-completion-map
                      minibuffer-local-must-match-map
                      minibuffer-local-isearch-map))
-        ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>h") 'windmove-left)
-        ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>j") 'windmove-down)
         (evil-collection-define-key '(insert normal) map (kbd "<SPC>k") 'windmove-up)
-        ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>l") 'windmove-right)
+        (evil-collection-define-key '(insert normal) map (kbd "C-q") 'windmove-up)
         )
+      )
+    (defun my/evil-magit-mode-map nil
+      (my/evil-windmove-mapset 'magit-mode-map)
       )
     :custom
     (evil-collection-setup-minibuffer . t)
@@ -731,7 +744,9 @@ Diredをオーバーホールするファイラ。
     :config
     ;; (evil-collection-init '(magit dired consult)))
     (evil-collection-init)
+    ;; custom mappings
     (my/evil-minibuffer-map)
+    (my/evil-magit-mode-map)
     )
 #+end_src
 *** evil-org
