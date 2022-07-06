@@ -553,12 +553,27 @@
   :straight t
   :require t
   :defun (evil-collection-init)
+  :init
+  (defun my/evil-minibuffer-map nil
+    (dolist (map '(minibuffer-local-map
+                   minibuffer-local-ns-map
+                   minibuffer-local-completion-map
+                   minibuffer-local-must-match-map
+                   minibuffer-local-isearch-map))
+      ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>h") 'windmove-left)
+      ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>j") 'windmove-down)
+      (evil-collection-define-key '(insert normal) map (kbd "<SPC>k") 'windmove-up)
+      ;; (evil-collection-define-key '(insert normal) map (kbd "<SPC>l") 'windmove-right)
+      )
+    )
   :custom
   (evil-collection-setup-minibuffer . t)
   (evil-collection-want-unimpaired-p . nil)
   :config
   ;; (evil-collection-init '(magit dired consult)))
-  (evil-collection-init))
+  (evil-collection-init)
+  (my/evil-minibuffer-map)
+  )
 
 (leaf
   evil-org
