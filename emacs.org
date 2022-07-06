@@ -1053,6 +1053,19 @@ Diredをオーバーホールするファイラ。
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 #+end_src
+*** sidekick
+#+begin_src emacs-lisp
+  (leaf sidekick
+    :straight (sidekick
+               :type git
+               :host github
+               :repo "VernonGrant/sidekick.el")
+    :require t sidekick-evil
+    :bind
+    (:evil-normal-state-map
+     ("<leader>sn" . 'sidekick-at-point))
+    )
+#+end_src
 ** Syntax Check/Formatting
 *** flycheck
 

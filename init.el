@@ -209,6 +209,15 @@
   (which-key-setup-side-window-right)
   (which-key-mode t))
 
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
+
 (leaf
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
@@ -308,14 +317,22 @@
   :global-minor-mode global-centered-cursor-mode
   :custom (ccm-step-size . 2))
 
-;; enhanced help
-(leaf helpful
+(leaf centaur-tabs
   :straight t
   :require t
+  :after evil
+  :global-minor-mode centaur-tabs-mode
+  :custom
+  (centaur-tabs-style . "bar")
+  (centaur-tabs-set-icons . t)
   :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
+  (:evil-normal-state-map
+   ("C-<tab>" . centaur-tabs-forward)
+   ("C-S-<tab>" . centaur-tabs-backward)
+   ("C-t" . centaur-tabs--create-new-tab)
+   ("C-q" . centaur-tabs-buffer-close-tab)
+   )
+  )
 
 (leaf
   dirvish
@@ -528,7 +545,7 @@
   (
    (:evil-normal-state-map
     ("C-s" . save-buffer)
-    ("C-q" . 'evil-quit)
+    ;; ("C-q" . 'evil-quit)
     ("C-l" . 'my/clear-marks-and-cursors)
     ("K" . 'helpful-at-point)
     ("C-j" . 'evil-open-fold)
@@ -864,6 +881,17 @@
   :after smartparens
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
+
+(leaf sidekick
+  :straight (sidekick
+             :type git
+             :host github
+             :repo "VernonGrant/sidekick.el")
+  :require t sidekick-evil
+  :bind
+  (:evil-normal-state-map
+   ("<leader>sn" . 'sidekick-at-point))
+  )
 
 ;; flycheck syntax checking
 (leaf
