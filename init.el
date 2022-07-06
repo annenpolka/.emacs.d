@@ -264,7 +264,6 @@
   :ensure t
   :blackout t
   :global-minor-mode zoom-mode
-  ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
 
 (leaf move-or-create-window
@@ -621,6 +620,11 @@
   :straight t
   :require t
   :global-minor-mode global-undo-fu-session-mode)
+
+(leaf super-save
+  :straight t
+  :require t
+  :global-minor-mode super-save-mode)
 
 ;; Code folding
 (leaf
@@ -1218,7 +1222,6 @@
    (lsp-completion-provider . :none)
    (lsp-keymap-prefix . "C-c l")))
 
-;; TODO: setup lsp ui tools
 (leaf
   lsp-ui
   :doc "UI modules for lsp-mode"

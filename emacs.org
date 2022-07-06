@@ -271,15 +271,15 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
-(leaf
-  kind-icon
-  :straight t
-  :require t
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+  (leaf
+    kind-icon
+    :straight t
+    :require t
+    :after corfu
+    :custom
+    (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+    :config
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
 * Input Method
 ** mozc
@@ -375,6 +375,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (org-mode-hook . rainbow-mode))
 #+end_src
 ** zoom
+TODO: set ignore major modes like dired
 #+begin_src emacs-lisp
 ;; focus window
 (leaf
@@ -383,7 +384,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   :ensure t
   :blackout t
   :global-minor-mode zoom-mode
-  ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
 #+end_src
 ** move-or-create-window
@@ -792,6 +792,13 @@ Diredをオーバーホールするファイラ。
     :straight t
     :require t
     :global-minor-mode global-undo-fu-session-mode)
+#+end_src
+*** super-save
+#+begin_src emacs-lisp
+  (leaf super-save
+    :straight t
+    :require t
+    :global-minor-mode super-save-mode)
 #+end_src
 *** origami
 #+begin_src emacs-lisp
@@ -1468,8 +1475,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 
 #+end_src
 *** lsp-ui
+ TODO: setup lsp ui tools
 #+begin_src emacs-lisp
-;; TODO: setup lsp ui tools
 (leaf
   lsp-ui
   :doc "UI modules for lsp-mode"
