@@ -461,7 +461,6 @@ Diredをオーバーホールするファイラ。
       ([remap dired-do-copy] . dirvish-yank-menu)
       ([remap mode-line-other-buffer] . dirvish-history-last))))
 #+end_src
-
 * Git/Version Mangagement
 ** magit (Git Frontend)
 #+begin_src emacs-lisp
@@ -616,9 +615,9 @@ Diredをオーバーホールするファイラ。
     ;; leader-key
     (evil-set-leader 'normal (kbd "<SPC>"))
     (evil-set-leader 'visual (kbd "<SPC>"))
-  ;; activate evil
-  (evil-mode 1)
-  (turn-on-evil-mode)
+    ;; activate evil
+    (evil-mode 1)
+    (turn-on-evil-mode)
     :bind
     (
      (:evil-normal-state-map
@@ -632,6 +631,7 @@ Diredをオーバーホールするファイラ。
       ("zg" . flyspell-correct-at-point)
       ("C-e" . find-file)
       ("C-f" . consult-line)
+      ("C-S-r" . consult-dir)
       ("<leader>SPC" . 'consult-buffer)
       ("<leader>n" . 'my-mc-hydra/body)
       ("<leader>g" . 'my-git-actions/body)

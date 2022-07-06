@@ -465,9 +465,9 @@
   ;; leader-key
   (evil-set-leader 'normal (kbd "<SPC>"))
   (evil-set-leader 'visual (kbd "<SPC>"))
-;; activate evil
-(evil-mode 1)
-(turn-on-evil-mode)
+  ;; activate evil
+  (evil-mode 1)
+  (turn-on-evil-mode)
   :bind
   (
    (:evil-normal-state-map
@@ -481,6 +481,7 @@
     ("zg" . flyspell-correct-at-point)
     ("C-e" . find-file)
     ("C-f" . consult-line)
+    ("C-S-r" . consult-dir)
     ("<leader>SPC" . 'consult-buffer)
     ("<leader>n" . 'my-mc-hydra/body)
     ("<leader>g" . 'my-git-actions/body)
