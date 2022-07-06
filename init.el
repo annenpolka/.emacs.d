@@ -127,8 +127,7 @@
 ;; Tangle the code blocks on save.
 (defun my/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name user-emacs-directory))
-
+                      (expand-file-name "emacs.org" user-emacs-directory))
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
@@ -265,6 +264,51 @@
   :global-minor-mode zoom-mode
   ;; TODO: set ignore major modes like dired
   :custom (zoom-size . '(0.618 . 0.618)))
+
+(leaf move-or-create-window
+  :doc "focus.nvim in emacs"
+  :init
+  (defun move-or-create-window-above nil
+    (interactive)
+    (if (window-in-direction 'above)
+        (windmove-up)
+      (progn
+        (split-window-below)
+        (windmove-up))))
+
+  (defun move-or-create-window-below nil
+    (interactive)
+    (if (window-in-direction 'below)
+        (windmove-down)
+      (progn
+        (split-window-below)
+        (windmove-down))))
+
+  (defun move-or-create-window-left nil
+    (interactive)
+    (if (window-in-direction 'left)
+        (windmove-left)
+      (progn
+        (split-window-right)
+        (windmove-left))))
+
+  (defun move-or-create-window-right nil
+    (interactive)
+    (if (window-in-direction 'right)
+        (windmove-right)
+      (progn
+        (split-window-right)
+        (windmove-right))))
+  )
+
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
 
 (leaf
   dirvish
@@ -531,9 +575,9 @@
   targets
   :straight
   (targets
-   :type git
-   :host github
-   :repo "noctuid/targets.el")
+    :type git
+    :host github
+    :repo "noctuid/targets.el")
   :require t
   :defun (targets-setup targets-define-composite-to)
   :config
@@ -804,51 +848,6 @@
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
-(leaf move-or-create-window
-  :doc "focus.nvim in emacs"
-  :init
-  (defun move-or-create-window-above nil
-    (interactive)
-    (if (window-in-direction 'above)
-        (windmove-up)
-      (progn
-        (split-window-below)
-        (windmove-up))))
-
-  (defun move-or-create-window-below nil
-    (interactive)
-    (if (window-in-direction 'below)
-        (windmove-down)
-      (progn
-        (split-window-below)
-        (windmove-down))))
-
-  (defun move-or-create-window-left nil
-    (interactive)
-    (if (window-in-direction 'left)
-        (windmove-left)
-      (progn
-        (split-window-right)
-        (windmove-left))))
-
-  (defun move-or-create-window-right nil
-    (interactive)
-    (if (window-in-direction 'right)
-        (windmove-right)
-      (progn
-        (split-window-right)
-        (windmove-right))))
-  )
-
-;; enhanced help
-(leaf helpful
-  :straight t
-  :require t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
-
 ;; flycheck syntax checking
 (leaf
   flycheck
@@ -857,43 +856,43 @@
   :global-minor-mode global-flycheck-mode)
 
 (leaf
-  flyspell
-  :blackout (flyspell-mode flyspell-prog-mode)
-  :hook
-  (text-mode-hook . flyspell-mode)
-  (prog-mode-hook . flyspell-prog-mode)
-  (conf-mode-hook . flyspell-prog-mode)
-  (yaml-mode-hook . flyspell-prog-mode)
-  :defvar
-  (ispell-extra-args
-   ispell-aspell-dict-dir
-   ispell-aspell-data-dir
-   ispell-program-name)
-  :defun (ispell-get-aspell-config-value)
-  :config
-  (pcase
-      (cond
-       ((executable-find "aspell")
-        'aspell)
-       ((executable-find "hunspell")
-        'hunspell)
-       ((executable-find "enchant-2")
-        'enchant))
-    (`aspell
-     (setq
-      ispell-program-name
-      "aspell"
-      ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+    flyspell
+    :blackout (flyspell-mode flyspell-prog-mode)
+    :hook
+    (text-mode-hook . flyspell-mode)
+    (prog-mode-hook . flyspell-prog-mode)
+    (conf-mode-hook . flyspell-prog-mode)
+    (yaml-mode-hook . flyspell-prog-mode)
+    :defvar
+    (ispell-extra-args
+     ispell-aspell-dict-dir
+     ispell-aspell-data-dir
+     ispell-program-name)
+    :defun (ispell-get-aspell-config-value)
+    :config
+    (pcase
+        (cond
+         ((executable-find "aspell")
+          'aspell)
+         ((executable-find "hunspell")
+          'hunspell)
+         ((executable-find "enchant-2")
+          'enchant))
+      (`aspell
+       (setq
+        ispell-program-name
+        "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
 
-     (unless ispell-aspell-dict-dir
-       (setq ispell-aspell-dict-dir
-             (ispell-get-aspell-config-value "dict-dir")))
-     (unless ispell-aspell-data-dir
-       (setq ispell-aspell-data-dir
-             (ispell-get-aspell-config-value "data-dir"))))
-    (`hunspell (setq ispell-program-name "hunspell"))
-    (`enchant (setq ispell-program-name "enchant-2"))
-    (_ (system-packages-ensure "aspell"))))
+       (unless ispell-aspell-dict-dir
+         (setq ispell-aspell-dict-dir
+               (ispell-get-aspell-config-value "dict-dir")))
+       (unless ispell-aspell-data-dir
+         (setq ispell-aspell-data-dir
+               (ispell-get-aspell-config-value "data-dir"))))
+      (`hunspell (setq ispell-program-name "hunspell"))
+      (`enchant (setq ispell-program-name "enchant-2"))
+      (_ (system-packages-ensure "aspell"))))
 (leaf
   flyspell-correct
   :straight t
