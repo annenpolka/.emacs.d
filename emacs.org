@@ -785,45 +785,6 @@ Diredをオーバーホールするファイラ。
     :require t
     :global-minor-mode global-undo-fu-session-mode)
 #+end_src
-*** c-njndo-fu (with undo-fu-session)
-
-今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
-
-#+begin_src emacs-lisp
-  ;; undo
-  (leaf undo-fu :straight t :require t)
-  (leaf
-    undo-fu-session
-    :straight t
-    :require t
-    :global-minor-mode global-undo-fu-session-mode)
-#+end_src
-*** c-njndo-fu (with undo-fu-session)
-
-今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
-
-#+begin_src emacs-lisp
-  ;; undo
-  (leaf undo-fu :straight t :require t)
-  (leaf
-    undo-fu-session
-    :straight t
-    :require t
-    :global-minor-mode global-undo-fu-session-mode)
-#+end_src
-*** c-njndo-fu (with undo-fu-session)
-
-今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
-
-#+begin_src emacs-lisp
-  ;; undo
-  (leaf undo-fu :straight t :require t)
-  (leaf
-    undo-fu-session
-    :straight t
-    :require t
-    :global-minor-mode global-undo-fu-session-mode)
-#+end_src
 *** origami
 #+begin_src emacs-lisp
 ;; Code folding

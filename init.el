@@ -616,30 +616,6 @@
   :require t
   :global-minor-mode global-undo-fu-session-mode)
 
-;; undo
-(leaf undo-fu :straight t :require t)
-(leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
-;; undo
-(leaf undo-fu :straight t :require t)
-(leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
-;; undo
-(leaf undo-fu :straight t :require t)
-(leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
 ;; Code folding
 (leaf
   origami
