@@ -907,7 +907,9 @@
   flycheck
   :straight t
   :require t
-  :global-minor-mode global-flycheck-mode)
+  :global-minor-mode global-flycheck-mode
+  :custom
+  (flycheck-display-errors-delay . 0.2))
 
 (leaf
   flyspell

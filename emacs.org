@@ -1100,12 +1100,14 @@ Diredをオーバーホールするファイラ。
 非同期で文法などのチェックを行う。
 
 #+begin_src emacs-lisp
-;; flycheck syntax checking
-(leaf
-  flycheck
-  :straight t
-  :require t
-  :global-minor-mode global-flycheck-mode)
+  ;; flycheck syntax checking
+  (leaf
+    flycheck
+    :straight t
+    :require t
+    :global-minor-mode global-flycheck-mode
+    :custom
+    (flycheck-display-errors-delay . 0.2))
 #+end_src
 *** flyspell (with flyspell-correct)
 
