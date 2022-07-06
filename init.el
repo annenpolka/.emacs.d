@@ -209,15 +209,6 @@
   (which-key-setup-side-window-right)
   (which-key-mode t))
 
-;; enhanced help
-(leaf helpful
-  :straight t
-  :require t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
-
 (leaf
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
@@ -317,22 +308,14 @@
   :global-minor-mode global-centered-cursor-mode
   :custom (ccm-step-size . 2))
 
-(leaf centaur-tabs
+;; enhanced help
+(leaf helpful
   :straight t
   :require t
-  :after evil
-  :global-minor-mode centaur-tabs-mode
-  :custom
-  (centaur-tabs-style . "bar")
-  (centaur-tabs-set-icons . t)
   :bind
-  (:evil-normal-state-map
-   ("C-<tab>" . centaur-tabs-forward)
-   ("C-S-<tab>" . centaur-tabs-backward)
-   ("C-t" . centaur-tabs--create-new-tab)
-   ("C-q" . centaur-tabs-buffer-close-tab)
-   )
-  )
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
 
 (leaf
   dirvish
@@ -545,7 +528,7 @@
   (
    (:evil-normal-state-map
     ("C-s" . save-buffer)
-    ;; ("C-q" . 'evil-quit)
+    ("C-q" . 'evil-quit)
     ("C-l" . 'my/clear-marks-and-cursors)
     ("K" . 'helpful-at-point)
     ("C-j" . 'evil-open-fold)
@@ -679,6 +662,17 @@
   ((:evil-normal-state-map
     ("C-/" . 'evil-commentary-line)
     ))
+  )
+
+(leaf evil-snipe
+  :straight t
+  :require t
+  :global-minor-mode evil-snipe-mode evil-snipe-override-mode
+  :hook
+  (magit-mode-hook . turn-off-evil-snipe-override-mode)
+  :custom
+  (evil-snipe-scope . 'visible)
+  (evil-snipe-smart-case . t)
   )
 
 (leaf

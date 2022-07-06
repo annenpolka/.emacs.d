@@ -844,6 +844,19 @@ Diredをオーバーホールするファイラ。
       ))
     )
 #+end_src
+*** evil-snipe
+#+begin_src emacs-lisp
+  (leaf evil-snipe
+    :straight t
+    :require t
+    :global-minor-mode evil-snipe-mode evil-snipe-override-mode
+    :hook
+    (magit-mode-hook . turn-off-evil-snipe-override-mode)
+    :custom
+    (evil-snipe-scope . 'visible)
+    (evil-snipe-smart-case . t)
+    )
+#+end_src
 *** evil-mc
 #+begin_src emacs-lisp
   (leaf
