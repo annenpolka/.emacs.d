@@ -1244,6 +1244,13 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
    ("C-o" . yas-next-field-or-maybe-expand))
   :global-minor-mode yas-global-mode)
 #+end_src
+**** yasnippet-snippets
+#+begin_src emacs-lisp
+  (leaf yasnippet-snippets
+    :straight t
+    :require t
+    :after yasnippet)
+#+end_src
 *** cape
 #+begin_src emacs-lisp
 (leaf

@@ -1029,6 +1029,11 @@
    ("C-o" . yas-next-field-or-maybe-expand))
   :global-minor-mode yas-global-mode)
 
+(leaf yasnippet-snippets
+  :straight t
+  :require t
+  :after yasnippet)
+
 (leaf
   cape
   :straight t
