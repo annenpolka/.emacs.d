@@ -528,12 +528,8 @@
     ("K" . 'helpful-at-point)
     ("C-j" . 'evil-open-fold)
     ("C-k" . 'evil-close-fold)
-    ("C-/" . 'evil-commentary-line)
-    ("zg" . flyspell-correct-at-point)
     ("C-e" . find-file)
-    ("C-f" . consult-line)
-    ("C-S-r" . consult-dir)
-    ("<leader>SPC" . 'consult-buffer)
+    ("C-S-e" . find-file-other-window)
     ("<leader>n" . 'my-mc-hydra/body)
     ("<leader>g" . 'my-git-actions/body)
     ("<leader>h" . 'move-or-create-window-left)
@@ -542,7 +538,9 @@
     ("<leader>l" . 'move-or-create-window-right))
    (:evil-visual-state-map
     ("<leader>n" . 'my-mc-hydra/body)
-    ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match))))
+    ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
+    ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
+    )))
 
 (leaf
   evil-collection
@@ -618,6 +616,30 @@
   :require t
   :global-minor-mode global-undo-fu-session-mode)
 
+;; undo
+(leaf undo-fu :straight t :require t)
+(leaf
+  undo-fu-session
+  :straight t
+  :require t
+  :global-minor-mode global-undo-fu-session-mode)
+
+;; undo
+(leaf undo-fu :straight t :require t)
+(leaf
+  undo-fu-session
+  :straight t
+  :require t
+  :global-minor-mode global-undo-fu-session-mode)
+
+;; undo
+(leaf undo-fu :straight t :require t)
+(leaf
+  undo-fu-session
+  :straight t
+  :require t
+  :global-minor-mode global-undo-fu-session-mode)
+
 ;; Code folding
 (leaf
   origami
@@ -649,7 +671,12 @@
   :straight t
   :require t
   :blackout t
-  :global-minor-mode evil-commentary-mode)
+  :global-minor-mode evil-commentary-mode
+  :bind
+  ((:evil-normal-state-map
+    ("C-/" . 'evil-commentary-line)
+    ))
+  )
 
 (leaf
   evil-mc
@@ -789,7 +816,9 @@
     "
    ("Z" #'evil-mc-make-all-cursors)
    ("m" #'evil-mc-make-and-goto-next-match)
+   ("C-n" #'evil-mc-make-and-goto-next-match)
    ("M" #'evil-mc-make-and-goto-prev-match)
+   ("C-p" #'evil-mc-make-and-goto-prev-match)
    ("n" #'evil-mc-skip-and-goto-next-match)
    ("N" #'evil-mc-skip-and-goto-prev-match)
    ("J" #'evil-mc-make-cursor-move-next-line)
@@ -858,49 +887,53 @@
   :global-minor-mode global-flycheck-mode)
 
 (leaf
-    flyspell
-    :blackout (flyspell-mode flyspell-prog-mode)
-    :hook
-    (text-mode-hook . flyspell-mode)
-    (prog-mode-hook . flyspell-prog-mode)
-    (conf-mode-hook . flyspell-prog-mode)
-    (yaml-mode-hook . flyspell-prog-mode)
-    :defvar
-    (ispell-extra-args
-     ispell-aspell-dict-dir
-     ispell-aspell-data-dir
-     ispell-program-name)
-    :defun (ispell-get-aspell-config-value)
-    :config
-    (pcase
-        (cond
-         ((executable-find "aspell")
-          'aspell)
-         ((executable-find "hunspell")
-          'hunspell)
-         ((executable-find "enchant-2")
-          'enchant))
-      (`aspell
-       (setq
-        ispell-program-name
-        "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+  flyspell
+  :blackout (flyspell-mode flyspell-prog-mode)
+  :hook
+  (text-mode-hook . flyspell-mode)
+  (prog-mode-hook . flyspell-prog-mode)
+  (conf-mode-hook . flyspell-prog-mode)
+  (yaml-mode-hook . flyspell-prog-mode)
+  :defvar
+  (ispell-extra-args
+   ispell-aspell-dict-dir
+   ispell-aspell-data-dir
+   ispell-program-name)
+  :defun (ispell-get-aspell-config-value)
+  :config
+  (pcase
+      (cond
+       ((executable-find "aspell")
+        'aspell)
+       ((executable-find "hunspell")
+        'hunspell)
+       ((executable-find "enchant-2")
+        'enchant))
+    (`aspell
+     (setq
+      ispell-program-name
+      "aspell"
+      ispell-extra-args '("--sug-mode=ultra" "--run-together"))
 
-       (unless ispell-aspell-dict-dir
-         (setq ispell-aspell-dict-dir
-               (ispell-get-aspell-config-value "dict-dir")))
-       (unless ispell-aspell-data-dir
-         (setq ispell-aspell-data-dir
-               (ispell-get-aspell-config-value "data-dir"))))
-      (`hunspell (setq ispell-program-name "hunspell"))
-      (`enchant (setq ispell-program-name "enchant-2"))
-      (_ (system-packages-ensure "aspell"))))
+     (unless ispell-aspell-dict-dir
+       (setq ispell-aspell-dict-dir
+             (ispell-get-aspell-config-value "dict-dir")))
+     (unless ispell-aspell-data-dir
+       (setq ispell-aspell-data-dir
+             (ispell-get-aspell-config-value "data-dir"))))
+    (`hunspell (setq ispell-program-name "hunspell"))
+    (`enchant (setq ispell-program-name "enchant-2"))
+    (_ (system-packages-ensure "aspell"))))
 (leaf
   flyspell-correct
   :straight t
   :require t
   :after flyspell
-  :bind ([remap ispell-word] . flyspell-correct-at-point))
+
+  :bind (([remap ispell-word] . flyspell-correct-at-point)
+         (:evil-normal-state-map
+          ("zg" . flyspell-correct-at-point)
+          )))
 
 (leaf
   eldoc
@@ -1064,7 +1097,12 @@
      consult--source-buffer
      consult--source-project-buffer
      consult--source-bookmark
-     consult--source-recent-file))))
+     consult--source-recent-file)))
+  :bind
+  ((:evil-normal-state-map
+    ("C-f" . consult-line)
+    ("<leader>SPC" . 'consult-buffer)
+    )))
 
 ;; dir extension
 (leaf
@@ -1076,7 +1114,10 @@
   (("C-x C-d" . consult-dir)
    (:vertico-map
     ("C-x C-d" . consult-dir)
-    ("C-x C-j" . consult-dir-jump-file)))
+    ("C-x C-j" . consult-dir-jump-file))
+   (:evil-normal-state-map
+    ("C-S-r" . consult-dir)
+    ))
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 

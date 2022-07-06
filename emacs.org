@@ -682,12 +682,8 @@ Diredをオーバーホールするファイラ。
       ("K" . 'helpful-at-point)
       ("C-j" . 'evil-open-fold)
       ("C-k" . 'evil-close-fold)
-      ("C-/" . 'evil-commentary-line)
-      ("zg" . flyspell-correct-at-point)
       ("C-e" . find-file)
-      ("C-f" . consult-line)
-      ("C-S-r" . consult-dir)
-      ("<leader>SPC" . 'consult-buffer)
+      ("C-S-e" . find-file-other-window)
       ("<leader>n" . 'my-mc-hydra/body)
       ("<leader>g" . 'my-git-actions/body)
       ("<leader>h" . 'move-or-create-window-left)
@@ -696,7 +692,9 @@ Diredをオーバーホールするファイラ。
       ("<leader>l" . 'move-or-create-window-right))
      (:evil-visual-state-map
       ("<leader>n" . 'my-mc-hydra/body)
-      ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match))))
+      ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
+      ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
+      )))
 #+end_src
 *** evil-collection (Evil's binding presets)
 #+begin_src emacs-lisp
@@ -787,6 +785,45 @@ Diredをオーバーホールするファイラ。
     :require t
     :global-minor-mode global-undo-fu-session-mode)
 #+end_src
+*** c-njndo-fu (with undo-fu-session)
+
+今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
+
+#+begin_src emacs-lisp
+  ;; undo
+  (leaf undo-fu :straight t :require t)
+  (leaf
+    undo-fu-session
+    :straight t
+    :require t
+    :global-minor-mode global-undo-fu-session-mode)
+#+end_src
+*** c-njndo-fu (with undo-fu-session)
+
+今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
+
+#+begin_src emacs-lisp
+  ;; undo
+  (leaf undo-fu :straight t :require t)
+  (leaf
+    undo-fu-session
+    :straight t
+    :require t
+    :global-minor-mode global-undo-fu-session-mode)
+#+end_src
+*** c-njndo-fu (with undo-fu-session)
+
+今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
+
+#+begin_src emacs-lisp
+  ;; undo
+  (leaf undo-fu :straight t :require t)
+  (leaf
+    undo-fu-session
+    :straight t
+    :require t
+    :global-minor-mode global-undo-fu-session-mode)
+#+end_src
 *** origami
 #+begin_src emacs-lisp
 ;; Code folding
@@ -824,7 +861,12 @@ Diredをオーバーホールするファイラ。
     :straight t
     :require t
     :blackout t
-    :global-minor-mode evil-commentary-mode)
+    :global-minor-mode evil-commentary-mode
+    :bind
+    ((:evil-normal-state-map
+      ("C-/" . 'evil-commentary-line)
+      ))
+    )
 #+end_src
 *** evil-mc
 #+begin_src emacs-lisp
@@ -966,7 +1008,9 @@ Diredをオーバーホールするファイラ。
       "
      ("Z" #'evil-mc-make-all-cursors)
      ("m" #'evil-mc-make-and-goto-next-match)
+     ("C-n" #'evil-mc-make-and-goto-next-match)
      ("M" #'evil-mc-make-and-goto-prev-match)
+     ("C-p" #'evil-mc-make-and-goto-prev-match)
      ("n" #'evil-mc-skip-and-goto-next-match)
      ("N" #'evil-mc-skip-and-goto-prev-match)
      ("J" #'evil-mc-make-cursor-move-next-line)
@@ -1089,12 +1133,16 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       (`hunspell (setq ispell-program-name "hunspell"))
       (`enchant (setq ispell-program-name "enchant-2"))
       (_ (system-packages-ensure "aspell"))))
-(leaf
-  flyspell-correct
-  :straight t
-  :require t
-  :after flyspell
-  :bind ([remap ispell-word] . flyspell-correct-at-point))
+  (leaf
+    flyspell-correct
+    :straight t
+    :require t
+    :after flyspell
+
+    :bind (([remap ispell-word] . flyspell-correct-at-point)
+           (:evil-normal-state-map
+            ("zg" . flyspell-correct-at-point)
+            )))
 #+end_src
 *** eldoc
 #+begin_src emacs-lisp
@@ -1284,23 +1332,31 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
        consult--source-buffer
        consult--source-project-buffer
        consult--source-bookmark
-       consult--source-recent-file))))
+       consult--source-recent-file)))
+    :bind
+    ((:evil-normal-state-map
+      ("C-f" . consult-line)
+      ("<leader>SPC" . 'consult-buffer)
+      )))
 #+end_src
-*** consult-dir
+**** consult-dir
 #+begin_src emacs-lisp
-;; dir extension
-(leaf
-  consult-dir
-  :straight t
-  :require t
-  :after consult
-  :bind
-  (("C-x C-d" . consult-dir)
-   (:vertico-map
-    ("C-x C-d" . consult-dir)
-    ("C-x C-j" . consult-dir-jump-file)))
-  :custom
-  (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+  ;; dir extension
+  (leaf
+    consult-dir
+    :straight t
+    :require t
+    :after consult
+    :bind
+    (("C-x C-d" . consult-dir)
+     (:vertico-map
+      ("C-x C-d" . consult-dir)
+      ("C-x C-j" . consult-dir-jump-file))
+     (:evil-normal-state-map
+      ("C-S-r" . consult-dir)
+      ))
+    :custom
+    (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 #+end_src
 *** embark
 #+begin_src emacs-lisp
