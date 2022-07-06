@@ -1017,24 +1017,6 @@
   :hook (corfu-mode-hook . corfu-doc-mode))
 
 (leaf
-  yasnippet
-  :straight t
-  :require t
-  :bind
-  (:yas-keymap
-   ("<tab>" . nil)
-   ("TAB" . nil)
-   ("<backtab>" . nil)
-   ("S-TAB" . nil)
-   ("C-o" . yas-next-field-or-maybe-expand))
-  :global-minor-mode yas-global-mode)
-
-(leaf yasnippet-snippets
-  :straight t
-  :require t
-  :after yasnippet)
-
-(leaf
   cape
   :straight t
   :require t
@@ -1054,6 +1036,24 @@
                                         ;#'cape-line
                   )))
   :hook (prog-mode-hook . my/basic-super-capf))
+
+(leaf
+  yasnippet
+  :straight t
+  :require t
+  :bind
+  (:yas-keymap
+   ("<tab>" . nil)
+   ("TAB" . nil)
+   ("<backtab>" . nil)
+   ("S-TAB" . nil)
+   ("C-o" . yas-next-field-or-maybe-expand))
+  :global-minor-mode yas-global-mode)
+
+(leaf yasnippet-snippets
+  :straight t
+  :require t
+  :after yasnippet)
 
 (leaf
   vertico

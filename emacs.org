@@ -1229,29 +1229,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   :require t
   :hook (corfu-mode-hook . corfu-doc-mode))
 #+end_src
-*** yasnippet
-#+begin_src emacs-lisp
-(leaf
-  yasnippet
-  :straight t
-  :require t
-  :bind
-  (:yas-keymap
-   ("<tab>" . nil)
-   ("TAB" . nil)
-   ("<backtab>" . nil)
-   ("S-TAB" . nil)
-   ("C-o" . yas-next-field-or-maybe-expand))
-  :global-minor-mode yas-global-mode)
-#+end_src
-**** yasnippet-snippets
-#+begin_src emacs-lisp
-  (leaf yasnippet-snippets
-    :straight t
-    :require t
-    :after yasnippet)
-#+end_src
-*** cape
+**** cape
 #+begin_src emacs-lisp
 (leaf
   cape
@@ -1273,6 +1251,28 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                                         ;#'cape-line
                   )))
   :hook (prog-mode-hook . my/basic-super-capf))
+#+end_src
+*** yasnippet
+#+begin_src emacs-lisp
+(leaf
+  yasnippet
+  :straight t
+  :require t
+  :bind
+  (:yas-keymap
+   ("<tab>" . nil)
+   ("TAB" . nil)
+   ("<backtab>" . nil)
+   ("S-TAB" . nil)
+   ("C-o" . yas-next-field-or-maybe-expand))
+  :global-minor-mode yas-global-mode)
+#+end_src
+**** yasnippet-snippets
+#+begin_src emacs-lisp
+  (leaf yasnippet-snippets
+    :straight t
+    :require t
+    :after yasnippet)
 #+end_src
 ** Minibuffer
 *** vertico
