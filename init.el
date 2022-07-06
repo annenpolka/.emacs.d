@@ -1078,7 +1078,10 @@
                                         ;#'cape-dict
                                         ;#'cape-line
                   )))
-  :hook (prog-mode-hook . my/basic-super-capf))
+  :hook
+  (prog-mode-hook . my/basic-super-capf)
+  (magit-mode-hook . my/basic-super-capf)
+  )
 
 (leaf
   yasnippet

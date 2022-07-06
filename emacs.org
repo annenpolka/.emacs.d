@@ -1281,26 +1281,29 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 **** cape
 #+begin_src emacs-lisp
-(leaf
-  cape
-  :straight t
-  :require t
-  :init
-  (defun my/basic-super-capf ()
-    (add-to-list 'completion-at-point-functions
-                 (cape-super-capf
-                  ;; #'lsp-completion-at-point
-                  #'cape-file
-                  #'cape-tex
-                  #'cape-symbol
-                  #'cape-keyword
-                  #'cape-dabbrev
-                  #'cape-abbrev
-                                        ;#'cape-ispell
-                                        ;#'cape-dict
-                                        ;#'cape-line
-                  )))
-  :hook (prog-mode-hook . my/basic-super-capf))
+  (leaf
+    cape
+    :straight t
+    :require t
+    :init
+    (defun my/basic-super-capf ()
+      (add-to-list 'completion-at-point-functions
+                   (cape-super-capf
+                    ;; #'lsp-completion-at-point
+                    #'cape-file
+                    #'cape-tex
+                    #'cape-symbol
+                    #'cape-keyword
+                    #'cape-dabbrev
+                    #'cape-abbrev
+                                          ;#'cape-ispell
+                                          ;#'cape-dict
+                                          ;#'cape-line
+                    )))
+    :hook
+    (prog-mode-hook . my/basic-super-capf)
+    (magit-mode-hook . my/basic-super-capf)
+    )
 #+end_src
 *** yasnippet
 #+begin_src emacs-lisp
