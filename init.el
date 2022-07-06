@@ -303,6 +303,12 @@
         (windmove-right))))
   )
 
+(leaf centered-cursor-mode
+  :straight t
+  :require t
+  :global-minor-mode global-centered-cursor-mode
+  :custom (ccm-step-size . 2))
+
 ;; enhanced help
 (leaf helpful
   :straight t
