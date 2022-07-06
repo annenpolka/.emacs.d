@@ -126,7 +126,7 @@
 
 ;; Tangle the code blocks on save.
 (defun my/org-babel-tangle-config ()
-  (when (string-equal (file-name-directory (buffer-file-name))
+  (when (string-equal (buffer-file-name)
                       (expand-file-name user-emacs-directory))
 
     ;; Dynamic scoping to the rescue
@@ -966,7 +966,7 @@
   :custom
   (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
   (corfu-auto . t) ;; Enable auto completion
-  (corfu-auto-delay . 0.1) ;; Enable auto completion
+  (corfu-auto-delay . 0.05) ;; Enable auto completion
   (corfu-count . 15) ;; show more candidates
   (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
   ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
