@@ -184,6 +184,31 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+(leaf dashboard
+  :straight t
+  :require t
+  :custom
+  (dashboard-banner-logo-title . "Kurumi Emacs")
+  (dashboard-startup-banner . 'logo)
+  (dashboard-footer-messages .
+                             '("I'm a thinker, I could break it down."
+                               "I'm a shooter. A drastic baby."
+                               "Agitate and jump out. Feel it in the will."
+                               "Can you talk about deep-sea with me."
+                               "The deep-sea fish loves you forever. All are as your thinking over."
+                               "Out of space, when someone waits there."
+                               "Sound of jet, they played for out."))
+  (dashboard-projects . 'projectile)
+  (dashboard-items . '((recents  . 5)
+                       (bookmarks . 5)
+                       (projects . 5)))
+  :config
+  (setq dashboard-footer-icon (all-the-icons-material "dashboard"
+                                                      :height 1.0
+                                                      :v-adjust -0.05
+                                                      :face 'font-lock-keyword-face))
+  (dashboard-setup-startup-hook))
+
 (leaf doom-modeline
   :straight t
   :require t
@@ -545,6 +570,8 @@
   :custom
   ;; <C-u> to scroll (replace universal-argument)
   (evil-want-C-u-scroll . t)
+  ;; don't kill on visual paste
+  (evil-kill-on-visual-paste . nil)
   ;; serach module
   (evil-search-module 'evil-search)
   :config
