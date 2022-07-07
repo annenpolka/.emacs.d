@@ -238,6 +238,15 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :require t
     :bind (("C-c e" . macrostep-expand)))
 #+end_src
+*** restart-emacs
+#+begin_src emacs-lisp
+  (leaf restart-emacs
+    :straight t
+    :require t
+    :after evil
+    :bind (:evil-normal-state-map
+           ("<leader>qr" . restart-emacs)))
+#+end_src
 
 * Themes/Fonts/Icons
 ** Font Config
