@@ -1428,6 +1428,16 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       ("C-f" . consult-line)
       ("<leader>SPC" . 'consult-buffer)
       )))
+
+  ;; flycheck integration
+  (leaf consult-flycheck
+    :straight t
+    :require t
+    :after consult flycheck
+    :bind
+    ((:evil-normal-state-map
+      ("<leader>q" . 'consult-flycheck)
+      )))
 #+end_src
 **** consult-dir
 #+begin_src emacs-lisp
