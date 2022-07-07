@@ -249,20 +249,21 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+end_src
 ** Modus Themes
 #+begin_src emacs-lisp
-;; modus theme
-(leaf modus-themes
-  :custom
-  (modus-themes-completions . 'subtle)
-  (modus-themes-fringes . 'subtle)
-  (modus-themes-italic-constructs . t)
-  (modus-themes-bold-constructs . nil)
-  (modus-themes-mode-line . '(borderless moody))
-  (modus-themes-hl-line . '(underline))
-  (modus-themes-region . '(bg-only no-extend))
-  (modus-themes-scale-headings . t)
-  (modus-themes-prompts . '(background bold gray intense italic))
-  (modus-themes-syntax . '(faint alt-syntax green-strings))
-  :config (load-theme 'modus-vivendi))
+  ;; modus theme
+  (leaf modus-themes
+    :custom
+    (modus-themes-completions . 'subtle)
+    (modus-themes-fringes . 'subtle)
+    (modus-themes-italic-constructs . t)
+    (modus-themes-bold-constructs . nil)
+    (modus-themes-tabs-accented . nil)
+    (modus-themes-mode-line . '(borderless))
+    (modus-themes-hl-line . '(underline))
+    (modus-themes-region . '(bg-only no-extend))
+    (modus-themes-scale-headings . t)
+    (modus-themes-prompts . '(background bold gray intense italic))
+    (modus-themes-syntax . '(faint alt-syntax green-strings))
+    :config (load-theme 'modus-vivendi))
 #+end_src
 ** all-the-icons
 #+begin_src emacs-lisp
@@ -280,6 +281,42 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
     :config
     (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+* Modeline
+** doom-modeline
+#+begin_src emacs-lisp
+  (leaf doom-modeline
+    :straight t
+    :require t
+    :hook (after-init-hook . doom-modeline-mode)
+    :custom
+    (doom-modeline-minor-modes . nil)
+    (all-the-icons-scale-factor . 1.1)
+    :config
+    (custom-set-faces
+     '(mode-line ((t (:family "Iosevka Term" :height 0.9))))
+     '(mode-line-active ((t (:family "Iosevka Term" :height 0.9)))) ; For 29+
+     '(mode-line-inactive ((t (:family "Iosevka Term" :height 0.9)))))
+    )
+#+end_src
+** COMMENT moody
+#+begin_src emacs-lisp
+  (leaf moody
+    :straight t
+    :require t
+    :custom
+    (x-underline-at-descent-line . t)
+    :config
+    (moody-replace-mode-line-buffer-identification)
+    (moody-replace-vc-mode)
+    (moody-replace-eldoc-minibuffer-message-function))
+#+end_src
+** minions
+#+begin_src emacs-lisp
+  (leaf minions
+    :straight t
+    :require t
+    :global-minor-mode minions-mode)
 #+end_src
 * Input Method
 ** mozc
@@ -370,6 +407,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   (leaf rainbow-mode
     :straight t
     :require t
+    :blackout t
     :hook
     (prog-mode-hook . rainbow-mode)
     (org-mode-hook . rainbow-mode))
@@ -429,6 +467,7 @@ TODO: set ignore major modes like dired
   (leaf centered-cursor-mode
     :straight t
     :require t
+    :blackout t
     :global-minor-mode global-centered-cursor-mode
     :custom (ccm-step-size . 2))
 #+end_src
@@ -751,21 +790,22 @@ Diredをオーバーホールするファイラ。
 #+end_src
 *** evil-org
 #+begin_src emacs-lisp
-(leaf
-  evil-org
-  :straight t
-  :require t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
+  (leaf
+    evil-org
+    :straight t
+    :require t
+    :blackout t
+    :hook (org-mode-hook . evil-org-mode)
+    :defun (evil-org-agenda-set-keys)
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys)
+    (evil-define-key '(normal visual) 'evil-org-mode
+      (kbd "C-a") 'org-edit-special
+      (kbd "C-j") 'org-next-visible-heading
+      (kbd "C-k") 'org-previous-visible-heading
+      (kbd "C-S-j") 'org-move-subtree-down
+      (kbd "C-S-k") 'org-move-subtree-up))
 #+end_src
 *** targets (anyblock textobject)
 #+begin_src emacs-lisp
@@ -828,6 +868,7 @@ Diredをオーバーホールするファイラ。
   (leaf super-save
     :straight t
     :require t
+    :blackout t
     :global-minor-mode super-save-mode)
 #+end_src
 *** origami
@@ -879,6 +920,7 @@ Diredをオーバーホールするファイラ。
   (leaf evil-snipe
     :straight t
     :require t
+    :blackout t
     :global-minor-mode evil-snipe-mode evil-snipe-override-mode
     :hook
     (magit-mode-hook . turn-off-evil-snipe-override-mode)
@@ -1047,20 +1089,21 @@ Diredをオーバーホールするファイラ。
 #+end_src
 *** evil-owl (preview registers)
 #+begin_src emacs-lisp
-;; display registers
-(leaf evil-owl
-  :straight t
-  :require t
-  :global-minor-mode evil-owl-mode
-  :custom
-  (evil-owl-max-string-length . 500)
-  (evil-owl-idle-delay . 0.2)
-  :config
-  (add-to-list 'display-buffer-alist
-               '("*evil-owl*"
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (window-height . 0.25))))
+  ;; display registers
+  (leaf evil-owl
+    :straight t
+    :require t
+    :blackout t
+    :global-minor-mode evil-owl-mode
+    :custom
+    (evil-owl-max-string-length . 500)
+    (evil-owl-idle-delay . 0.2)
+    :config
+    (add-to-list 'display-buffer-alist
+                 '("*evil-owl*"
+                   (display-buffer-in-side-window)
+                   (side . bottom)
+                   (window-height . 0.25))))
 #+end_src
 *** evil-surround(with embrace,evil-embrace)
 #+begin_src emacs-lisp
@@ -1201,6 +1244,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     format-all
     :straight t
     :require t
+    :blackout t
     :hook
     (prog-mode-hook . format-all-mode)
     (prog-mode-hook . format-all-ensure-formatter))
@@ -1208,12 +1252,13 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 
 *** editorconfig
 #+begin_src emacs-lisp
-;; EditorConfig support
-(leaf
-  editorconfig
-  :straight t
-  :require t
-  :global-minor-mode editorconfig-mode)
+  ;; EditorConfig support
+  (leaf
+    editorconfig
+    :straight t
+    :require t
+    :blackout t
+    :global-minor-mode editorconfig-mode)
 #+end_src
 
 ** Completion
@@ -1322,18 +1367,19 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 *** yasnippet
 #+begin_src emacs-lisp
-(leaf
-  yasnippet
-  :straight t
-  :require t
-  :bind
-  (:yas-keymap
-   ("<tab>" . nil)
-   ("TAB" . nil)
-   ("<backtab>" . nil)
-   ("S-TAB" . nil)
-   ("C-o" . yas-next-field-or-maybe-expand))
-  :global-minor-mode yas-global-mode)
+  (leaf
+    yasnippet
+    :straight t
+    :require t
+    :blackout t
+    :bind
+    (:yas-keymap
+     ("<tab>" . nil)
+     ("TAB" . nil)
+     ("<backtab>" . nil)
+     ("S-TAB" . nil)
+     ("C-o" . yas-next-field-or-maybe-expand))
+    :global-minor-mode yas-global-mode)
 #+end_src
 **** yasnippet-snippets
 #+begin_src emacs-lisp

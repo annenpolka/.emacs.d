@@ -163,7 +163,8 @@
   (modus-themes-fringes . 'subtle)
   (modus-themes-italic-constructs . t)
   (modus-themes-bold-constructs . nil)
-  (modus-themes-mode-line . '(borderless moody))
+  (modus-themes-tabs-accented . nil)
+  (modus-themes-mode-line . '(borderless))
   (modus-themes-hl-line . '(underline))
   (modus-themes-region . '(bg-only no-extend))
   (modus-themes-scale-headings . t)
@@ -183,6 +184,25 @@
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(leaf doom-modeline
+  :straight t
+  :require t
+  :hook (after-init-hook . doom-modeline-mode)
+  :custom
+  (doom-modeline-minor-modes . nil)
+  (all-the-icons-scale-factor . 1.1)
+  :config
+  (custom-set-faces
+   '(mode-line ((t (:family "Iosevka Term" :height 0.9))))
+   '(mode-line-active ((t (:family "Iosevka Term" :height 0.9)))) ; For 29+
+   '(mode-line-inactive ((t (:family "Iosevka Term" :height 0.9)))))
+  )
+
+(leaf minions
+  :straight t
+  :require t
+  :global-minor-mode minions-mode)
 
 ;; mozc ime
 (leaf
@@ -253,6 +273,7 @@
 (leaf rainbow-mode
   :straight t
   :require t
+  :blackout t
   :hook
   (prog-mode-hook . rainbow-mode)
   (org-mode-hook . rainbow-mode))
@@ -305,6 +326,7 @@
 (leaf centered-cursor-mode
   :straight t
   :require t
+  :blackout t
   :global-minor-mode global-centered-cursor-mode
   :custom (ccm-step-size . 2))
 
@@ -594,6 +616,7 @@
   evil-org
   :straight t
   :require t
+  :blackout t
   :hook (org-mode-hook . evil-org-mode)
   :defun (evil-org-agenda-set-keys)
   :config
@@ -654,6 +677,7 @@
 (leaf super-save
   :straight t
   :require t
+  :blackout t
   :global-minor-mode super-save-mode)
 
 ;; Code folding
@@ -697,6 +721,7 @@
 (leaf evil-snipe
   :straight t
   :require t
+  :blackout t
   :global-minor-mode evil-snipe-mode evil-snipe-override-mode
   :hook
   (magit-mode-hook . turn-off-evil-snipe-override-mode)
@@ -865,6 +890,7 @@
 (leaf evil-owl
   :straight t
   :require t
+  :blackout t
   :global-minor-mode evil-owl-mode
   :custom
   (evil-owl-max-string-length . 500)
@@ -990,6 +1016,7 @@
   format-all
   :straight t
   :require t
+  :blackout t
   :hook
   (prog-mode-hook . format-all-mode)
   (prog-mode-hook . format-all-ensure-formatter))
@@ -999,6 +1026,7 @@
   editorconfig
   :straight t
   :require t
+  :blackout t
   :global-minor-mode editorconfig-mode)
 
 ;; completion style
@@ -1102,6 +1130,7 @@
   yasnippet
   :straight t
   :require t
+  :blackout t
   :bind
   (:yas-keymap
    ("<tab>" . nil)
