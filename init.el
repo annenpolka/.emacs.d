@@ -1205,9 +1205,10 @@
    (consult-buffer-sources
     .
     '
-    (consult--source-hidden-buffer
-     consult--source-buffer
+    (
      consult--source-project-buffer
+     consult--source-buffer
+     consult--source-hidden-buffer
      consult--source-bookmark
      consult--source-recent-file)))
   :bind
