@@ -739,6 +739,8 @@ Diredをオーバーホールするファイラ。
     :custom
     ;; <C-u> to scroll (replace universal-argument)
     (evil-want-C-u-scroll . t)
+    ;; don't kill on visual paste
+    (evil-kill-on-visual-paste . nil)
     ;; serach module
     (evil-search-module 'evil-search)
     :config
