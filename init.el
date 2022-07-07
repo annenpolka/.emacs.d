@@ -132,7 +132,7 @@
   :blackout t
   :defun (gcmh-mode)
   :custom
-  (gcmh-verbose . nil)
+  (gcmh-verbose . t)
   :config
   (gcmh-mode 1))
 
@@ -190,7 +190,6 @@
   :init
   :hook
   (after-init-hook . doom-modeline-mode)
-  (doom-modeline-mode-hook . setup-custom-doom-modeline)
   :custom
   (doom-modeline-minor-modes . nil)
   (doom-modeline-major-mode-icon . t)
@@ -205,16 +204,12 @@
    '(mode-line-inactive ((t (:family "Hack" :height 0.9)))))
 
   ;; Define your custom doom-modeline
-  (doom-modeline-def-modeline 'my-simple-line
+  (doom-modeline-def-modeline 'main
     '(bar matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
     '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
   (doom-modeline-def-modeline 'org-src
     '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
     '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
-  ;; Add to `doom-modeline-mode-hook` or other hooks
-  (defun setup-custom-doom-modeline ()
-    (doom-modeline-set-modeline 'my-simple-line 'default)
-    )
   )
 
 ;; mozc ime
