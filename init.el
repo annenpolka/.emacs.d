@@ -116,14 +116,6 @@
   "help"
   :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
 
-(leaf
-  persistent-scratch
-  :doc "keep scratch buffer state across sessions"
-  :straight t
-  :require t
-  :defun (persistent-scratch-setup-default)
-  :config (persistent-scratch-setup-default))
-
 ;; Tangle the code blocks on save.
 (defun my/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -140,7 +132,7 @@
   :blackout t
   :defun (gcmh-mode)
   :custom
-  (gcmh-verbose . t)
+  (gcmh-verbose . nil)
   :config
   (gcmh-mode 1))
 
@@ -150,6 +142,10 @@
   :straight t
   :require t
   :bind (("C-c e" . macrostep-expand)))
+
+(leaf restart-emacs
+  :straight t
+  :require t)
 
 ;; font config
 (set-face-attribute 'default nil :font "Iosevka Term-14")
@@ -173,7 +169,10 @@
   :config (load-theme 'modus-vivendi))
 
 ;; icons dependency
-(leaf all-the-icons :straight t :require t)
+(leaf all-the-icons :straight t :require t
+  :custom
+  (all-the-icons-scale-factor . 1.1)
+  )
 
 (leaf
   kind-icon
@@ -188,21 +187,35 @@
 (leaf doom-modeline
   :straight t
   :require t
-  :hook (after-init-hook . doom-modeline-mode)
+  :init
+  :hook
+  (after-init-hook . doom-modeline-mode)
+  (doom-modeline-mode-hook . setup-custom-doom-modeline)
   :custom
   (doom-modeline-minor-modes . nil)
-  (all-the-icons-scale-factor . 1.1)
+  (doom-modeline-major-mode-icon . t)
+  (doom-modeline-bar-width . 6)
+  (doom-modeline-height . 15)
+  (doom-modeline-modal-icon . nil)
+  (doom-modeline-icon . t)
   :config
   (custom-set-faces
-   '(mode-line ((t (:family "Iosevka Term" :height 0.9))))
-   '(mode-line-active ((t (:family "Iosevka Term" :height 0.9)))) ; For 29+
-   '(mode-line-inactive ((t (:family "Iosevka Term" :height 0.9)))))
-  )
+   '(mode-line ((t (:family "Hack" :height 0.9))))
+   ;; '(mode-line-active ((t (:family "Hack" :height 0.9 :weight light))))
+   '(mode-line-inactive ((t (:family "Hack" :height 0.9)))))
 
-(leaf minions
-  :straight t
-  :require t
-  :global-minor-mode minions-mode)
+  ;; Define your custom doom-modeline
+  (doom-modeline-def-modeline 'my-simple-line
+    '(bar matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+    '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
+  (doom-modeline-def-modeline 'org-src
+    '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
+    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
+  ;; Add to `doom-modeline-mode-hook` or other hooks
+  (defun setup-custom-doom-modeline ()
+    (doom-modeline-set-modeline 'my-simple-line 'default)
+    )
+  )
 
 ;; mozc ime
 (leaf
@@ -1179,6 +1192,16 @@
   ((:evil-normal-state-map
     ("C-f" . consult-line)
     ("<leader>SPC" . 'consult-buffer)
+    )))
+
+;; flycheck integration
+(leaf consult-flycheck
+  :straight t
+  :require t
+  :after consult flycheck
+  :bind
+  ((:evil-normal-state-map
+    ("<leader>q" . 'consult-flycheck)
     )))
 
 ;; dir extension

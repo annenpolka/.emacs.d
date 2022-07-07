@@ -242,10 +242,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+begin_src emacs-lisp
   (leaf restart-emacs
     :straight t
-    :require t
-    :after evil
-    :bind (:evil-normal-state-map
-           ("<leader>qr" . restart-emacs)))
+    :require t)
 #+end_src
 
 * Themes/Fonts/Icons
@@ -276,8 +273,11 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+end_src
 ** all-the-icons
 #+begin_src emacs-lisp
-;; icons dependency
-(leaf all-the-icons :straight t :require t)
+  ;; icons dependency
+  (leaf all-the-icons :straight t :require t
+    :custom
+    (all-the-icons-scale-factor . 1.1)
+    )
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
@@ -297,15 +297,34 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   (leaf doom-modeline
     :straight t
     :require t
-    :hook (after-init-hook . doom-modeline-mode)
+    :init
+    :hook
+    (after-init-hook . doom-modeline-mode)
+    (doom-modeline-mode-hook . setup-custom-doom-modeline)
     :custom
     (doom-modeline-minor-modes . nil)
-    (all-the-icons-scale-factor . 1.1)
+    (doom-modeline-major-mode-icon . t)
+    (doom-modeline-bar-width . 6)
+    (doom-modeline-height . 15)
+    (doom-modeline-modal-icon . nil)
+    (doom-modeline-icon . t)
     :config
     (custom-set-faces
-     '(mode-line ((t (:family "Iosevka Term" :height 0.9))))
-     '(mode-line-active ((t (:family "Iosevka Term" :height 0.9)))) ; For 29+
-     '(mode-line-inactive ((t (:family "Iosevka Term" :height 0.9)))))
+     '(mode-line ((t (:family "Hack" :height 0.9))))
+     ;; '(mode-line-active ((t (:family "Hack" :height 0.9 :weight light))))
+     '(mode-line-inactive ((t (:family "Hack" :height 0.9)))))
+
+    ;; Define your custom doom-modeline
+    (doom-modeline-def-modeline 'my-simple-line
+      '(bar matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
+    (doom-modeline-def-modeline 'org-src
+      '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
+      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
+    ;; Add to `doom-modeline-mode-hook` or other hooks
+    (defun setup-custom-doom-modeline ()
+      (doom-modeline-set-modeline 'my-simple-line 'default)
+      )
     )
 #+end_src
 ** COMMENT moody
@@ -315,12 +334,17 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :require t
     :custom
     (x-underline-at-descent-line . t)
+    (moody-mode-line-height . 25)
     :config
+    (custom-set-faces
+     '(mode-line ((t (:family "Hack" :height 0.9))))
+     '(mode-line-active ((t (:family "Hack" :height 0.9)))) ; For 29+
+     '(mode-line-inactive ((t (:family "Hack" :height 0.9)))))
     (moody-replace-mode-line-buffer-identification)
     (moody-replace-vc-mode)
     (moody-replace-eldoc-minibuffer-message-function))
 #+end_src
-** minions
+** COMMENT minions
 #+begin_src emacs-lisp
   (leaf minions
     :straight t
@@ -1298,7 +1322,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (fussy-score-fn . 'fussy-fuz-bin-score)
      (fussy-fuz-use-skim-p . t)))
 #+end_src
-*** corfu (with corfu-doc)
+*** corfu (with corfu-doc, cape)
 #+begin_src emacs-lisp
 (leaf
   corfu
