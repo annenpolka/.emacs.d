@@ -415,7 +415,7 @@
   ;; Otherwise some commands won't work properly
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  ;; (evil-make-overriding-map dired-mode-map)
+  (evil-make-overriding-map dired-mode-map)
   :hook
   ;; show file preview in minibuffer browsing
   ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
@@ -423,7 +423,7 @@
   :bind
   (
    (:dired-mode-map
-    ("h" . dired-up-directory)
+    ("h" . dirvish-up-directory)
     ;; ("j" . dired-next-line)
     ;; ("k" . dired-previous-line)
     ;; ("l" . dired-find-file)

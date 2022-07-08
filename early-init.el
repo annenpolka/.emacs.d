@@ -28,6 +28,8 @@
 (setq native-comp-async-report-warnings-errors nil)
 ;; suppress cl deprecation warnings
 (setq byte-compile-warnings '(not cl-functions obsolete))
+;; suppress ad-redefinition warnings
+(setq ad-redefinition-action 'accept)
 
 ;; disable straight-process-buffer
 (defvar straight-process-buffer)
