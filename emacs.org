@@ -1484,7 +1484,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
        consult--source-recent-file)))
     :bind
     ((:evil-normal-state-map
-      ("C-f" . consult-line)
+      ;; ("C-f" . consult-line)
+      ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
       ("<leader>SPC" . 'consult-buffer)
       )))
 
@@ -1495,7 +1496,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :after consult flycheck
     :bind
     ((:evil-normal-state-map
-      ("<leader>q" . 'consult-flycheck)
+      ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
       )))
 #+end_src
 **** consult-dir
@@ -1527,6 +1528,11 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      ("C-;" . embark-dwim)        ;; good alternative: M-.
      ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
     )
+
+  ;; consult integration
+  (leaf embark-consult
+    :straight t
+    :require t)
 #+end_src
 *** marginalia (Show Command Description)
 #+begin_src emacs-lisp
@@ -1562,6 +1568,18 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   :init (savehist-mode)
   :setq (savehist-coding-system . 'utf-8-emacs))
 #+end_src
+*** switch-to-minibuffer
+#+begin_src emacs-lisp
+  (leaf switch-to-minibuffer
+    :init
+    (defun switch-to-minibuffer ()
+      "Switch to minibuffer window."
+      (interactive)
+      (if (active-minibuffer-window)
+          (select-window (active-minibuffer-window))
+        nil))
+    )
+#+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
 ** Org Mode
@@ -1590,7 +1608,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     (require 'evil-org-agenda)
     (evil-org-agenda-set-keys)
     (evil-define-key '(normal visual) 'evil-org-mode
-      (kbd "C-a") 'org-edit-special
+      (kbd "C-S-a") 'org-edit-special
       (kbd "C-j") 'org-next-visible-heading
       (kbd "C-k") 'org-previous-visible-heading
       (kbd "C-S-j") 'org-move-subtree-down

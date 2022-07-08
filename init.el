@@ -1213,7 +1213,8 @@
      consult--source-recent-file)))
   :bind
   ((:evil-normal-state-map
-    ("C-f" . consult-line)
+    ;; ("C-f" . consult-line)
+    ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
     ("<leader>SPC" . 'consult-buffer)
     )))
 
@@ -1224,7 +1225,7 @@
   :after consult flycheck
   :bind
   ((:evil-normal-state-map
-    ("<leader>q" . 'consult-flycheck)
+    ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
     )))
 
 ;; dir extension
@@ -1252,6 +1253,11 @@
    ("C-;" . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   )
+
+;; consult integration
+(leaf embark-consult
+  :straight t
+  :require t)
 
 ;; marginalia
 (leaf
@@ -1281,6 +1287,16 @@
   :init (savehist-mode)
   :setq (savehist-coding-system . 'utf-8-emacs))
 
+(leaf switch-to-minibuffer
+  :init
+  (defun switch-to-minibuffer ()
+    "Switch to minibuffer window."
+    (interactive)
+    (if (active-minibuffer-window)
+        (select-window (active-minibuffer-window))
+      nil))
+  )
+
 ;; org mode things
 (leaf org
   :straight t
@@ -1302,7 +1318,7 @@
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
   (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-a") 'org-edit-special
+    (kbd "C-S-a") 'org-edit-special
     (kbd "C-j") 'org-next-visible-heading
     (kbd "C-k") 'org-previous-visible-heading
     (kbd "C-S-j") 'org-move-subtree-down
