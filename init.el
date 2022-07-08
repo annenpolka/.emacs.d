@@ -1089,77 +1089,73 @@
    (fussy-score-fn . 'fussy-fuz-bin-score)
    (fussy-fuz-use-skim-p . t)))
 
-(leaf
-  corfu
-  :after evil
+(leaf company
   :straight t
   :require t
-  :init
-  (defun corfu-enable-in-minibuffer nil
-    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
-    (when
-        (where-is-internal
-         #'completion-at-point
-         (list (current-local-map)))
-      (corfu-mode 1)))
-  :hook
-                                        ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
-  (after-init-hook . global-corfu-mode)
-  :custom
-  (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto . t) ;; Enable auto completion
-  (corfu-auto-delay . 0.05) ;; Enable auto completion
-  (corfu-count . 15) ;; show more candidates
-  (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
-  ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
-  (corfu-auto-prefix . 1)
-  (corfu-preview-current . t) ;; current candidate preview
-  (corfu-preselect-first . t) ;; candidate preselection
-  (corfu-quit-no-match . 'separator)
-  (corfu-separator . ?\s)
   :bind
+  (([remap indent-for-tab-command] . company-indent-or-complete-common)
+   ([remap c-indent-line-or-region] . company-indent-or-complete-common)
+   (:company-active-map
+    ("C-w" . nil)
+    ))
+  :global-minor-mode global-company-mode
+  :custom
   (
-   (:corfu-map
-    ("TAB" . corfu-next)
-    ("<tab>" . corfu-next)
-    ("S-TAB" . corfu-previous)
-    ("<backtab>" . corfu-previous)
-    ("C-n" . corfu-next)
-    ("C-p" . corfu-previous)))
+   (company-idle-delay . 0.05)
+   (company-minimum-prefix-length . 2)
+   (company-tooltip-align-annotations . t)
+   (company-dabbrev-other-buffers . t)
+   (company-dabbrev-ignore-case . t)
+   (company-dabbrev-downcase . nil)
+   (company-require-match . 'never)
+   (company-transformers . '(company-sort-by-statistics company-sort-by-backend-importance))
+   (company-auto-complete . nil))
   :config
-  (evil-make-overriding-map corfu-map)
-  (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
-  (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
-
-(leaf
-  corfu-doc
-  :straight t
-  :require t
-  :hook (corfu-mode-hook . corfu-doc-mode))
-
-(leaf
-  cape
-  :straight t
-  :require t
-  :init
-  (defun my/basic-super-capf ()
-    (add-to-list 'completion-at-point-functions
-                 (cape-super-capf
-                  ;; #'lsp-completion-at-point
-                  #'cape-file
-                  #'cape-tex
-                  #'cape-symbol
-                  #'cape-keyword
-                  #'cape-dabbrev
-                  #'cape-abbrev
-                                        ;#'cape-ispell
-                                        ;#'cape-dict
-                                        ;#'cape-line
-                  )))
-  :hook
-  (prog-mode-hook . my/basic-super-capf)
-  (magit-mode-hook . my/basic-super-capf)
+  (add-to-list 'company-backends 'company-yasnippet t)
   )
+
+(leaf company-statistics
+  :straight t
+  :require t
+  :global-minor-mode company-statistics-mode)
+
+(leaf company-box
+  :straight t
+  :require t
+  :after company
+  :hook (company-mode-hook . company-box-mode)
+  )
+
+(leaf company-dwim
+  :straight (company-dwim :type git :host github :repo "zk-phi/company-dwim")
+  :require t
+  :after company
+  :bind (:company-active-map
+         ("TAB" . company-dwim)
+         ("<tab>" . company-dwim)
+         ("S-TAB" . company-dwim-select-previous)
+         ("<backtab>" . company-dwim-select-previous)
+         ("C-j" . company-complete-selection))
+  :config
+  (add-to-list 'company-frontends 'company-dwim-frontend t))
+
+(leaf company-anywhere
+  :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
+  :require t)
+
+(leaf company-same-mode-buffers
+  :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
+  :require t
+  :setq
+  (company-same-mode-buffers-matchers .
+                                      '(
+                                        company-same-mode-buffers-matcher-partial
+                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest
+                                        company-same-mode-buffers-matcher-flex
+                                        ))
+  :config
+  (company-same-mode-buffers-initialize)
+  (add-to-list 'company-backends 'company-same-mode-buffers t))
 
 (leaf
   yasnippet
@@ -1250,7 +1246,7 @@
   :doc "minibuffer actions"
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("M-." . embark-dwim)        ;; good alternative: M-.
    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
   )
 
