@@ -1108,9 +1108,8 @@
   :custom
   (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
   (corfu-auto . t) ;; Enable auto completion
-  (corfu-auto-delay . 0.05) ;; Enable auto completion
+  (corfu-auto-delay . 0.1) ;; Enable auto completion
   (corfu-count . 15) ;; show more candidates
-  (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
   ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
   (corfu-auto-prefix . 1)
   (corfu-preview-current . t) ;; current candidate preview
@@ -1142,7 +1141,7 @@
   :straight t
   :require t
   :init
-  (defun my/basic-super-capf ()
+  (defun my/my-basic-capfs ()
     (add-to-list 'completion-at-point-functions
                  (cape-super-capf
                   ;; #'lsp-completion-at-point
@@ -1156,9 +1155,31 @@
                                         ;#'cape-dict
                                         ;#'cape-line
                   )))
+
+  (defun my/convert-super-capf (arg-capf)
+    (list (cape-capf-buster
+           (cape-super-capf arg-capf
+                            ;; FIXME:
+                            ;; (cape-company-to-capf #'company-yasnippet)
+                            ))
+          #'cape-file
+          #'cape-dabbrev
+          #'cape-ispell))
+
+  (defun my/set-basic-capf ()
+    "set cape backend using completion-at-point-function list"
+    (setq-local completion-at-point-functions (my/convert-super-capf (car completion-at-point-functions))))
+
+  (defun my/set-lsp-capf ()
+    "set cape backend using completion-at-point-function + lsp-completion"
+    (setq-local completion-at-point-functions (my/convert-super-capf #'lsp-completion-at-point)))
+
   :hook
-  (prog-mode-hook . my/basic-super-capf)
-  (magit-mode-hook . my/basic-super-capf)
+  (prog-mode-hook . my/set-basic-capf)
+  (lsp-completion-mode-hook . my/set-basic-capf)
+  (magit-mode-hook . my/set-basic-capf)
+  :config
+  (my/my-basic-capfs)
   )
 
 (leaf

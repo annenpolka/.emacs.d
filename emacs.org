@@ -1351,53 +1351,52 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 *** corfu (with corfu-doc, cape)
 #+begin_src emacs-lisp
-(leaf
-  corfu
-  :after evil
-  :straight t
-  :require t
-  :init
-  (defun corfu-enable-in-minibuffer nil
-    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
-    (when
-        (where-is-internal
-         #'completion-at-point
-         (list (current-local-map)))
-      (corfu-mode 1)))
-  :hook
-                                        ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
-  (after-init-hook . global-corfu-mode)
-  :custom
-  (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto . t) ;; Enable auto completion
-  (corfu-auto-delay . 0.05) ;; Enable auto completion
-  (corfu-count . 15) ;; show more candidates
-  (corfu-quit-at-boundary . t) ;; nil: スペースを入れてもquitしない
-  ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
-  (corfu-auto-prefix . 1)
-  (corfu-preview-current . t) ;; current candidate preview
-  (corfu-preselect-first . t) ;; candidate preselection
-  (corfu-quit-no-match . 'separator)
-  (corfu-separator . ?\s)
-  :bind
-  (
-   (:corfu-map
-    ("TAB" . corfu-next)
-    ("<tab>" . corfu-next)
-    ("S-TAB" . corfu-previous)
-    ("<backtab>" . corfu-previous)
-    ("C-n" . corfu-next)
-    ("C-p" . corfu-previous)))
-  :config
-  (evil-make-overriding-map corfu-map)
-  (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
-  (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
+  (leaf
+    corfu
+    :after evil
+    :straight t
+    :require t
+    :init
+    (defun corfu-enable-in-minibuffer nil
+      "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+      (when
+          (where-is-internal
+           #'completion-at-point
+           (list (current-local-map)))
+        (corfu-mode 1)))
+    :hook
+                                          ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
+    (after-init-hook . global-corfu-mode)
+    :custom
+    (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
+    (corfu-auto . t) ;; Enable auto completion
+    (corfu-auto-delay . 0.1) ;; Enable auto completion
+    (corfu-count . 15) ;; show more candidates
+    ;; (corfu-quit-no-match . nil) ;; nil: マッチしないとき"no match"を表示してquitしない
+    (corfu-auto-prefix . 1)
+    (corfu-preview-current . t) ;; current candidate preview
+    (corfu-preselect-first . t) ;; candidate preselection
+    (corfu-quit-no-match . 'separator)
+    (corfu-separator . ?\s)
+    :bind
+    (
+     (:corfu-map
+      ("TAB" . corfu-next)
+      ("<tab>" . corfu-next)
+      ("S-TAB" . corfu-previous)
+      ("<backtab>" . corfu-previous)
+      ("C-n" . corfu-next)
+      ("C-p" . corfu-previous)))
+    :config
+    (evil-make-overriding-map corfu-map)
+    (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
+    (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
 
-(leaf
-  corfu-doc
-  :straight t
-  :require t
-  :hook (corfu-mode-hook . corfu-doc-mode))
+  (leaf
+    corfu-doc
+    :straight t
+    :require t
+    :hook (corfu-mode-hook . corfu-doc-mode))
 #+end_src
 **** cape
 #+begin_src emacs-lisp
@@ -1406,7 +1405,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :straight t
     :require t
     :init
-    (defun my/basic-super-capf ()
+    (defun my/my-basic-capfs ()
       (add-to-list 'completion-at-point-functions
                    (cape-super-capf
                     ;; #'lsp-completion-at-point
@@ -1420,9 +1419,31 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                                           ;#'cape-dict
                                           ;#'cape-line
                     )))
+
+    (defun my/convert-super-capf (arg-capf)
+      (list (cape-capf-buster
+             (cape-super-capf arg-capf
+                              ;; FIXME:
+                              ;; (cape-company-to-capf #'company-yasnippet)
+                              ))
+            #'cape-file
+            #'cape-dabbrev
+            #'cape-ispell))
+
+    (defun my/set-basic-capf ()
+      "set cape backend using completion-at-point-function list"
+      (setq-local completion-at-point-functions (my/convert-super-capf (car completion-at-point-functions))))
+
+    (defun my/set-lsp-capf ()
+      "set cape backend using completion-at-point-function + lsp-completion"
+      (setq-local completion-at-point-functions (my/convert-super-capf #'lsp-completion-at-point)))
+
     :hook
-    (prog-mode-hook . my/basic-super-capf)
-    (magit-mode-hook . my/basic-super-capf)
+    (prog-mode-hook . my/set-basic-capf)
+    (lsp-completion-mode-hook . my/set-basic-capf)
+    (magit-mode-hook . my/set-basic-capf)
+    :config
+    (my/my-basic-capfs)
     )
 #+end_src
 *** yasnippet
