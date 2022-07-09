@@ -1365,7 +1365,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
            (list (current-local-map)))
         (corfu-mode 1)))
     :hook
-                                          ; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
+    ;; (minibuffer-setup-hook . corfu-enable-in-minibuffer)
     (after-init-hook . global-corfu-mode)
     :custom
     (corfu-cycle . t) ;; Enable cycling for `corfu-next/previous'
@@ -1405,10 +1405,9 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :straight t
     :require t
     :init
-    (defun my/my-basic-capfs ()
+    (defun my/add-default-capfs ()
       (add-to-list 'completion-at-point-functions
                    (cape-super-capf
-                    ;; #'lsp-completion-at-point
                     #'cape-file
                     #'cape-tex
                     #'cape-symbol
@@ -1423,8 +1422,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     (defun my/convert-super-capf (arg-capf)
       (list (cape-capf-buster
              (cape-super-capf arg-capf
-                              ;; FIXME:
-                              ;; (cape-company-to-capf #'company-yasnippet)
+                              ;; FIXME: this depends company
+                              (cape-company-to-capf #'company-yasnippet)
                               ))
             #'cape-file
             #'cape-dabbrev
@@ -1440,10 +1439,17 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 
     :hook
     (prog-mode-hook . my/set-basic-capf)
-    (lsp-completion-mode-hook . my/set-basic-capf)
+    (lsp-completion-mode-hook . my/set-lsp-capf)
     (magit-mode-hook . my/set-basic-capf)
     :config
-    (my/my-basic-capfs)
+    (my/add-default-capfs)
+    )
+
+  ;; to use company-backends
+  (leaf company
+    :straight t
+    :require t
+    :after cape
     )
 #+end_src
 *** company-mode
