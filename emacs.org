@@ -1387,6 +1387,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :require t
     :init
     (defun my/add-default-capfs ()
+      "add completion backends to capfs, used as basic backends preset"
       (add-to-list 'completion-at-point-functions
                    (cape-super-capf
                     #'cape-file
@@ -1395,16 +1396,17 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                     #'cape-keyword
                     #'cape-dabbrev
                     #'cape-abbrev
-                                          ;#'cape-ispell
-                                          ;#'cape-dict
-                                          ;#'cape-line
+                    ;; #'cape-ispell
+                    ;; #'cape-dict
+                    ;; #'cape-line
                     )))
 
     (defun my/convert-super-capf (arg-capf)
       (list (cape-capf-buster
              (cape-super-capf arg-capf
-                              ;; FIXME: this depends company
                               (cape-company-to-capf #'company-yasnippet)
+                              (cape-company-to-capf #'company-same-mode-buffers)
+                              ;; (cape-company-to-capf #'company-wordfreq)
                               ))
             #'cape-file
             #'cape-dabbrev
@@ -1419,6 +1421,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       (setq-local completion-at-point-functions (my/convert-super-capf #'lsp-completion-at-point)))
 
     :hook
+    (text-mode-hook . my/set-basic-capf)
     (prog-mode-hook . my/set-basic-capf)
     (lsp-completion-mode-hook . my/set-lsp-capf)
     (magit-mode-hook . my/set-basic-capf)
@@ -1434,7 +1437,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     )
 #+end_src
 *** company-mode
-**** company, company-frontends
+**** company
 #+begin_src emacs-lisp
   (leaf company
     :straight t
@@ -1448,31 +1451,61 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :global-minor-mode global-company-mode
     :custom
     (
-     (company-idle-delay . 0.05)
+     (company-idle-delay . 0.1)
      (company-minimum-prefix-length . 2)
      (company-tooltip-align-annotations . t)
      (company-dabbrev-other-buffers . t)
-     (company-dabbrev-ignore-case . t)
+     (company-dabbrev-ignore-case . nil)
      (company-dabbrev-downcase . nil)
      (company-require-match . 'never)
-     (company-transformers . '(company-sort-by-statistics company-sort-by-backend-importance))
+     (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
      (company-auto-complete . nil))
     :config
-    (add-to-list 'company-backends 'company-yasnippet t)
+    (add-to-list 'company-frontends 'company-pseudo-tooltip-frontend t)
+    ;; (add-to-list 'company-frontends 'company-echo-metadata-frontend t)
+    (setq company-backends '(
+                             ;; get lsp completion first when available
+                             (comany-capf
+                              :with
+                              company-keywords
+                              company-yasnippet
+                              company-dabbrev
+                              ;; company-dabbrev-code
+                              company-same-mode-buffers
+                              company-semantic
+                              company-gtags
+                              company-etags
+                              )
+                             (
+                              company-keywords
+                              company-yasnippet
+                              company-dabbrev
+                              ;; company-dabbrev-code
+                              company-same-mode-buffers
+                              company-semantic
+                              company-gtags
+                              company-etags
+                              )
+                             company-files
+                             company-dabbrev
+                             company-wordfreq
+                             company-bbdb
+                             company-oddmuse
+                             company-same-mode-buffers
+                             ))
     )
-
-  (leaf company-statistics
-    :straight t
-    :require t
-    :global-minor-mode company-statistics-mode)
-
+#+end_src
+**** company-box
+#+begin_src emacs-lisp
   (leaf company-box
     :straight t
     :require t
     :after company
     :hook (company-mode-hook . company-box-mode)
     )
-
+#+end_src
+**** company-dwim
+#+begin_src emacs-lisp
   (leaf company-dwim
     :straight (company-dwim :type git :host github :repo "zk-phi/company-dwim")
     :require t
@@ -1485,16 +1518,19 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
            ("C-j" . company-complete-selection))
     :config
     (add-to-list 'company-frontends 'company-dwim-frontend t))
-
+#+end_src
+**** company-anywhere
+#+begin_src emacs-lisp :tangle yes
   (leaf company-anywhere
     :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
     :require t)
 #+end_src
-**** company-same-mode-buffers (backend)
+*** company-same-mode-buffers (backend)
 #+begin_src emacs-lisp
   (leaf company-same-mode-buffers
     :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
     :require t
+    :after company
     :setq
     (company-same-mode-buffers-matchers .
                                         '(
@@ -1504,7 +1540,15 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                                           ))
     :config
     (company-same-mode-buffers-initialize)
-    (add-to-list 'company-backends 'company-same-mode-buffers t))
+    )
+#+end_src
+*** company-wordfreq (backend)
+#+begin_src emacs-lisp
+  (leaf company-wordfreq
+    :straight t
+    :require t
+    :after company
+    )
 #+end_src
 *** yasnippet
 #+begin_src emacs-lisp
@@ -1736,27 +1780,26 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 ** LSP Mode
 *** lsp-mode
 #+begin_src emacs-lisp
-;;; lsp
-(leaf
-  lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (defun my/lsp-mode-setup-completion ()
-    (setf
-     (alist-get
-      'styles
-      (alist-get 'lsp-capf completion-category-defaults))
-     '(orderless))) ;; Configure orderless
-  :hook
-  (lsp-mode . lsp-enable-which-key-integration)
-  (lsp-completion-mode . my/lsp-mode-setup-completion)
-  (c++-mode-hook . lsp)
-  :custom
-  ((lsp-idle-delay . 0.5)
-   (lsp-log-io . t)
-   (lsp-completion-provider . :none)
-   (lsp-keymap-prefix . "C-c l")))
-
+  ;;; lsp
+  (leaf
+    lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (defun my/lsp-mode-setup-completion ()
+      (setf
+       (alist-get
+        'styles
+        (alist-get 'lsp-capf completion-category-defaults))
+       '(orderless))) ;; Configure orderless
+    :hook
+    (lsp-mode . lsp-enable-which-key-integration)
+    ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
+    (c++-mode-hook . lsp)
+    :custom
+    ((lsp-idle-delay . 0.5)
+     (lsp-log-io . t)
+     (lsp-completion-provider . :capf)
+     (lsp-keymap-prefix . "C-c l")))
 #+end_src
 *** lsp-ui
  TODO: setup lsp ui tools

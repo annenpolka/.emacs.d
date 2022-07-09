@@ -648,23 +648,6 @@
   )
 
 (leaf
-  evil-org
-  :straight t
-  :require t
-  :blackout t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
-
-(leaf
   targets
   :straight
   (targets
@@ -1101,23 +1084,49 @@
   :global-minor-mode global-company-mode
   :custom
   (
-   (company-idle-delay . 0.05)
+   (company-idle-delay . 0.1)
    (company-minimum-prefix-length . 2)
    (company-tooltip-align-annotations . t)
    (company-dabbrev-other-buffers . t)
-   (company-dabbrev-ignore-case . t)
+   (company-dabbrev-ignore-case . nil)
    (company-dabbrev-downcase . nil)
    (company-require-match . 'never)
-   (company-transformers . '(company-sort-by-statistics company-sort-by-backend-importance))
+   (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
    (company-auto-complete . nil))
   :config
-  (add-to-list 'company-backends 'company-yasnippet t)
+  (add-to-list 'company-frontends 'company-pseudo-tooltip-frontend t)
+  ;; (add-to-list 'company-frontends 'company-echo-metadata-frontend t)
+  (setq company-backends '(
+                           ;; get lsp completion first when available
+                           (comany-capf
+                            :with
+                            company-keywords
+                            company-yasnippet
+                            company-dabbrev
+                            ;; company-dabbrev-code
+                            company-same-mode-buffers
+                            company-semantic
+                            company-gtags
+                            company-etags
+                            )
+                           (
+                            company-keywords
+                            company-yasnippet
+                            company-dabbrev
+                            ;; company-dabbrev-code
+                            company-same-mode-buffers
+                            company-semantic
+                            company-gtags
+                            company-etags
+                            )
+                           company-files
+                           company-dabbrev
+                           company-wordfreq
+                           company-bbdb
+                           company-oddmuse
+                           company-same-mode-buffers
+                           ))
   )
-
-(leaf company-statistics
-  :straight t
-  :require t
-  :global-minor-mode company-statistics-mode)
 
 (leaf company-box
   :straight t
@@ -1139,13 +1148,10 @@
   :config
   (add-to-list 'company-frontends 'company-dwim-frontend t))
 
-(leaf company-anywhere
-  :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
-  :require t)
-
 (leaf company-same-mode-buffers
   :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
   :require t
+  :after company
   :setq
   (company-same-mode-buffers-matchers .
                                       '(
@@ -1155,7 +1161,13 @@
                                         ))
   :config
   (company-same-mode-buffers-initialize)
-  (add-to-list 'company-backends 'company-same-mode-buffers t))
+  )
+
+(leaf company-wordfreq
+  :straight t
+  :require t
+  :after company
+  )
 
 (leaf
   yasnippet
@@ -1365,12 +1377,12 @@
      '(orderless))) ;; Configure orderless
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
-  (lsp-completion-mode . my/lsp-mode-setup-completion)
+  ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
   (c++-mode-hook . lsp)
   :custom
   ((lsp-idle-delay . 0.5)
    (lsp-log-io . t)
-   (lsp-completion-provider . :none)
+   (lsp-completion-provider . :capf)
    (lsp-keymap-prefix . "C-c l")))
 
 (leaf
