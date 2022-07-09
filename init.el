@@ -648,6 +648,22 @@
   )
 
 (leaf
+  evil-org
+  :straight t
+  :require t
+  :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-agenda-set-keys)
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys)
+  (evil-define-key '(normal visual) 'evil-org-mode
+    (kbd "C-S-a") 'org-edit-special
+    (kbd "C-j") 'org-next-visible-heading
+    (kbd "C-k") 'org-previous-visible-heading
+    (kbd "C-S-j") 'org-move-subtree-down
+    (kbd "C-S-k") 'org-move-subtree-up))
+
+(leaf
   targets
   :straight
   (targets
@@ -683,28 +699,6 @@
    (:evil-outer-text-objects-map
     ("i" . 'evil-indent-plus-a-indent-up)
     ("I" . 'evil-indent-plus-a-indent))))
-
-;; undo
-(leaf undo-fu :straight t :require t)
-(leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
-(leaf super-save
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode super-save-mode)
-
-;; Code folding
-(leaf
-  origami
-  :straight t
-  :require t
-  :after evil
-  :global-minor-mode global-origami-mode)
 
 (leaf
   evil-escape
@@ -950,6 +944,28 @@
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
+;; undo
+(leaf undo-fu :straight t :require t)
+(leaf
+  undo-fu-session
+  :straight t
+  :require t
+  :global-minor-mode global-undo-fu-session-mode)
+
+(leaf super-save
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode super-save-mode)
+
+;; Code folding
+(leaf
+  origami
+  :straight t
+  :require t
+  :after evil
+  :global-minor-mode global-origami-mode)
+
 (leaf sidekick
   :straight (sidekick
              :type git
@@ -1109,8 +1125,7 @@
                             company-gtags
                             company-etags
                             )
-                           (
-                            company-keywords
+                           (company-keywords
                             company-yasnippet
                             company-dabbrev
                             ;; company-dabbrev-code
@@ -1322,22 +1337,6 @@
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
-
-(leaf
-  evil-org
-  :straight t
-  :require t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-S-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
 
 (leaf org-bullets
   :straight t

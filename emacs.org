@@ -737,7 +737,7 @@ Diredをオーバーホールするファイラ。
 #+end_src
 
 * Editing
-** Evil Bindings
+** Evil
 *** evil
 #+begin_src emacs-lisp
   (leaf
@@ -848,6 +848,24 @@ Diredをオーバーホールするファイラ。
     (my/evil-magit-mode-map)
     )
 #+end_src
+*** evil-org (org-mode evil keybinding)
+#+begin_src emacs-lisp
+  (leaf
+    evil-org
+    :straight t
+    :require t
+    :hook (org-mode-hook . evil-org-mode)
+    :defun (evil-org-agenda-set-keys)
+    :config
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys)
+    (evil-define-key '(normal visual) 'evil-org-mode
+      (kbd "C-S-a") 'org-edit-special
+      (kbd "C-j") 'org-next-visible-heading
+      (kbd "C-k") 'org-previous-visible-heading
+      (kbd "C-S-j") 'org-move-subtree-down
+      (kbd "C-S-k") 'org-move-subtree-up))
+#+end_src
 *** targets (anyblock textobject)
 #+begin_src emacs-lisp
 (leaf
@@ -889,38 +907,6 @@ Diredをオーバーホールするファイラ。
     ("i" . 'evil-indent-plus-a-indent-up)
     ("I" . 'evil-indent-plus-a-indent))))
 
-#+end_src
-** Utilities
-*** undo-fu (with undo-fu-session)
-
-今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
-
-#+begin_src emacs-lisp
-  ;; undo
-  (leaf undo-fu :straight t :require t)
-  (leaf
-    undo-fu-session
-    :straight t
-    :require t
-    :global-minor-mode global-undo-fu-session-mode)
-#+end_src
-*** super-save
-#+begin_src emacs-lisp
-  (leaf super-save
-    :straight t
-    :require t
-    :blackout t
-    :global-minor-mode super-save-mode)
-#+end_src
-*** origami
-#+begin_src emacs-lisp
-;; Code folding
-(leaf
-  origami
-  :straight t
-  :require t
-  :after evil
-  :global-minor-mode global-origami-mode)
 #+end_src
 *** evil-escape
 #+begin_src emacs-lisp
@@ -1179,6 +1165,38 @@ Diredをオーバーホールするファイラ。
   :after smartparens
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
+#+end_src
+** Utilities
+*** undo-fu (with undo-fu-session)
+
+今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
+
+#+begin_src emacs-lisp
+  ;; undo
+  (leaf undo-fu :straight t :require t)
+  (leaf
+    undo-fu-session
+    :straight t
+    :require t
+    :global-minor-mode global-undo-fu-session-mode)
+#+end_src
+*** super-save
+#+begin_src emacs-lisp
+  (leaf super-save
+    :straight t
+    :require t
+    :blackout t
+    :global-minor-mode super-save-mode)
+#+end_src
+*** origami
+#+begin_src emacs-lisp
+;; Code folding
+(leaf
+  origami
+  :straight t
+  :require t
+  :after evil
+  :global-minor-mode global-origami-mode)
 #+end_src
 *** sidekick
 #+begin_src emacs-lisp
@@ -1476,8 +1494,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               company-gtags
                               company-etags
                               )
-                             (
-                              company-keywords
+                             (company-keywords
                               company-yasnippet
                               company-dabbrev
                               ;; company-dabbrev-code
@@ -1729,24 +1746,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
-#+end_src
-*** evil-org
-#+begin_src emacs-lisp
-  (leaf
-    evil-org
-    :straight t
-    :require t
-    :hook (org-mode-hook . evil-org-mode)
-    :defun (evil-org-agenda-set-keys)
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys)
-    (evil-define-key '(normal visual) 'evil-org-mode
-      (kbd "C-S-a") 'org-edit-special
-      (kbd "C-j") 'org-next-visible-heading
-      (kbd "C-k") 'org-previous-visible-heading
-      (kbd "C-S-j") 'org-move-subtree-down
-      (kbd "C-S-k") 'org-move-subtree-up))
 #+end_src
 *** org-bullets
 #+begin_src emacs-lisp
