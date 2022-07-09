@@ -848,25 +848,6 @@ Diredをオーバーホールするファイラ。
     (my/evil-magit-mode-map)
     )
 #+end_src
-*** evil-org
-#+begin_src emacs-lisp
-  (leaf
-    evil-org
-    :straight t
-    :require t
-    :blackout t
-    :hook (org-mode-hook . evil-org-mode)
-    :defun (evil-org-agenda-set-keys)
-    :config
-    (require 'evil-org-agenda)
-    (evil-org-agenda-set-keys)
-    (evil-define-key '(normal visual) 'evil-org-mode
-      (kbd "C-a") 'org-edit-special
-      (kbd "C-j") 'org-next-visible-heading
-      (kbd "C-k") 'org-previous-visible-heading
-      (kbd "C-S-j") 'org-move-subtree-down
-      (kbd "C-S-k") 'org-move-subtree-up))
-#+end_src
 *** targets (anyblock textobject)
 #+begin_src emacs-lisp
 (leaf
