@@ -1734,18 +1734,18 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
 ** Org Mode
-*** org
+*** org-mode
 #+begin_src emacs-lisp
-;; org mode things
-(leaf org
-  :straight t
-  :require org org-tempo
-  :custom
-  (org-catch-invisible-edits . 'smart)
-  :config
-  (defun disable-flycheck-in-org-src-block ()
-    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
+  ;; org mode things
+  (leaf org
+    :straight (org :type built-in)
+    :require t org-tempo
+    :custom
+    (org-catch-invisible-edits . 'smart)
+    :config
+    (defun disable-flycheck-in-org-src-block ()
+      (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+    (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
 #+end_src
 *** org-bullets
 #+begin_src emacs-lisp
@@ -1769,6 +1769,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      :repo "awth13/org-appear")
     :hook
     (org-mode-hook . org-appear-mode)
+    :after org-mode
     :custom
     (org-appear-autolinks . t)
     (org-appear-autosubmarkers . t)
