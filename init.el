@@ -376,7 +376,7 @@
   dirvish
   :straight t
   :require (all-the-icons dirvish)
-  :after evil
+  ;; :after evil
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
@@ -415,7 +415,7 @@
   ;; Otherwise some commands won't work properly
   (setq dired-listing-switches
         "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-  (evil-make-overriding-map dired-mode-map)
+  ;; (evil-make-overriding-map dired-mode-map)
   :hook
   ;; show file preview in minibuffer browsing
   ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
@@ -541,408 +541,105 @@
    :host github
    :repo "alphapapa/burly.el"))
 
-(leaf
-  evil
-  :doc "Extensible vi layer for Emacs."
+(leaf meow
   :straight t
-  :require
-  evil
-  windmove
-  :defun
-  (evil-ex-nohighlight
-   evil-mc-undo-all-cursors
-   evil-set-leader
-   evil-mode
-   turn-on-evil-mode
-   evil-define-command
-   evil-define-key)
-  :defvar (evil-want-keybinding evil-undo-system)
+  :require t
   :init
-  (defun my/clear-marks-and-cursors ()
-    (interactive)
-    (evil-ex-nohighlight)
-    (evil-mc-undo-all-cursors))
-  :pre-setq
-  ;; for evil-collection
-  (evil-want-keybinding . nil)
-  ;; undo system
-  (evil-undo-system . 'undo-fu)
+  (defun meow-setup ()
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    (meow-motion-overwrite-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     ;; SPC j/k will run the original command in MOTION state.
+     '("j" . "H-j")
+     '("k" . "H-k")
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
+     '("p" . meow-yank)
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     '("R" . meow-swap-grab)
+     '("s" . meow-kill)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
+     '("v" . meow-visit)
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-goto-line)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("<escape>" . ignore)))
   :custom
-  ;; <C-u> to scroll (replace universal-argument)
-  (evil-want-C-u-scroll . t)
-  ;; don't kill on visual paste
-  (evil-kill-on-visual-paste . nil)
-  ;; serach module
-  (evil-search-module 'evil-search)
-  :config
-  ;; leader-key
-  (evil-set-leader 'normal (kbd "<SPC>"))
-  (evil-set-leader 'visual (kbd "<SPC>"))
-  ;; activate evil
-  (evil-mode 1)
-  (turn-on-evil-mode)
-  :bind
-  (
-   (:evil-normal-state-map
-    ("C-s" . save-buffer)
-    ("C-q" . 'evil-quit)
-    ("C-l" . 'my/clear-marks-and-cursors)
-    ("K" . 'helpful-at-point)
-    ("C-j" . 'evil-open-fold)
-    ("C-k" . 'evil-close-fold)
-    ("C-e" . find-file)
-    ("C-S-e" . find-file-other-window)
-    ("<leader>n" . 'my-mc-hydra/body)
-    ("<leader>g" . 'my-git-actions/body)
-    ("<leader>h" . 'move-or-create-window-left)
-    ("<leader>j" . 'move-or-create-window-below)
-    ("<leader>k" . 'move-or-create-window-above)
-    ("<leader>l" . 'move-or-create-window-right))
-   (:evil-visual-state-map
-    ("<leader>n" . 'my-mc-hydra/body)
-    ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
-    ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
-    )))
+  (meow-mode-state-list . '((helpful-mode . normal)
+                            (Man-mode . normal)
+                            (message-buffer-mode . normal)
+                            ))
 
-(leaf
-  evil-collection
-  :after evil
-  :straight t
-  :require t
-  :defun (evil-collection-init)
-  :init
-  (defun my/evil-move-or-create-window-mapset (map)
-    (evil-collection-define-key 'normal map (kbd "<SPC>h") 'move-or-create-window-left)
-    (evil-collection-define-key 'normal map (kbd "<SPC>j") 'move-or-create-window-below)
-    (evil-collection-define-key 'normal map (kbd "<SPC>k") 'move-or-create-window-above)
-    (evil-collection-define-key 'normal map (kbd "<SPC>l") 'move-or-create-window-right)
-    )
-  (defun my/evil-windmove-mapset (map)
-    (evil-collection-define-key 'normal map (kbd "<SPC>h") 'windmove-left)
-    (evil-collection-define-key 'normal map (kbd "<SPC>j") 'windmove-down)
-    (evil-collection-define-key 'normal map (kbd "<SPC>k") 'windmove-up)
-    (evil-collection-define-key 'normal map (kbd "<SPC>l") 'windmove-right)
-    )
-  (defun my/evil-minibuffer-map nil
-    (dolist (map '(minibuffer-local-map
-                   minibuffer-local-ns-map
-                   minibuffer-local-completion-map
-                   minibuffer-local-must-match-map
-                   minibuffer-local-isearch-map))
-      (evil-collection-define-key '(insert normal) map (kbd "<SPC>k") 'windmove-up)
-      (evil-collection-define-key '(insert normal) map (kbd "C-q") 'windmove-up)
-      )
-    )
-  (defun my/evil-magit-mode-map nil
-    (my/evil-windmove-mapset 'magit-mode-map)
-    )
-  :custom
-  (evil-collection-setup-minibuffer . t)
-  (evil-collection-want-unimpaired-p . nil)
   :config
-  ;; (evil-collection-init '(magit dired consult)))
-  (evil-collection-init)
-  ;; custom mappings
-  (my/evil-minibuffer-map)
-  (my/evil-magit-mode-map)
+  (meow-setup)
+  (meow-global-mode 1)
   )
-
-(leaf
-  evil-org
-  :straight t
-  :require t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-S-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
-
-(leaf
-  targets
-  :straight
-  (targets
-    :type git
-    :host github
-    :repo "noctuid/targets.el")
-  :require t
-  :defun (targets-setup targets-define-composite-to)
-  :config
-  (targets-setup)
-  ;; vim-textobj-anyblock
-  (targets-define-composite-to anyblock
-    (("(" ")" pair)
-     ("[" "]" pair)
-     ("{" "}" pair)
-     ("<" ">" pair)
-     ("\"" "\"" quote)
-     ("'" "'" quote)
-     ("`" "`" quote)
-     ("“" "”" quote))
-    :bind t
-    :keys "b"))
-
-;; indent textobject
-(leaf
-  evil-indent-plus
-  :straight t
-  :require t
-  :bind
-  ((:evil-inner-text-objects-map
-    ("i" . 'evil-indent-plus-i-indent-up)
-    ("I" . 'evil-indent-plus-i-indent))
-   (:evil-outer-text-objects-map
-    ("i" . 'evil-indent-plus-a-indent-up)
-    ("I" . 'evil-indent-plus-a-indent))))
-
-(leaf
-  evil-escape
-  :after evil
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-escape-mode
-  :setq-default
-  (evil-escape-key-sequence . "jk")
-  (evil-escape-delay . 0.2)
-  (evil-escape-excluded-states . '(normal visual motion emacs))
-  (evil-escape-excluded-major-modes
-   .
-   '
-   (magit-status-mode
-    magit-revision-mode magit-diff-mode help-mode)))
-
-(leaf
-  evil-commentary
-  :after evil
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-commentary-mode
-  :bind
-  ((:evil-normal-state-map
-    ("C-/" . 'evil-commentary-line)
-    ))
-  )
-
-(leaf evil-snipe
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-snipe-mode evil-snipe-override-mode
-  :hook
-  (magit-mode-hook . turn-off-evil-snipe-override-mode)
-  :custom
-  (evil-snipe-scope . 'visible)
-  (evil-snipe-smart-case . t)
-  )
-
-(leaf
-  evil-mc
-  :after evil
-  :straight t
-  :require t
-  :global-minor-mode global-evil-mc-mode
-  :config
-  (evil-define-command
-    evil-mc-toggle-cursor-here
-    ()
-    "Create a cursor at point. If in visual block or line mode, then create
-   cursors on each line of the selection, on the column of the cursor. Otherwise
-   pauses cursors."
-    :repeat nil
-    :keep-visual nil
-    :evil-mc
-    t
-    (cond
-     (
-      (and
-       (evil-mc-has-cursors-p) (evil-normal-state-p)
-       (let*
-           (
-            (pos (point))
-            (cursor
-             (cl-find-if
-              (lambda (cursor)
-                (eq pos (evil-mc-get-cursor-start cursor)))
-              evil-mc-cursor-list)))
-         (when cursor
-           (evil-mc-delete-cursor cursor)
-           (setq evil-mc-cursor-list
-                 (delq cursor evil-mc-cursor-list))
-           t))))
-
-     ((memq evil-this-type '(block line))
-      (let
-          (
-           (col (evil-column))
-           (line-at-pt (line-number-at-pos)))
-        ;; Fix off-by-one error
-        (when (= evil-visual-direction 1)
-          (cl-decf col)
-          (backward-char))
-        (save-excursion
-          (evil-apply-on-block
-           (lambda (ibeg _)
-             (unless
-                 (or
-                  (= line-at-pt (line-number-at-pos ibeg))
-                  (invisible-p ibeg))
-               (goto-char ibeg)
-               (move-to-column col)
-               (when (= (current-column) col)
-                 (evil-mc-make-cursor-here))))
-           evil-visual-beginning
-           (if (eq evil-this-type 'line)
-               (1- evil-visual-end)
-             evil-visual-end)
-           nil)
-          (evil-exit-visual-state))))
-     (t
-      (evil-mc-pause-cursors)
-      ;; I assume I don't want the cursors to move yet
-      (evil-mc-make-cursor-here))))
-
-  (evil-define-command
-    evil-mc-undo-cursor
-    ()
-    "Undos last cursor, or all cursors in visual region."
-    :repeat nil
-    :evil-mc
-    t
-    (if (evil-visual-state-p)
-        (or
-         (mapc
-          (lambda (c)
-            (evil-mc-delete-cursor c)
-            (setq evil-mc-cursor-list (delq c evil-mc-cursor-list)))
-          (cl-remove-if-not
-           (lambda (pos)
-             (and
-              (>= pos evil-visual-beginning)
-              (< pos evil-visual-end)))
-           evil-mc-cursor-list
-           :key #'evil-mc-get-cursor-start))
-         (message "No cursors to undo in region"))
-      (evil-mc-undo-last-added-cursor)))
-
-  ;; smartparens integration
-  (dolist
-      (sp-command
-       '
-       (sp-up-sexp
-        sp-copy-sexp
-        sp-down-sexp
-        sp-join-sexp
-        sp-kill-sexp
-        sp-next-sexp
-        sp-split-sexp
-        sp-wrap-curly
-        sp-wrap-round
-        sp-raise-sexp
-        sp-clone-sexp
-        sp-wrap-square
-        sp-splice-sexp
-        sp-end-of-sexp
-        sp-forward-sexp
-        sp-backward-sexp
-        sp-convolute-sexp
-        sp-transpose-sexp
-        sp-kill-whole-line
-        sp-beginning-of-sexp
-        sp-forward-barf-sexp
-        sp-forward-slurp-sexp
-        sp-backward-barf-sexp
-        sp-backward-slurp-sexp
-        sp-splice-sexp-killing-forward
-        sp-splice-sexp-killing-backward))
-    (add-to-list 'evil-mc-custom-known-commands
-                 `(,sp-command (:default . evil-mc-execute-call))))
-  :hydra
-  (my-mc-hydra
-   (:color pink :hint nil :pre (evil-mc-pause-cursors))
-   "
-    ^Match^            ^Line-wise^           ^Manual^
-    ^^^^^^----------------------------------------------------
-    _Z_: match all     _J_: make & go down   _z_: toggle here
-    _m_: make & next   _K_: make & go up     _r_: remove last
-    _M_: make & prev   ^ ^                   _R_: remove all
-    _n_: skip & next   ^ ^                   _p_: pause
-    _N_: skip & prev   ^ ^                   _P_: resume
-
-    Current pattern: %`evil-mc-pattern
-
-    "
-   ("Z" #'evil-mc-make-all-cursors)
-   ("m" #'evil-mc-make-and-goto-next-match)
-   ("C-n" #'evil-mc-make-and-goto-next-match)
-   ("M" #'evil-mc-make-and-goto-prev-match)
-   ("C-p" #'evil-mc-make-and-goto-prev-match)
-   ("n" #'evil-mc-skip-and-goto-next-match)
-   ("N" #'evil-mc-skip-and-goto-prev-match)
-   ("J" #'evil-mc-make-cursor-move-next-line)
-   ("K" #'evil-mc-make-cursor-move-prev-line)
-   ("z" #'evil-mc-toggle-cursor-here)
-   ("r" #'evil-mc-undo-cursor)
-   ("R" #'evil-mc-undo-all-cursors)
-   ("p" #'evil-mc-pause-cursors)
-   ("P" #'evil-mc-resume-cursors)
-   ("q" #'evil-mc-resume-cursors "quit" :color blue)
-   ("Q"
-    #'evil-mc-undo-all-cursors
-    "quit with remove all"
-    :color blue)))
-
-;; display registers
-(leaf evil-owl
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-owl-mode
-  :custom
-  (evil-owl-max-string-length . 500)
-  (evil-owl-idle-delay . 0.2)
-  :config
-  (add-to-list 'display-buffer-alist
-               '("*evil-owl*"
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (window-height . 0.25))))
-
-(leaf embrace :straight t :require t)
-(leaf evil-embrace :straight t :require t)
-(leaf
-  evil-surround
-  :straight t
-  :require
-  embrace
-  evil-embrace
-  evil-surround
-  :defun
-  (global-evil-surround-mode
-   evil-embrace-enable-evil-surround-integration)
-  :config
-  (global-evil-surround-mode 1)
-  (evil-embrace-enable-evil-surround-integration))
-
-(leaf
-  smartparens
-  :straight t
-  :require t smartparens-config
-  :blackout t
-  :global-minor-mode smartparens-global-mode)
-(leaf
-  evil-smartparens
-  :straight t
-  :require t
-  :after smartparens
-  :blackout t
-  :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
 ;; undo
 (leaf undo-fu :straight t :require t)
@@ -963,7 +660,7 @@
   origami
   :straight t
   :require t
-  :after evil
+  ;; :after evil
   :global-minor-mode global-origami-mode)
 
 (leaf sidekick
@@ -971,10 +668,10 @@
              :type git
              :host github
              :repo "VernonGrant/sidekick.el")
-  :require t sidekick-evil
+  :require t ;; sidekick-evil
   :bind
-  (:evil-normal-state-map
-   ("<leader>sn" . 'sidekick-at-point))
+  ;; (:evil-normal-state-map
+  ;;  ("<leader>sn" . 'sidekick-at-point))
   )
 
 ;; flycheck syntax checking
@@ -1031,9 +728,10 @@
   :after flyspell
 
   :bind (([remap ispell-word] . flyspell-correct-at-point)
-         (:evil-normal-state-map
-          ("zg" . flyspell-correct-at-point)
-          )))
+         ;; (:evil-normal-state-map
+         ;;  ("zg" . flyspell-correct-at-point)
+         ;;  )
+         ))
 
 (leaf
   eldoc
@@ -1124,6 +822,8 @@
                             company-semantic
                             company-gtags
                             company-etags
+                            company-oddmuse
+                            company-bbdb
                             )
                            (company-keywords
                             company-yasnippet
@@ -1133,6 +833,8 @@
                             company-semantic
                             company-gtags
                             company-etags
+                            company-oddmuse
+                            company-bbdb
                             )
                            company-files
                            company-dabbrev
@@ -1211,52 +913,55 @@
   :custom ((vertico-cycle . t)))
 
 (leaf
-  consult
-  :straight t
-  :require t
-  :defvar (consult-buffer-sources)
-  :setq
-  (
-   (completion-in-region-function
-    .
-    (lambda (&rest args)
-      (apply
-       (if vertico-mode
-           #'consult-completion-in-region
-         #'completion--in-region)
-       args)))
-   (consult-buffer-sources
-    .
-    '
+    consult
+    :straight t
+    :require t
+    :defvar (consult-buffer-sources)
+    :setq
     (
-     consult--source-project-buffer
-     consult--source-buffer
-     consult--source-hidden-buffer
-     consult--source-bookmark
-     consult--source-recent-file)))
-  :config
-  (consult-customize
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-recent-file
-   consult--source-project-recent-file
-   :preview-key '(:debounce 0.2 any))
-  :bind
-  ((:evil-normal-state-map
-    ;; ("C-f" . consult-line)
-    ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-    ("<leader>SPC" . 'consult-buffer)
-    )))
+     (completion-in-region-function
+      .
+      (lambda (&rest args)
+        (apply
+         (if vertico-mode
+             #'consult-completion-in-region
+           #'completion--in-region)
+         args)))
+     (consult-buffer-sources
+      .
+      '
+      (
+       consult--source-project-buffer
+       consult--source-buffer
+       consult--source-hidden-buffer
+       consult--source-bookmark
+       consult--source-recent-file)))
+    :config
+    (consult-customize
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-recent-file
+     consult--source-project-recent-file
+     :preview-key '(:debounce 0.2 any))
+    :bind
+    ;; ((:evil-normal-state-map
+    ;;   ;; ("C-f" . consult-line)
+    ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+    ;;   ("<leader>SPC" . 'consult-buffer)
+    ;;   ))
+    )
 
-;; flycheck integration
-(leaf consult-flycheck
-  :straight t
-  :require t
-  :after consult flycheck
-  :bind
-  ((:evil-normal-state-map
-    ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-    )))
+  ;; flycheck integration
+  (leaf consult-flycheck
+    :straight t
+    :require t
+    :after consult flycheck
+    :bind
+    (
+;; (:evil-normal-state-map
+;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
+;;       )
+))
 
 ;; dir extension
 (leaf
@@ -1269,9 +974,10 @@
    (:vertico-map
     ("C-x C-d" . consult-dir)
     ("C-x C-j" . consult-dir-jump-file))
-   (:evil-normal-state-map
-    ("C-S-r" . consult-dir)
-    ))
+   ;; (:evil-normal-state-map
+   ;;  ("C-S-r" . consult-dir)
+   ;;  )
+   )
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 
@@ -1329,8 +1035,8 @@
 
 ;; org mode things
 (leaf org
-  :straight t
-  :require org org-tempo
+  :straight (org :type built-in)
+  :require t org-tempo
   :custom
   (org-catch-invisible-edits . 'smart)
   :config
@@ -1356,6 +1062,7 @@
    :repo "awth13/org-appear")
   :hook
   (org-mode-hook . org-appear-mode)
+  :after org-mode
   :custom
   (org-appear-autolinks . t)
   (org-appear-autosubmarkers . t)

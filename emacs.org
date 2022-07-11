@@ -550,7 +550,7 @@ Diredをオーバーホールするファイラ。
     dirvish
     :straight t
     :require (all-the-icons dirvish)
-    :after evil
+    ;; :after evil
     :custom
     ;; Go back home? Just press `bh'
     (dirvish-bookmark-entries
@@ -589,7 +589,7 @@ Diredをオーバーホールするファイラ。
     ;; Otherwise some commands won't work properly
     (setq dired-listing-switches
           "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-    (evil-make-overriding-map dired-mode-map)
+    ;; (evil-make-overriding-map dired-mode-map)
     :hook
     ;; show file preview in minibuffer browsing
     ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
@@ -621,7 +621,7 @@ Diredをオーバーホールするファイラ。
       ([remap dired-do-copy] . dirvish-yank-menu)
       ([remap mode-line-other-buffer] . dirvish-history-last))))
 #+end_src
-* Git/Version Mangagement
+* Git/Version Management
 ** magit (Git Frontend)
 #+begin_src emacs-lisp
   (leaf
@@ -737,71 +737,72 @@ Diredをオーバーホールするファイラ。
 #+end_src
 
 * Editing
-** Evil
+** COMMENT Evil Modal Setup
 *** evil
 #+begin_src emacs-lisp
-  (leaf
-    evil
-    :doc "Extensible vi layer for Emacs."
-    :straight t
-    :require
-    evil
-    windmove
-    :defun
-    (evil-ex-nohighlight
-     evil-mc-undo-all-cursors
-     evil-set-leader
-     evil-mode
-     turn-on-evil-mode
-     evil-define-command
-     evil-define-key)
-    :defvar (evil-want-keybinding evil-undo-system)
-    :init
-    (defun my/clear-marks-and-cursors ()
-      (interactive)
-      (evil-ex-nohighlight)
-      (evil-mc-undo-all-cursors))
-    :pre-setq
-    ;; for evil-collection
-    (evil-want-keybinding . nil)
-    ;; undo system
-    (evil-undo-system . 'undo-fu)
-    :custom
-    ;; <C-u> to scroll (replace universal-argument)
-    (evil-want-C-u-scroll . t)
-    ;; don't kill on visual paste
-    (evil-kill-on-visual-paste . nil)
-    ;; serach module
-    (evil-search-module 'evil-search)
-    :config
-    ;; leader-key
-    (evil-set-leader 'normal (kbd "<SPC>"))
-    (evil-set-leader 'visual (kbd "<SPC>"))
-    ;; activate evil
-    (evil-mode 1)
-    (turn-on-evil-mode)
-    :bind
-    (
-     (:evil-normal-state-map
-      ("C-s" . save-buffer)
-      ("C-q" . 'evil-quit)
-      ("C-l" . 'my/clear-marks-and-cursors)
-      ("K" . 'helpful-at-point)
-      ("C-j" . 'evil-open-fold)
-      ("C-k" . 'evil-close-fold)
-      ("C-e" . find-file)
-      ("C-S-e" . find-file-other-window)
-      ("<leader>n" . 'my-mc-hydra/body)
-      ("<leader>g" . 'my-git-actions/body)
-      ("<leader>h" . 'move-or-create-window-left)
-      ("<leader>j" . 'move-or-create-window-below)
-      ("<leader>k" . 'move-or-create-window-above)
-      ("<leader>l" . 'move-or-create-window-right))
-     (:evil-visual-state-map
-      ("<leader>n" . 'my-mc-hydra/body)
-      ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
-      ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
-      )))
+    (leaf
+      evil
+      :doc "Extensible vi layer for Emacs."
+      :straight t
+      :require
+      evil
+      windmove
+      :defun
+      (evil-ex-nohighlight
+       evil-mc-undo-all-cursors
+       evil-set-leader
+       evil-mode
+       turn-on-evil-mode
+       evil-define-command
+       evil-define-key)
+      :defvar (evil-want-keybinding evil-undo-system)
+      :init
+      (defun my/clear-marks-and-cursors ()
+        (interactive)
+        (evil-ex-nohighlight)
+        (evil-mc-undo-all-cursors))
+      :pre-setq
+      ;; for evil-collection
+      (evil-want-keybinding . nil)
+      ;; undo system
+      (evil-undo-system . 'undo-fu)
+      :custom
+      ;; <C-u> to scroll (replace universal-argument)
+      (evil-want-C-u-scroll . t)
+      ;; don't kill on visual paste
+      (evil-kill-on-visual-paste . nil)
+      ;; serach module
+      (evil-search-module 'evil-search)
+      :config
+      ;; leader-key
+      (evil-set-leader 'normal (kbd "<SPC>"))
+      (evil-set-leader 'visual (kbd "<SPC>"))
+      ;; activate evil
+      (evil-mode 1)
+      (turn-on-evil-mode)
+      :bind
+      (
+       ;; (:evil-normal-state-map
+       ;;  ("C-s" . save-buffer)
+       ;;  ("C-q" . 'evil-quit)
+       ;;  ("C-l" . 'my/clear-marks-and-cursors)
+       ;;  ("K" . 'helpful-at-point)
+       ;;  ("C-j" . 'evil-open-fold)
+       ;;  ("C-k" . 'evil-close-fold)
+       ;;  ("C-e" . find-file)
+       ;;  ("C-S-e" . find-file-other-window)
+       ;;  ("<leader>n" . 'my-mc-hydra/body)
+       ;;  ("<leader>g" . 'my-git-actions/body)
+       ;;  ("<leader>h" . 'move-or-create-window-left)
+       ;;  ("<leader>j" . 'move-or-create-window-below)
+       ;;  ("<leader>k" . 'move-or-create-window-above)
+       ;;  ("<leader>l" . 'move-or-create-window-right))
+       ;; (:evil-visual-state-map
+       ;;  ("<leader>n" . 'my-mc-hydra/body)
+       ;;  ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
+       ;;  ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
+       ;;  )
+  ))
 #+end_src
 *** evil-collection (Evil's binding presets)
 #+begin_src emacs-lisp
@@ -937,9 +938,10 @@ Diredをオーバーホールするファイラ。
     :blackout t
     :global-minor-mode evil-commentary-mode
     :bind
-    ((:evil-normal-state-map
-      ("C-/" . 'evil-commentary-line)
-      ))
+    (;; (:evil-normal-state-map
+     ;;  ("C-/" . 'evil-commentary-line)
+     ;;  )
+     )
     )
 #+end_src
 *** evil-snipe
@@ -1166,6 +1168,109 @@ Diredをオーバーホールするファイラ。
   :blackout t
   :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 #+end_src
+** Meow Modal Setup
+*** meow
+#+begin_src emacs-lisp
+  (leaf meow
+    :straight t
+    :require t
+    :init
+    (defun meow-setup ()
+      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("<escape>" . ignore))
+      (meow-leader-define-key
+       ;; SPC j/k will run the original command in MOTION state.
+       '("j" . "H-j")
+       '("k" . "H-k")
+       ;; Use SPC (0-9) for digit arguments.
+       '("1" . meow-digit-argument)
+       '("2" . meow-digit-argument)
+       '("3" . meow-digit-argument)
+       '("4" . meow-digit-argument)
+       '("5" . meow-digit-argument)
+       '("6" . meow-digit-argument)
+       '("7" . meow-digit-argument)
+       '("8" . meow-digit-argument)
+       '("9" . meow-digit-argument)
+       '("0" . meow-digit-argument)
+       '("/" . meow-keypad-describe-key)
+       '("?" . meow-cheatsheet))
+      (meow-normal-define-key
+       '("0" . meow-expand-0)
+       '("9" . meow-expand-9)
+       '("8" . meow-expand-8)
+       '("7" . meow-expand-7)
+       '("6" . meow-expand-6)
+       '("5" . meow-expand-5)
+       '("4" . meow-expand-4)
+       '("3" . meow-expand-3)
+       '("2" . meow-expand-2)
+       '("1" . meow-expand-1)
+       '("-" . negative-argument)
+       '(";" . meow-reverse)
+       '("," . meow-inner-of-thing)
+       '("." . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("A" . meow-open-below)
+       '("b" . meow-back-word)
+       '("B" . meow-back-symbol)
+       '("c" . meow-change)
+       '("d" . meow-delete)
+       '("D" . meow-backward-delete)
+       '("e" . meow-next-word)
+       '("E" . meow-next-symbol)
+       '("f" . meow-find)
+       '("g" . meow-cancel-selection)
+       '("G" . meow-grab)
+       '("h" . meow-left)
+       '("H" . meow-left-expand)
+       '("i" . meow-insert)
+       '("I" . meow-open-above)
+       '("j" . meow-next)
+       '("J" . meow-next-expand)
+       '("k" . meow-prev)
+       '("K" . meow-prev-expand)
+       '("l" . meow-right)
+       '("L" . meow-right-expand)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("o" . meow-block)
+       '("O" . meow-to-block)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("Q" . meow-goto-line)
+       '("r" . meow-replace)
+       '("R" . meow-swap-grab)
+       '("s" . meow-kill)
+       '("t" . meow-till)
+       '("u" . meow-undo)
+       '("U" . meow-undo-in-selection)
+       '("v" . meow-visit)
+       '("w" . meow-mark-word)
+       '("W" . meow-mark-symbol)
+       '("x" . meow-line)
+       '("X" . meow-goto-line)
+       '("y" . meow-save)
+       '("Y" . meow-sync-grab)
+       '("z" . meow-pop-selection)
+       '("'" . repeat)
+       '("<escape>" . ignore)))
+    :custom
+    (meow-mode-state-list . '((helpful-mode . normal)
+                              (Man-mode . normal)
+                              (message-buffer-mode . normal)
+                              ))
+
+    :config
+    (meow-setup)
+    (meow-global-mode 1)
+    )
+#+end_src
 ** Utilities
 *** undo-fu (with undo-fu-session)
 
@@ -1190,13 +1295,13 @@ Diredをオーバーホールするファイラ。
 #+end_src
 *** origami
 #+begin_src emacs-lisp
-;; Code folding
-(leaf
-  origami
-  :straight t
-  :require t
-  :after evil
-  :global-minor-mode global-origami-mode)
+  ;; Code folding
+  (leaf
+    origami
+    :straight t
+    :require t
+    ;; :after evil
+    :global-minor-mode global-origami-mode)
 #+end_src
 *** sidekick
 #+begin_src emacs-lisp
@@ -1205,10 +1310,10 @@ Diredをオーバーホールするファイラ。
                :type git
                :host github
                :repo "VernonGrant/sidekick.el")
-    :require t sidekick-evil
+    :require t ;; sidekick-evil
     :bind
-    (:evil-normal-state-map
-     ("<leader>sn" . 'sidekick-at-point))
+    ;; (:evil-normal-state-map
+    ;;  ("<leader>sn" . 'sidekick-at-point))
     )
 #+end_src
 ** Syntax Check/Formatting
@@ -1276,9 +1381,10 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :after flyspell
 
     :bind (([remap ispell-word] . flyspell-correct-at-point)
-           (:evil-normal-state-map
-            ("zg" . flyspell-correct-at-point)
-            )))
+           ;; (:evil-normal-state-map
+           ;;  ("zg" . flyspell-correct-at-point)
+           ;;  )
+           ))
 #+end_src
 *** eldoc
 #+begin_src emacs-lisp
@@ -1493,6 +1599,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               company-semantic
                               company-gtags
                               company-etags
+                              company-oddmuse
+                              company-bbdb
                               )
                              (company-keywords
                               company-yasnippet
@@ -1502,6 +1610,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               company-semantic
                               company-gtags
                               company-etags
+                              company-oddmuse
+                              company-bbdb
                               )
                              company-files
                              company-dabbrev
@@ -1602,53 +1712,56 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 *** consult (Narrowing Functions)
 #+begin_src emacs-lisp
-  (leaf
-    consult
-    :straight t
-    :require t
-    :defvar (consult-buffer-sources)
-    :setq
-    (
-     (completion-in-region-function
-      .
-      (lambda (&rest args)
-        (apply
-         (if vertico-mode
-             #'consult-completion-in-region
-           #'completion--in-region)
-         args)))
-     (consult-buffer-sources
-      .
-      '
+    (leaf
+      consult
+      :straight t
+      :require t
+      :defvar (consult-buffer-sources)
+      :setq
       (
-       consult--source-project-buffer
-       consult--source-buffer
-       consult--source-hidden-buffer
-       consult--source-bookmark
-       consult--source-recent-file)))
-    :config
-    (consult-customize
-     consult-ripgrep consult-git-grep consult-grep
-     consult-bookmark consult-recent-file consult-xref
-     consult--source-bookmark consult--source-recent-file
-     consult--source-project-recent-file
-     :preview-key '(:debounce 0.2 any))
-    :bind
-    ((:evil-normal-state-map
-      ;; ("C-f" . consult-line)
-      ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-      ("<leader>SPC" . 'consult-buffer)
-      )))
+       (completion-in-region-function
+        .
+        (lambda (&rest args)
+          (apply
+           (if vertico-mode
+               #'consult-completion-in-region
+             #'completion--in-region)
+           args)))
+       (consult-buffer-sources
+        .
+        '
+        (
+         consult--source-project-buffer
+         consult--source-buffer
+         consult--source-hidden-buffer
+         consult--source-bookmark
+         consult--source-recent-file)))
+      :config
+      (consult-customize
+       consult-ripgrep consult-git-grep consult-grep
+       consult-bookmark consult-recent-file consult-xref
+       consult--source-bookmark consult--source-recent-file
+       consult--source-project-recent-file
+       :preview-key '(:debounce 0.2 any))
+      :bind
+      ;; ((:evil-normal-state-map
+      ;;   ;; ("C-f" . consult-line)
+      ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+      ;;   ("<leader>SPC" . 'consult-buffer)
+      ;;   ))
+      )
 
-  ;; flycheck integration
-  (leaf consult-flycheck
-    :straight t
-    :require t
-    :after consult flycheck
-    :bind
-    ((:evil-normal-state-map
-      ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-      )))
+    ;; flycheck integration
+    (leaf consult-flycheck
+      :straight t
+      :require t
+      :after consult flycheck
+      :bind
+      (
+  ;; (:evil-normal-state-map
+  ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
+  ;;       )
+  ))
 #+end_src
 **** consult-dir
 #+begin_src emacs-lisp
@@ -1663,9 +1776,10 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (:vertico-map
       ("C-x C-d" . consult-dir)
       ("C-x C-j" . consult-dir-jump-file))
-     (:evil-normal-state-map
-      ("C-S-r" . consult-dir)
-      ))
+     ;; (:evil-normal-state-map
+     ;;  ("C-S-r" . consult-dir)
+     ;;  )
+     )
     :custom
     (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 #+end_src
