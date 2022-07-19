@@ -1481,7 +1481,24 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (compleiton-category-overrides . nil)
      (fussy-filter-fn . 'fussy-filter-default)
      (fussy-score-fn . 'fussy-fuz-bin-score)
-     (fussy-fuz-use-skim-p . t)))
+     (fussy-fuz-use-skim-p . t))
+    :config
+    ;; integrate with company
+    (defun j-company-capf (f &rest args)
+      "Manage `completion-styles'."
+      (let ((fussy-max-candidate-limit 5000)
+            (fussy-default-regex-fn 'fussy-pattern-first-letter)
+            (fussy-prefer-prefix nil))
+        (apply f args)))
+
+    (defun j-company-transformers (f &rest args)
+      "Manage `company-transformers'."
+      (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+        (apply f args)))
+
+    (advice-add 'company--transform-candidates :around 'j-company-transformers)
+    (advice-add 'company-capf :around 'j-company-capf)
+    )
 #+end_src
 *** COMMENT corfu (with corfu-doc, cape)
 #+begin_src emacs-lisp
@@ -1687,11 +1704,11 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
     :require t
     :after company
-    :setq
+    :custom
     (company-same-mode-buffers-matchers .
                                         '(
-                                          company-same-mode-buffers-matcher-partial
-                                          company-same-mode-buffers-matcher-exact-first-letter-flex-rest
+                                          ;; company-same-mode-buffers-matcher-partial
+                                          ;; company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                           company-same-mode-buffers-matcher-flex
                                           ))
     :config
