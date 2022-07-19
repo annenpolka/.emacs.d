@@ -554,6 +554,7 @@ TODO: set ignore major modes like dired
 ** Dirvish
 
 Diredをオーバーホールするファイラ。
+良くも悪くもdiredらしさを取っ払ってranger系に作り替えるという感じ。
 
 #+begin_src emacs-lisp
   (leaf
@@ -587,7 +588,7 @@ Diredをオーバーホールするファイラ。
     ;; (dirvish-hide-details nil)
     :config
     ;; Place this line under :init to ensure the overriding at startup, see #22
-    (dirvish-override-dired-mode)
+    ;; (dirvish-override-dired-mode)
     ;; (dirvish-peek-mode)
     ;; Dired options are respected except a few exceptions,
     ;; see *In relation to Dired* section above
@@ -606,8 +607,8 @@ Diredをオーバーホールするファイラ。
     (emacs-startup-hook . dirvish-peek-mode)
     :bind
     (
-     (:dired-mode-map
-      ("h" . dirvish-up-directory)
+     (:dirvish-mode-map
+      ("h" . dired-up-directory)
       ;; ("j" . dired-next-line)
       ;; ("k" . dired-previous-line)
       ;; ("l" . dired-find-file)
