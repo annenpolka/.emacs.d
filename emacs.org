@@ -391,6 +391,15 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :custom
     ((default-input-method . "japanese-mozc")
      (mozc-candidate-style . 'overlay))
+    :init
+    (defun off-input-method nil
+      "deactivate multilingual input method."
+      (interactive)
+      (deactivate-input-method))
+    (defun on-input-method nil
+      "activate multilingual input method."
+      (interactive)
+      (activate-input-method default-input-method))
     )
 #+end_src
 * Helper Interfaces
