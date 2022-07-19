@@ -101,6 +101,7 @@
    (scroll-bar-mode . nil)
    (indent-tabs-mode . nil)
    (vc-follow-symlinks . t)
+   (select-enable-primary . t)
    (show-paren-style . 'mixed))
   :init
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -555,6 +556,11 @@
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-k")
+     ;; move-or-create-window prefix
+     '("w j" . move-or-create-window-below)
+     '("w k" . move-or-create-window-above)
+     '("w h" . move-or-create-window-left)
+     '("w l" . move-or-create-window-right)
      ;; Use SPC (0-9) for digit arguments.
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
@@ -629,17 +635,27 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
+     '("/" . consult-line)
+     '("C-u" . ccm-scroll-down)
+     '("C-d" . ccm-scroll-up)
      '("<escape>" . ignore)))
   :custom
   (meow-mode-state-list . '((helpful-mode . normal)
                             (Man-mode . normal)
                             (message-buffer-mode . normal)
                             ))
-
+  (meow--kbd-delete-char . "<deletechar>")
   :config
   (meow-setup)
   (meow-global-mode 1)
   )
+
+(leaf
+  smartparens
+  :straight t
+  :require t smartparens-config
+  :blackout t
+  :global-minor-mode smartparens-global-mode)
 
 ;; undo
 (leaf undo-fu :straight t :require t)

@@ -739,6 +739,7 @@ Diredをオーバーホールするファイラ。
 
 * Editing
 ** COMMENT Evil Modal Setup
+Evilに統合された設定をしているので、他の編集モードで同じパッケージを使う場合にもDRYにしない。
 *** evil
 #+begin_src emacs-lisp
     (leaf
@@ -1186,6 +1187,11 @@ Diredをオーバーホールするファイラ。
        ;; SPC j/k will run the original command in MOTION state.
        '("j" . "H-j")
        '("k" . "H-k")
+       ;; move-or-create-window prefix
+       '("w j" . move-or-create-window-below)
+       '("w k" . move-or-create-window-above)
+       '("w h" . move-or-create-window-left)
+       '("w l" . move-or-create-window-right)
        ;; Use SPC (0-9) for digit arguments.
        '("1" . meow-digit-argument)
        '("2" . meow-digit-argument)
@@ -1260,18 +1266,30 @@ Diredをオーバーホールするファイラ。
        '("Y" . meow-sync-grab)
        '("z" . meow-pop-selection)
        '("'" . repeat)
+       '("/" . consult-line)
+       '("C-u" . ccm-scroll-down)
+       '("C-d" . ccm-scroll-up)
        '("<escape>" . ignore)))
     :custom
     (meow-mode-state-list . '((helpful-mode . normal)
                               (Man-mode . normal)
                               (message-buffer-mode . normal)
                               ))
-
+    (meow--kbd-delete-char . "<deletechar>")
     :config
     (meow-setup)
     (meow-global-mode 1)
     )
 #+end_src
+*** smartparens
+#+begin_src emacs-lisp
+(leaf
+  smartparens
+  :straight t
+  :require t smartparens-config
+  :blackout t
+  :global-minor-mode smartparens-global-mode)
+  #+end_src
 ** Utilities
 *** undo-fu (with undo-fu-session)
 
