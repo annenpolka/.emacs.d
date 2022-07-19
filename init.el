@@ -413,7 +413,7 @@
   ;; (dirvish-hide-details nil)
   :config
   ;; Place this line under :init to ensure the overriding at startup, see #22
-  (dirvish-override-dired-mode)
+  ;; (dirvish-override-dired-mode)
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions,
   ;; see *In relation to Dired* section above
@@ -432,8 +432,8 @@
   (emacs-startup-hook . dirvish-peek-mode)
   :bind
   (
-   (:dired-mode-map
-    ("h" . dirvish-up-directory)
+   (:dirvish-mode-map
+    ("h" . dired-up-directory)
     ;; ("j" . dired-next-line)
     ;; ("k" . dired-previous-line)
     ;; ("l" . dired-find-file)
@@ -550,304 +550,6 @@
    :type git
    :host github
    :repo "alphapapa/burly.el"))
-
-(leaf
-  evil-org
-  :straight t
-  :require t
-  :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-agenda-set-keys)
-  :config
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys)
-  (evil-define-key '(normal visual) 'evil-org-mode
-    (kbd "C-S-a") 'org-edit-special
-    (kbd "C-j") 'org-next-visible-heading
-    (kbd "C-k") 'org-previous-visible-heading
-    (kbd "C-S-j") 'org-move-subtree-down
-    (kbd "C-S-k") 'org-move-subtree-up))
-
-(leaf
-  targets
-  :straight
-  (targets
-    :type git
-    :host github
-    :repo "noctuid/targets.el")
-  :require t
-  :defun (targets-setup targets-define-composite-to)
-  :config
-  (targets-setup)
-  ;; vim-textobj-anyblock
-  (targets-define-composite-to anyblock
-    (("(" ")" pair)
-     ("[" "]" pair)
-     ("{" "}" pair)
-     ("<" ">" pair)
-     ("\"" "\"" quote)
-     ("'" "'" quote)
-     ("`" "`" quote)
-     ("“" "”" quote))
-    :bind t
-    :keys "b"))
-
-;; indent textobject
-(leaf
-  evil-indent-plus
-  :straight t
-  :require t
-  :bind
-  ((:evil-inner-text-objects-map
-    ("i" . 'evil-indent-plus-i-indent-up)
-    ("I" . 'evil-indent-plus-i-indent))
-   (:evil-outer-text-objects-map
-    ("i" . 'evil-indent-plus-a-indent-up)
-    ("I" . 'evil-indent-plus-a-indent))))
-
-(leaf
-  evil-escape
-  :after evil
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-escape-mode
-  :setq-default
-  (evil-escape-key-sequence . "jk")
-  (evil-escape-delay . 0.2)
-  (evil-escape-excluded-states . '(normal visual motion emacs))
-  (evil-escape-excluded-major-modes
-   .
-   '
-   (magit-status-mode
-    magit-revision-mode magit-diff-mode help-mode)))
-
-(leaf
-  evil-commentary
-  :after evil
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-commentary-mode
-  :bind
-  (;; (:evil-normal-state-map
-   ;;  ("C-/" . 'evil-commentary-line)
-   ;;  )
-   )
-  )
-
-(leaf evil-snipe
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-snipe-mode evil-snipe-override-mode
-  :hook
-  (magit-mode-hook . turn-off-evil-snipe-override-mode)
-  :custom
-  (evil-snipe-scope . 'visible)
-  (evil-snipe-smart-case . t)
-  )
-
-(leaf
-  evil-mc
-  :after evil
-  :straight t
-  :require t
-  :global-minor-mode global-evil-mc-mode
-  :config
-  (evil-define-command
-    evil-mc-toggle-cursor-here
-    ()
-    "Create a cursor at point. If in visual block or line mode, then create
-   cursors on each line of the selection, on the column of the cursor. Otherwise
-   pauses cursors."
-    :repeat nil
-    :keep-visual nil
-    :evil-mc
-    t
-    (cond
-     (
-      (and
-       (evil-mc-has-cursors-p) (evil-normal-state-p)
-       (let*
-           (
-            (pos (point))
-            (cursor
-             (cl-find-if
-              (lambda (cursor)
-                (eq pos (evil-mc-get-cursor-start cursor)))
-              evil-mc-cursor-list)))
-         (when cursor
-           (evil-mc-delete-cursor cursor)
-           (setq evil-mc-cursor-list
-                 (delq cursor evil-mc-cursor-list))
-           t))))
-
-     ((memq evil-this-type '(block line))
-      (let
-          (
-           (col (evil-column))
-           (line-at-pt (line-number-at-pos)))
-        ;; Fix off-by-one error
-        (when (= evil-visual-direction 1)
-          (cl-decf col)
-          (backward-char))
-        (save-excursion
-          (evil-apply-on-block
-           (lambda (ibeg _)
-             (unless
-                 (or
-                  (= line-at-pt (line-number-at-pos ibeg))
-                  (invisible-p ibeg))
-               (goto-char ibeg)
-               (move-to-column col)
-               (when (= (current-column) col)
-                 (evil-mc-make-cursor-here))))
-           evil-visual-beginning
-           (if (eq evil-this-type 'line)
-               (1- evil-visual-end)
-             evil-visual-end)
-           nil)
-          (evil-exit-visual-state))))
-     (t
-      (evil-mc-pause-cursors)
-      ;; I assume I don't want the cursors to move yet
-      (evil-mc-make-cursor-here))))
-
-  (evil-define-command
-    evil-mc-undo-cursor
-    ()
-    "Undos last cursor, or all cursors in visual region."
-    :repeat nil
-    :evil-mc
-    t
-    (if (evil-visual-state-p)
-        (or
-         (mapc
-          (lambda (c)
-            (evil-mc-delete-cursor c)
-            (setq evil-mc-cursor-list (delq c evil-mc-cursor-list)))
-          (cl-remove-if-not
-           (lambda (pos)
-             (and
-              (>= pos evil-visual-beginning)
-              (< pos evil-visual-end)))
-           evil-mc-cursor-list
-           :key #'evil-mc-get-cursor-start))
-         (message "No cursors to undo in region"))
-      (evil-mc-undo-last-added-cursor)))
-
-  ;; smartparens integration
-  (dolist
-      (sp-command
-       '
-       (sp-up-sexp
-        sp-copy-sexp
-        sp-down-sexp
-        sp-join-sexp
-        sp-kill-sexp
-        sp-next-sexp
-        sp-split-sexp
-        sp-wrap-curly
-        sp-wrap-round
-        sp-raise-sexp
-        sp-clone-sexp
-        sp-wrap-square
-        sp-splice-sexp
-        sp-end-of-sexp
-        sp-forward-sexp
-        sp-backward-sexp
-        sp-convolute-sexp
-        sp-transpose-sexp
-        sp-kill-whole-line
-        sp-beginning-of-sexp
-        sp-forward-barf-sexp
-        sp-forward-slurp-sexp
-        sp-backward-barf-sexp
-        sp-backward-slurp-sexp
-        sp-splice-sexp-killing-forward
-        sp-splice-sexp-killing-backward))
-    (add-to-list 'evil-mc-custom-known-commands
-                 `(,sp-command (:default . evil-mc-execute-call))))
-  :hydra
-  (my-mc-hydra
-   (:color pink :hint nil :pre (evil-mc-pause-cursors))
-   "
-    ^Match^            ^Line-wise^           ^Manual^
-    ^^^^^^----------------------------------------------------
-    _Z_: match all     _J_: make & go down   _z_: toggle here
-    _m_: make & next   _K_: make & go up     _r_: remove last
-    _M_: make & prev   ^ ^                   _R_: remove all
-    _n_: skip & next   ^ ^                   _p_: pause
-    _N_: skip & prev   ^ ^                   _P_: resume
-
-    Current pattern: %`evil-mc-pattern
-
-    "
-   ("Z" #'evil-mc-make-all-cursors)
-   ("m" #'evil-mc-make-and-goto-next-match)
-   ("C-n" #'evil-mc-make-and-goto-next-match)
-   ("M" #'evil-mc-make-and-goto-prev-match)
-   ("C-p" #'evil-mc-make-and-goto-prev-match)
-   ("n" #'evil-mc-skip-and-goto-next-match)
-   ("N" #'evil-mc-skip-and-goto-prev-match)
-   ("J" #'evil-mc-make-cursor-move-next-line)
-   ("K" #'evil-mc-make-cursor-move-prev-line)
-   ("z" #'evil-mc-toggle-cursor-here)
-   ("r" #'evil-mc-undo-cursor)
-   ("R" #'evil-mc-undo-all-cursors)
-   ("p" #'evil-mc-pause-cursors)
-   ("P" #'evil-mc-resume-cursors)
-   ("q" #'evil-mc-resume-cursors "quit" :color blue)
-   ("Q"
-    #'evil-mc-undo-all-cursors
-    "quit with remove all"
-    :color blue)))
-
-;; display registers
-(leaf evil-owl
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode evil-owl-mode
-  :custom
-  (evil-owl-max-string-length . 500)
-  (evil-owl-idle-delay . 0.2)
-  :config
-  (add-to-list 'display-buffer-alist
-               '("*evil-owl*"
-                 (display-buffer-in-side-window)
-                 (side . bottom)
-                 (window-height . 0.25))))
-
-(leaf embrace :straight t :require t)
-(leaf evil-embrace :straight t :require t)
-(leaf
-  evil-surround
-  :straight t
-  :require
-  embrace
-  evil-embrace
-  evil-surround
-  :defun
-  (global-evil-surround-mode
-   evil-embrace-enable-evil-surround-integration)
-  :config
-  (global-evil-surround-mode 1)
-  (evil-embrace-enable-evil-surround-integration))
-
-(leaf
-  smartparens
-  :straight t
-  :require t smartparens-config
-  :blackout t
-  :global-minor-mode smartparens-global-mode)
-(leaf
-  evil-smartparens
-  :straight t
-  :require t
-  :after smartparens
-  :blackout t
-  :hook ((smartparens-enabled-hook . evil-smartparens-mode)))
 
 (leaf meow
   :straight t
@@ -1118,7 +820,24 @@
    (compleiton-category-overrides . nil)
    (fussy-filter-fn . 'fussy-filter-default)
    (fussy-score-fn . 'fussy-fuz-bin-score)
-   (fussy-fuz-use-skim-p . t)))
+   (fussy-fuz-use-skim-p . t))
+  :config
+  ;; integrate with company
+  (defun j-company-capf (f &rest args)
+    "Manage `completion-styles'."
+    (let ((fussy-max-candidate-limit 5000)
+          (fussy-default-regex-fn 'fussy-pattern-first-letter)
+          (fussy-prefer-prefix nil))
+      (apply f args)))
+
+  (defun j-company-transformers (f &rest args)
+    "Manage `company-transformers'."
+    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+      (apply f args)))
+
+  (advice-add 'company--transform-candidates :around 'j-company-transformers)
+  (advice-add 'company-capf :around 'j-company-capf)
+  )
 
 (leaf company
   :straight t
@@ -1203,11 +922,11 @@
   :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
   :require t
   :after company
-  :setq
+  :custom
   (company-same-mode-buffers-matchers .
                                       '(
-                                        company-same-mode-buffers-matcher-partial
-                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest
+                                        ;; company-same-mode-buffers-matcher-partial
+                                        ;; company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                         company-same-mode-buffers-matcher-flex
                                         ))
   :config
