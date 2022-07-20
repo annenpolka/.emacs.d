@@ -572,6 +572,11 @@
      '("w l" . move-or-create-window-right)
      ;; version control operations
      '("v" . my-git-actions/body)
+     ;; spell correction
+     '("z g" . flyspell-correct-at-point)
+     ;; consult search operations
+     '("SPC" . consult-buffer)
+     '("s p" . consult-ripgrep)
      ;; Use SPC (0-9) for digit arguments.
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
@@ -632,11 +637,12 @@
      '("q" . meow-quit)
      '("Q" . meow-goto-line)
      '("r" . meow-replace)
+     ;; '("r" . embrace-commander)
      '("R" . meow-swap-grab)
      '("s" . meow-kill)
      '("t" . meow-till)
      '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
+     '("U" . undo-redo)
      '("v" . meow-visit)
      '("V" . er/expand-region)
      '("w" . meow-mark-word)
@@ -653,13 +659,18 @@
      '("<escape>" . ignore))
     ;; insert state keymap
     (meow-define-keys
-      'insert
-    '("C-g" . meow-insert-exit)))
+        'insert
+      '("C-g" . meow-insert-exit)
+      '("C-w" . backward-kill-word)
+      )
+    )
+  :bind
+  (:minibuffer-local-map
+   ("C-w" . backward-kill-word))
   :custom
   (meow-mode-state-list . '((helpful-mode . normal)
                             (Man-mode . normal)
-                            (message-buffer-mode . normal)
-                            ))
+                                        ))
   (meow--kbd-delete-char . "<deletechar>")
   :config
   (meow-setup)
@@ -676,6 +687,10 @@
 (leaf expand-region
     :straight t
     :require t)
+
+(leaf embrace
+  :straight t
+  :require t)
 
 ;; undo
 (leaf undo-fu :straight t :require t)
@@ -787,7 +802,83 @@
   :blackout t
   :hook
   (prog-mode-hook . format-all-mode)
-  (prog-mode-hook . format-all-ensure-formatter))
+  (prog-mode-hook . format-all-ensure-formatter)
+  :custom
+  (format-all-default-formatters .
+                                 '(("Assembly" asmfmt)
+                                  ("ATS" atsfmt)
+                                  ("Bazel" buildifier)
+                                  ("BibTeX" emacs-bibtex)
+                                  ("C" clang-format)
+                                  ("C#" clang-format)
+                                  ("C++" clang-format)
+                                  ("Cabal Config" cabal-fmt)
+                                  ("Clojure" zprint)
+                                  ("CMake" cmake-format)
+                                  ("Crystal" crystal)
+                                  ("CSS" prettier)
+                                  ("Cuda" clang-format)
+                                  ("D" dfmt)
+                                  ("Dart" dart-format)
+                                  ("Dhall" dhall)
+                                  ("Dockerfile" dockfmt)
+                                  ("Elixir" mix-format)
+                                  ("Elm" elm-format)
+                                  ("Emacs Lisp" emacs-lisp)
+                                  ("Erlang" efmt)
+                                  ("F#" fantomas)
+                                  ("Fish" fish-indent)
+                                  ("Fortran Free Form" fprettify)
+                                  ("GLSL" clang-format)
+                                  ("Go" gofmt)
+                                  ("GraphQL" prettier)
+                                  ("Haskell" brittany)
+                                  ("HTML" html-tidy)
+                                  ("HTML+ERB" erb-format)
+                                  ("Java" clang-format)
+                                  ("JavaScript" prettier)
+                                  ("JSON" prettier)
+                                  ("JSON5" prettier)
+                                  ("Jsonnet" jsonnetfmt)
+                                  ("JSX" prettier)
+                                  ("Kotlin" ktlint)
+                                  ("LaTeX" latexindent)
+                                  ("Less" prettier)
+                                  ("Literate Haskell" brittany)
+                                  ("Lua" stylua)
+                                  ("Markdown" prettier)
+                                  ("Nix" nixpkgs-fmt)
+                                  ("Objective-C" clang-format)
+                                  ("OCaml" ocp-indent)
+                                  ("Perl" perltidy)
+                                  ("PHP" prettier)
+                                  ("Protocol Buffer" clang-format)
+                                  ("PureScript" purty)
+                                  ("Python" black)
+                                  ("R" styler)
+                                  ("Reason" bsrefmt)
+                                  ("ReScript" rescript)
+                                  ("Ruby" rufo)
+                                  ("Rust" rustfmt)
+                                  ("Scala" scalafmt)
+                                  ("SCSS" prettier)
+                                  ("Shell" shfmt)
+                                  ("Solidity" prettier)
+                                  ("SQL" sqlformat)
+                                  ("Svelte" prettier)
+                                  ("Swift" swiftformat)
+                                  ("Terraform" terraform-fmt)
+                                  ("TOML" prettier)
+                                  ("TSX" prettier)
+                                  ("TypeScript" prettier)
+                                  ("V" v-fmt)
+                                  ("Verilog" istyle-verilog)
+                                  ("Vue" prettier)
+                                  ("XML" html-tidy)
+                                  ("YAML" prettier)
+                                  )
+                                 )
+  )
 
 ;; EditorConfig support
 (leaf
@@ -917,6 +1008,10 @@
          ("C-j" . company-complete-selection))
   :config
   (add-to-list 'company-frontends 'company-dwim-frontend t))
+
+(leaf company-anywhere
+  :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
+  :require t)
 
 (leaf company-same-mode-buffers
   :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
@@ -1168,6 +1263,11 @@
    (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
    )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
+
+(leaf lua-mode
+  :straight t
+  :require t
+ )
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
