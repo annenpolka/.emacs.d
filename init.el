@@ -59,6 +59,8 @@
     (straight-use-package 'major-mode-hydra)
     (straight-use-package 'blackout)
     (straight-use-package 'system-packages)
+    ;; use bind-key for modal-depending keymapping
+    (straight-use-package 'bind-key)
     :config
     ;; initialize leaf-keywords.el
     (leaf-keywords-init)))
@@ -101,7 +103,7 @@
    (scroll-bar-mode . nil)
    (indent-tabs-mode . nil)
    (vc-follow-symlinks . t)
-   (select-enable-primary . t)
+   (select-enable-primary . nil)
    (show-paren-style . 'parenthesis))
   :init
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -148,10 +150,12 @@
   :straight t
   :require t)
 
-;; font config
 (set-face-attribute 'default nil :font "Iosevka Term-14")
 (set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
-(set-face-attribute 'variable-pitch nil :family "PlemolJP Console NF" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "MigMix 1M" :height 1.0)
+
+;; Japanese font
+(set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M"))
 
 ;; modus theme
 (leaf modus-themes
@@ -413,7 +417,7 @@
   ;; (dirvish-hide-details nil)
   :config
   ;; Place this line under :init to ensure the overriding at startup, see #22
-  ;; (dirvish-override-dired-mode)
+  (dirvish-override-dired-mode)
   ;; (dirvish-peek-mode)
   ;; Dired options are respected except a few exceptions,
   ;; see *In relation to Dired* section above
@@ -505,7 +509,9 @@
   ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
    (magit-post-refresh-hook . diff-hl-magit-post-refresh))
   :global-minor-mode global-diff-hl-mode
-  :custom (diff-hl-show-staged-changes . nil))
+  :custom
+  (diff-hl-show-staged-changes . nil)
+  (diff-hl-ask-before-revert-hunk . t))
 
 (leaf
   autorevert
@@ -555,7 +561,38 @@
   :straight t
   :require t
   :init
-  (defun meow-setup ()
+  ;; key-chord dependency
+  (leaf key-chord
+    :straight t
+    :require t
+    :global-minor-mode t
+    :custom
+    (key-chord-two-keys-delay . 0.1)
+    (key-chord-one-keys-delay . 0.2)
+    )
+  ;; command functions
+  (defun meow-save-line nil
+    (interactive)
+    (meow-line 1)
+    (call-interactively #'meow-save))
+  (defun meow-insert-at-first-non-whitespace nil
+    (interactive)
+    (back-to-indentation)
+    (meow-insert))
+  (defun meow-insert-at-end-of-line nil
+    (interactive)
+    (move-end-of-line 1)
+    (meow-insert))
+  (defun meow-find-backward nil
+    (interactive)
+    (let ((current-prefix-arg -1))
+      (call-interactively 'meow-find)))
+  (defun meow-search-backward nil
+    (interactive)
+    (let ((current-prefix-arg -1))
+      (call-interactively 'meow-search)))
+  ;; setup keymap
+  (defun meow-setup nil
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
@@ -574,6 +611,8 @@
      '("v" . my-git-actions/body)
      ;; spell correction
      '("z g" . flyspell-correct-at-point)
+     ;; help
+     '("K" . helpful-at-point)
      ;; consult search operations
      '("SPC" . consult-buffer)
      '("s p" . consult-ripgrep)
@@ -602,13 +641,16 @@
      '("2" . meow-expand-2)
      '("1" . meow-expand-1)
      '("-" . negative-argument)
+     '("=" . meow-query-replace)
+     '("+" . meow-stellar-replace-regexp)
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
      '("[" . meow-beginning-of-thing)
      '("]" . meow-end-of-thing)
      '("a" . meow-append)
-     '("A" . meow-open-below)
+     '("A" . meow-insert-at-end-of-line)
+     '("o" . meow-open-below)
      '("b" . meow-back-word)
      '("B" . meow-back-symbol)
      '("c" . meow-change)
@@ -617,12 +659,14 @@
      '("e" . meow-next-word)
      '("E" . meow-next-symbol)
      '("f" . meow-find)
+     '("F" . meow-find-backward)
      '("g" . meow-cancel-selection)
      '("G" . meow-grab)
      '("h" . meow-left)
      '("H" . meow-left-expand)
      '("i" . meow-insert)
-     '("I" . meow-open-above)
+     '("I" . meow-insert-at-first-non-whitespace)
+     '("O" . meow-open-above)
      '("j" . meow-next)
      '("J" . meow-next-expand)
      '("k" . meow-prev)
@@ -631,8 +675,9 @@
      '("L" . meow-right-expand)
      '("m" . meow-join)
      '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
+     '("N" . meow-search-backward)
+     '("(" . meow-block)
+     '(")" . meow-to-block)
      '("p" . meow-yank)
      '("q" . meow-quit)
      '("Q" . meow-goto-line)
@@ -640,9 +685,11 @@
      ;; '("r" . embrace-commander)
      '("R" . meow-swap-grab)
      '("s" . meow-kill)
+     '("S" . embrace-commander)
      '("t" . meow-till)
      '("u" . meow-undo)
      '("U" . undo-redo)
+     '("C-r" . undo-redo)
      '("v" . meow-visit)
      '("V" . er/expand-region)
      '("w" . meow-mark-word)
@@ -656,6 +703,12 @@
      '("/" . consult-line)
      '("C-u" . ccm-scroll-down)
      '("C-d" . ccm-scroll-up)
+     '("C-o" . better-jumper-jump-backward)
+     '("C-i" . better-jumper-jump-forward)
+     '("C-s" . save-buffer)
+     ;; '("TAB" . origami-toggle-node)
+     '("<tab>" . origami-toggle-node)
+     '("C-s" . save-buffer)
      '("<escape>" . ignore))
     ;; insert state keymap
     (meow-define-keys
@@ -663,19 +716,70 @@
       '("C-g" . meow-insert-exit)
       '("C-w" . backward-kill-word)
       )
+    (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
+    ;; anyblock thing object
+    (meow-thing-register 'anyblock
+                         '(
+                           (#'meow--inner-of-string)
+                           (pair ("[") ("]"))
+                           (pair ("(") (")"))
+                           (pair ("{") ("}"))
+                           (pair ("<") (">"))
+                           )
+                         '(
+                           (#'meow--bounds-of-string)
+                           (pair ("[") ("]"))
+                           (pair ("(") (")"))
+                           (pair ("{") ("}"))
+                           (pair ("<") (">"))
+                           )
+                         )
     )
   :bind
+  ;; readline style keymap for minibuffer
   (:minibuffer-local-map
    ("C-w" . backward-kill-word))
   :custom
+  (meow-use-clipboard . t)
   (meow-mode-state-list . '((helpful-mode . normal)
                             (Man-mode . normal)
-                                        ))
+                            ))
   (meow--kbd-delete-char . "<deletechar>")
+  (meow-selection-command-fallback .
+                                   '((meow-reverse . back-to-indentation)
+                                     (meow-change . meow-change-char)
+                                     (meow-save . meow-save-line)
+                                     (meow-kill . meow-kill-whole-line)
+                                     (meow-pop-selection . meow-pop-grab)
+                                     (meow-beacon-change . meow-beacon-change-char)
+                                     (meow-cancel . keyboard-quit)
+                                     (meow-delete . meow-C-d)))
+  (meow-char-thing-table .
+                         '((?r . round)
+                           (?b . anyblock) ;; `b' for bracket
+                           (?c . curly)
+                           (?s . string)
+                           (?e . symbol)
+                           (?w . window)
+                           (?B . buffer)
+                           (?p . paragraph)
+                           (?\[ . square)
+                           (?\( . round)
+                           (?l . line)
+                           (?d . defun)
+                           (?. . sentence)))
   :config
   (meow-setup)
+  ;; vim-way cursor
+  ;; Must set before enable `meow-global-mode`
+  ;; (setq meow-use-cursor-position-hack t
+  ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
   (meow-global-mode 1)
   )
+
+(leaf expand-region
+    :straight t
+    :require t)
 
 (leaf
   smartparens
@@ -684,13 +788,38 @@
   :blackout t
   :global-minor-mode smartparens-global-mode)
 
-(leaf expand-region
-    :straight t
-    :require t)
-
 (leaf embrace
   :straight t
   :require t)
+
+(leaf better-jumper
+  :straight t
+  :require t
+  :global-minor-mode t
+  :custom
+  (better-jumper-context . 'window)
+  :config
+  ;; this is the key here. This advice makes it so you only set a jump point
+  ;; if you move more than one line with whatever command you call. For example
+  ;; if you add this advice around evil-next-line, you will set a jump point
+  ;; if you do 10 j, but not if you just hit j. I did not write this code, I
+  ;; I found it a while back and updated it to work with better-jumper.
+  (defun my-jump-advice (oldfun &rest args)
+    (let ((old-pos (point)))
+      (apply oldfun args)
+      (when (> (abs (- (line-number-at-pos old-pos) (line-number-at-pos (point))))
+               1)
+        (better-jumper-set-jump old-pos))))
+
+  ;; jump scenarios
+  (advice-add 'meow-search :around #'my-jump-advice)
+  (advice-add 'meow-visit :around #'my-jump-advice)
+  (advice-add 'consult--jump :around #'my-jump-advice)
+  (advice-add 'ccm-scroll-up :around #'my-jump-advice)
+  (advice-add 'ccm-scroll-down :around #'my-jump-advice)
+  ;; (advice-add 'evil-goto-definition :around #'my-jump-advice)
+  ;; (advice-add 'evil-goto-mark  :around #'my-jump-advice)
+  )
 
 ;; undo
 (leaf undo-fu :straight t :require t)
@@ -723,6 +852,16 @@
   :bind
   ;; (:evil-normal-state-map
   ;;  ("<leader>sn" . 'sidekick-at-point))
+  )
+
+(leaf avy
+  :straight t
+  :require t
+  :custom
+  (avy-timeout-seconds . 0.3)
+  (avy-orders-alist .
+    '((avy-goto-char-0 . avy-order-closest)
+      (avy-goto-word-0 . avy-order-closest)))
   )
 
 ;; flycheck syntax checking
@@ -1190,7 +1329,17 @@
   :config
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block))
+  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block)
+  ;; keymap for meow modal
+  (when (featurep 'meow)
+    (bind-keys :map org-mode-map
+               ("C-S-<return>" . org-edit-special)
+               ("C-j" . org-next-visible-heading)
+               ("C-k" . org-previous-visible-heading)
+               ("C-S-j" . org-move-subtree-down)
+               ("C-S-k" . org-move-subtree-up))
+    )
+  )
 
 (leaf org-bullets
   :straight t
