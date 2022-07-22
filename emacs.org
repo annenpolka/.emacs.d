@@ -775,69 +775,69 @@ Diredをオーバーホールするファイラ。
 Evilに統合して・合わせて設定をしているので、他の編集モードで同じパッケージを使う場合にも設定をDRYにしない。
 *** evil
 #+begin_src emacs-lisp
-    (leaf
-      evil
-      :doc "Extensible vi layer for Emacs."
-      :straight t
-      :require
-      evil
-      windmove
-      :defun
-      (evil-ex-nohighlight
-       evil-mc-undo-all-cursors
-       evil-set-leader
-       evil-mode
-       turn-on-evil-mode
-       evil-define-command
-       evil-define-key)
-      :defvar (evil-want-keybinding evil-undo-system)
-      :init
-      (defun my/clear-marks-and-cursors ()
-        (interactive)
-        (evil-ex-nohighlight)
-        (evil-mc-undo-all-cursors))
-      :pre-setq
-      ;; for evil-collection
-      (evil-want-keybinding . nil)
-      ;; undo system
-      (evil-undo-system . 'undo-fu)
-      :custom
-      ;; <C-u> to scroll (replace universal-argument)
-      (evil-want-C-u-scroll . t)
-      ;; don't kill on visual paste
-      (evil-kill-on-visual-paste . nil)
-      ;; serach module
-      (evil-search-module 'evil-search)
-      :config
-      ;; leader-key
-      (evil-set-leader 'normal (kbd "<SPC>"))
-      (evil-set-leader 'visual (kbd "<SPC>"))
-      ;; activate evil
-      (evil-mode 1)
-      (turn-on-evil-mode)
-      :bind
-      (
-       (:evil-normal-state-map
-        ("C-s" . save-buffer)
-        ("C-q" . 'evil-quit)
-        ("C-l" . 'my/clear-marks-and-cursors)
-        ("K" . 'helpful-at-point)
-        ("C-j" . 'evil-open-fold)
-        ("C-k" . 'evil-close-fold)
-        ("C-e" . find-file)
-        ("C-S-e" . find-file-other-window)
-        ("<leader>n" . 'my-mc-hydra/body)
-        ("<leader>g" . 'my-git-actions/body)
-        ("<leader>h" . 'move-or-create-window-left)
-        ("<leader>j" . 'move-or-create-window-below)
-        ("<leader>k" . 'move-or-create-window-above)
-        ("<leader>l" . 'move-or-create-window-right))
-       (:evil-visual-state-map
-        ("<leader>n" . 'my-mc-hydra/body)
-        ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
-        ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
-        )
-  ))
+  (leaf
+    evil
+    :doc "Extensible vi layer for Emacs."
+    :straight t
+    :require
+    evil
+    windmove
+    :defun
+    (evil-ex-nohighlight
+     evil-mc-undo-all-cursors
+     evil-set-leader
+     evil-mode
+     turn-on-evil-mode
+     evil-define-command
+     evil-define-key)
+    :defvar (evil-want-keybinding evil-undo-system)
+    :init
+    (defun my/clear-marks-and-cursors ()
+      (interactive)
+      (evil-ex-nohighlight)
+      (evil-mc-undo-all-cursors))
+    :pre-setq
+    ;; for evil-collection
+    (evil-want-keybinding . nil)
+    ;; undo system
+    (evil-undo-system . 'undo-fu)
+    :custom
+    ;; <C-u> to scroll (replace universal-argument)
+    (evil-want-C-u-scroll . t)
+    ;; don't kill on visual paste
+    (evil-kill-on-visual-paste . nil)
+    ;; serach module
+    (evil-search-module 'evil-search)
+    :config
+    ;; leader-key
+    (evil-set-leader 'normal (kbd "<SPC>"))
+    (evil-set-leader 'visual (kbd "<SPC>"))
+    ;; activate evil
+    (evil-mode 1)
+    (turn-on-evil-mode)
+    :bind
+    (
+     (:evil-normal-state-map
+      ("C-s" . save-buffer)
+      ("C-q" . 'evil-quit)
+      ("C-l" . 'my/clear-marks-and-cursors)
+      ("K" . 'helpful-at-point)
+      ("C-j" . 'evil-open-fold)
+      ("C-k" . 'evil-close-fold)
+      ("C-e" . find-file)
+      ("C-S-e" . find-file-other-window)
+      ("<leader>n" . 'my-mc-hydra/body)
+      ("<leader>g" . 'my-git-actions/body)
+      ("<leader>h" . 'move-or-create-window-left)
+      ("<leader>j" . 'move-or-create-window-below)
+      ("<leader>k" . 'move-or-create-window-above)
+      ("<leader>l" . 'move-or-create-window-right))
+     (:evil-visual-state-map
+      ("<leader>n" . 'my-mc-hydra/body)
+      ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
+      ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
+      )
+     ))
 #+end_src
 *** evil-collection (Evil's binding presets)
 #+begin_src emacs-lisp
