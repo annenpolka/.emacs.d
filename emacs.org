@@ -658,6 +658,9 @@ Diredをオーバーホールするファイラ。
     :doc "great git client"
     :straight t
     :require t
+    :bind
+    (:magit-status-mode-map
+     ("x" . magit-delete-thing))
     :pretty-hydra
     (my-git-actions
      (:color pink :separator "=" :quit-key "q")
