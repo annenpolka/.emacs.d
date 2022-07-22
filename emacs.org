@@ -2190,6 +2190,14 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
         nil))
     )
 #+end_src
+* Terminal
+** vterm
+#+begin_src emacs-lisp
+  (leaf vterm
+    :straight t
+    :ensure-system-package cmake libtool (libtool . libtool-bin)
+    :require t)
+#+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
 ** Org Mode
