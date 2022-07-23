@@ -261,6 +261,31 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 
 #+end_src
 
+* Input Method
+** mozc
+#+begin_src emacs-lisp
+  ;; mozc ime
+  (leaf
+    mozc
+    ;; :depends emacs-mozc
+    :straight t
+    :require t
+    :bind* (("<zenkaku-hankaku>" . toggle-input-method)
+            ("<eisu-toggle>" . toggle-input-method))
+    :custom
+    ((default-input-method . "japanese-mozc")
+     (mozc-candidate-style . 'overlay))
+    :init
+    (defun off-input-method nil
+      "deactivate multilingual input method."
+      (interactive)
+      (deactivate-input-method))
+    (defun on-input-method nil
+      "activate multilingual input method."
+      (interactive)
+      (activate-input-method default-input-method))
+    )
+#+end_src
 * Themes/Fonts/Icons
 ** Font Config
 日本語てすとあいうえお、。
@@ -411,31 +436,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :straight t
     :require t
     :config (awesome-tab-mode t))
-#+end_src
-* Input Method
-** mozc
-#+begin_src emacs-lisp
-  ;; mozc ime
-  (leaf
-    mozc
-    ;; :depends emacs-mozc
-    :straight t
-    :require t
-    :bind* (("<zenkaku-hankaku>" . toggle-input-method)
-            ("<eisu-toggle>" . toggle-input-method))
-    :custom
-    ((default-input-method . "japanese-mozc")
-     (mozc-candidate-style . 'overlay))
-    :init
-    (defun off-input-method nil
-      "deactivate multilingual input method."
-      (interactive)
-      (deactivate-input-method))
-    (defun on-input-method nil
-      "activate multilingual input method."
-      (interactive)
-      (activate-input-method default-input-method))
-    )
 #+end_src
 * Helper Interfaces
 ** COMMENT which-key
