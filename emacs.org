@@ -555,7 +555,10 @@ TODO: set ignore major modes like dired
     :require t
     :blackout t
     :global-minor-mode global-centered-cursor-mode
-    :custom (ccm-step-size . 2))
+    :custom (ccm-step-size . 2)
+    :config
+    ;; exclude on vterm
+    (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
 #+end_src
 ** helpful
 #+begin_src emacs-lisp
@@ -2202,7 +2205,19 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   (leaf vterm
     :straight t
     :ensure-system-package cmake libtool (libtool . libtool-bin)
-    :require t)
+    :require t
+    :init
+    (leaf vterm-toggle
+      :straight t
+      :require t)
+    :bind
+    (("C-@" . vterm-toggle)
+     (:vterm-mode-map
+      ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
+      ))
+    :custom
+    (vterm-max-scrollback . 10000)
+    )
 #+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
