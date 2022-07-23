@@ -3,8 +3,7 @@
 ;;; Code:
 
 (setq
- gc-cons-threshold
- most-positive-fixnum
+ gc-cons-threshold most-positive-fixnum
  gc-cons-percentage 0.5)
 
 (set-language-environment 'Japanese)

@@ -267,18 +267,6 @@
   )
 
 (leaf
-  which-key
-  :doc "which-key in emacs"
-  :straight t
-  :require t
-  :defun (which-key-setup-side-window-right which-key-mode)
-  :blackout which-key-mode
-  :custom (which-key-idle-delay . 0.5)
-  :init
-  (which-key-setup-side-window-right)
-  (which-key-mode t))
-
-(leaf
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
@@ -376,12 +364,10 @@
   :straight t
   :require t
   :blackout t
-  :hook
-  (text-mode-hook . centered-cursor-mode)
-  (org-mode-hook . centered-cursor-mode)
-  (prog-mode-hook . centered-cursor-mode)
+  :global-minor-mode global-centered-cursor-mode
   :custom (ccm-step-size . 2)
   :config
+  ;; exclude on vterm
   (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
 
 ;; enhanced help
@@ -1414,7 +1400,7 @@
       (alist-get 'lsp-capf completion-category-defaults))
      '(orderless))) ;; Configure orderless
   :hook
-  (lsp-mode . lsp-enable-which-key-integration)
+  ;; (lsp-mode . lsp-enable-which-key-integration)
   ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
   (c++-mode-hook . lsp)
   :custom

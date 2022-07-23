@@ -38,8 +38,7 @@ My configuration managed by leaf.el + straight.el
   ;;; Code:
 
   (setq
-   gc-cons-threshold
-   most-positive-fixnum
+   gc-cons-threshold most-positive-fixnum
    gc-cons-percentage 0.5)
 
   (set-language-environment 'Japanese)
@@ -421,7 +420,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     )
 #+end_src
 * Helper Interfaces
-** which-key
+** COMMENT which-key
 #+begin_src emacs-lisp
 (leaf
   which-key
@@ -2237,7 +2236,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     ;; keymap for meow modal
     (when (featurep 'meow)
       (bind-keys :map org-mode-map
-                 ("C-S-<return>" . org-edit-special)
+                 ("C-S-e" . org-edit-special)
                  ("C-j" . org-next-visible-heading)
                  ("C-k" . org-previous-visible-heading)
                  ("C-S-j" . org-move-subtree-down)
@@ -2290,7 +2289,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
         (alist-get 'lsp-capf completion-category-defaults))
        '(orderless))) ;; Configure orderless
     :hook
-    (lsp-mode . lsp-enable-which-key-integration)
+    ;; (lsp-mode . lsp-enable-which-key-integration)
     ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
     (c++-mode-hook . lsp)
     :custom
