@@ -2294,6 +2294,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 ** LSP Mode
 *** lsp-mode
+**** lsp-mode
 #+begin_src emacs-lisp
   ;;; lsp
   (leaf
@@ -2317,41 +2318,35 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (lsp-keymap-prefix . "s-l")))
   
 #+end_src
-*** lsp-ui
+**** lsp-ui
  TODO: setup lsp ui tools
 #+begin_src emacs-lisp
-(leaf
-  lsp-ui
-  :doc "UI modules for lsp-mode"
-  :url "https://github.com/emacs-lsp/lsp-ui"
-  :straight t
-  :require t
-  :after lsp-mode
-  :custom
-  ((lsp-ui-doc-enable . t)
-   (lsp-ui-doc-deley . 0.5)
-   (lsp-ui-doc-header . t)
-   (lsp-ui-doc-include-signature . t)
-   (lsp-ui-doc-position . 'at-point)
-   (lsp-ui-doc-max-width . 150)
-   (lsp-ui-doc-max-height . 30)
-   (lsp-ui-doc-use-childframe . nil)
-   (lsp-ui-doc-use-webkit . nil)
-   (lsp-ui-flycheck-enable . t)
-   (lsp-ui-peek-enable . t)
-   (lsp-ui-peek-peek-height . 20)
-   (lsp-ui-peek-list-width . 50)
-   (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
-   )
-  :hook ((lsp-mode-hook . lsp-ui-mode)))
-#+end_src
-*** COMMENT eglot
-#+begin_src emacs-lisp
-  (leaf eglot
+  (leaf
+    lsp-ui
+    :doc "UI modules for lsp-mode"
+    :url "https://github.com/emacs-lsp/lsp-ui"
     :straight t
     :require t
-    :hook
-    (c++-mode-hook . eglot-ensure))
+    :after lsp-mode
+    :custom
+    ((lsp-ui-doc-enable . t)
+     (lsp-ui-doc-deley . 0.5)
+     (lsp-ui-doc-header . t)
+     (lsp-ui-doc-include-signature . t)
+     (lsp-ui-doc-position . 'at-point)
+     (lsp-ui-doc-max-width . 150)
+     (lsp-ui-doc-max-height . 30)
+     (lsp-ui-doc-use-childframe . nil)
+     (lsp-ui-doc-use-webkit . nil)
+     (lsp-ui-sideline-show-diagnostics . t)
+     (lsp-ui-sideline-show-hover . t)
+     (lsp-ui-flycheck-enable . t)
+     (lsp-ui-peek-enable . t)
+     (lsp-ui-peek-peek-height . 20)
+     (lsp-ui-peek-list-width . 50)
+     (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
+     )
+    :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
 ** Lua Mode
 #+begin_src emacs-lisp
