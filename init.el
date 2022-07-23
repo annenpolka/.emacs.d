@@ -108,7 +108,9 @@
   :init
   (defalias 'yes-or-no-p 'y-or-n-p)
   (define-key key-translation-map [?\C-h] [?\C-?])
-  (global-set-key (kbd "C-?") 'help-for-help))
+  (global-set-key (kbd "C-?") 'help-for-help)
+  (define-key input-decode-map [?\C-i] [C-i])
+  )
 
 (leaf
   cus-edit
@@ -374,8 +376,13 @@
   :straight t
   :require t
   :blackout t
-  :global-minor-mode global-centered-cursor-mode
-  :custom (ccm-step-size . 2))
+  :hook
+  (text-mode-hook . centered-cursor-mode)
+  (org-mode-hook . centered-cursor-mode)
+  (prog-mode-hook . centered-cursor-mode)
+  :custom (ccm-step-size . 2)
+  :config
+  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
 
 ;; enhanced help
 (leaf helpful
@@ -466,6 +473,9 @@
   :doc "great git client"
   :straight t
   :require t
+  :bind
+  (:magit-status-mode-map
+   ("x" . magit-delete-thing))
   :pretty-hydra
   (my-git-actions
    (:color pink :separator "=" :quit-key "q")
@@ -597,11 +607,16 @@
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
      '("k" . meow-prev)
+     '("C-o" . my/backward-forward-previous-location)
+     '("<C-i>" . my/backward-forward-next-location)
      '("<escape>" . ignore))
     (meow-leader-define-key
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-k")
+     '("l" . "s-l") ;; lsp-command-map
+     '("C-o" . "H-C-o")
+     '("<C-i>" . "H-C-i")
      ;; move-or-create-window prefix
      '("w j" . move-or-create-window-below)
      '("w k" . move-or-create-window-above)
@@ -700,23 +715,27 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
+     '("\"" . consult-yank-pop)
      '("/" . consult-line)
      '("C-u" . ccm-scroll-down)
      '("C-d" . ccm-scroll-up)
-     '("C-o" . better-jumper-jump-backward)
-     '("C-i" . better-jumper-jump-forward)
+     '("C-o" . my/backward-forward-previous-location)
+     '("<C-i>" . my/backward-forward-next-location)
      '("C-s" . save-buffer)
      ;; '("TAB" . origami-toggle-node)
-     '("<tab>" . origami-toggle-node)
+     ;; '("<tab>" . origami-toggle-node)
      '("C-s" . save-buffer)
      '("<escape>" . ignore))
     ;; insert state keymap
     (meow-define-keys
         'insert
       '("C-g" . meow-insert-exit)
-      '("C-w" . backward-kill-word)
       )
-    (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
+    ;; readline-style keymap
+    (bind-key "C-w" 'backward-kill-word)
+    ;; key-chord shortcuts
+    ;; (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit) 
+    ;; (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
     ;; anyblock thing object
     (meow-thing-register 'anyblock
                          '(
@@ -743,8 +762,10 @@
   (meow-use-clipboard . t)
   (meow-mode-state-list . '((helpful-mode . normal)
                             (Man-mode . normal)
+                            (vterm-mode . insert)
                             ))
   (meow--kbd-delete-char . "<deletechar>")
+  (meow--kbd-kill-region . "S-<delete>")
   (meow-selection-command-fallback .
                                    '((meow-reverse . back-to-indentation)
                                      (meow-change . meow-change-char)
@@ -756,6 +777,7 @@
                                      (meow-delete . meow-C-d)))
   (meow-char-thing-table .
                          '((?r . round)
+                           (?\( . round)
                            (?b . anyblock) ;; `b' for bracket
                            (?c . curly)
                            (?s . string)
@@ -764,7 +786,6 @@
                            (?B . buffer)
                            (?p . paragraph)
                            (?\[ . square)
-                           (?\( . round)
                            (?l . line)
                            (?d . defun)
                            (?. . sentence)))
@@ -792,33 +813,30 @@
   :straight t
   :require t)
 
-(leaf better-jumper
+(leaf backward-forward
   :straight t
   :require t
   :global-minor-mode t
   :custom
-  (better-jumper-context . 'window)
-  :config
-  ;; this is the key here. This advice makes it so you only set a jump point
-  ;; if you move more than one line with whatever command you call. For example
-  ;; if you add this advice around evil-next-line, you will set a jump point
-  ;; if you do 10 j, but not if you just hit j. I did not write this code, I
-  ;; I found it a while back and updated it to work with better-jumper.
-  (defun my-jump-advice (oldfun &rest args)
-    (let ((old-pos (point)))
-      (apply oldfun args)
-      (when (> (abs (- (line-number-at-pos old-pos) (line-number-at-pos (point))))
-               1)
-        (better-jumper-set-jump old-pos))))
-
-  ;; jump scenarios
-  (advice-add 'meow-search :around #'my-jump-advice)
-  (advice-add 'meow-visit :around #'my-jump-advice)
-  (advice-add 'consult--jump :around #'my-jump-advice)
-  (advice-add 'ccm-scroll-up :around #'my-jump-advice)
-  (advice-add 'ccm-scroll-down :around #'my-jump-advice)
-  ;; (advice-add 'evil-goto-definition :around #'my-jump-advice)
-  ;; (advice-add 'evil-goto-mark  :around #'my-jump-advice)
+  (backward-forward-mark-ring-max . 100)
+  :init
+  ;; reference: https://emacs-china.org/t/emacs/19171/17
+  (defun my/backward-forward-previous-location ()
+    "A `backward-forward-previous-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
+          (recent (point-marker)))
+      (backward-forward-previous-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-previous-location))))
+  (defun my/backward-forward-next-location ()
+    "A `backward-forward-next-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (> backward-forward-mark-ring-traversal-position 0))
+          (recent (point-marker)))
+      (backward-forward-next-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-next-location))))
   )
 
 ;; undo
@@ -1320,6 +1338,23 @@
       nil))
   )
 
+(leaf vterm
+  :straight t
+  :ensure-system-package cmake libtool (libtool . libtool-bin)
+  :require t
+  :init
+  (leaf vterm-toggle
+    :straight t
+    :require t)
+  :bind
+  (("C-@" . vterm-toggle)
+   (:vterm-mode-map
+    ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
+    ))
+  :custom
+  (vterm-max-scrollback . 10000)
+  )
+
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
@@ -1333,7 +1368,7 @@
   ;; keymap for meow modal
   (when (featurep 'meow)
     (bind-keys :map org-mode-map
-               ("C-S-<return>" . org-edit-special)
+               ("C-S-e" . org-edit-special)
                ("C-j" . org-next-visible-heading)
                ("C-k" . org-previous-visible-heading)
                ("C-S-j" . org-move-subtree-down)
@@ -1386,7 +1421,7 @@
   ((lsp-idle-delay . 0.5)
    (lsp-log-io . t)
    (lsp-completion-provider . :capf)
-   (lsp-keymap-prefix . "C-c l")))
+   (lsp-keymap-prefix . "s-l")))
 
 (leaf
   lsp-ui
