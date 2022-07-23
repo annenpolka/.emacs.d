@@ -2327,6 +2327,14 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
    )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
+*** COMMENT eglot
+#+begin_src emacs-lisp
+  (leaf eglot
+    :straight t
+    :require t
+    :hook
+    (c++-mode-hook . eglot-ensure))
+#+end_src
 ** Lua Mode
 #+begin_src emacs-lisp
   (leaf lua-mode
