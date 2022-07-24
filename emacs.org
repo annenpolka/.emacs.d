@@ -1963,6 +1963,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     (
      (company-idle-delay . 0.1)
      (company-minimum-prefix-length . 2)
+     (company-selection-wrap-around . t)
      (company-tooltip-align-annotations . t)
      (company-dabbrev-other-buffers . t)
      (company-dabbrev-ignore-case . nil)
