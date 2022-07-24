@@ -1834,6 +1834,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     )
 #+end_src
 *** COMMENT corfu (with corfu-doc, cape)
+**** corfu
 #+begin_src emacs-lisp
   (leaf
     corfu
@@ -1870,17 +1871,23 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       ("S-TAB" . corfu-previous)
       ("<backtab>" . corfu-previous)
       ("C-n" . corfu-next)
-      ("C-p" . corfu-previous)))
-    :config
-    (evil-make-overriding-map corfu-map)
-    (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
-    (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
+      ("C-p" . corfu-previous))
+     (:yas-keymap
+      ("<tab>" . nil)
+      ("TAB" . nil)
+      ("<backtab>" . nil)
+      ("S-TAB" . nil)
+      ("C-l" . yas-next-field-or-maybe-expand))
+     :config
+     (evil-make-overriding-map corfu-map)
+     (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
+     (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
 
-  (leaf
-    corfu-doc
-    :straight t
-    :require t
-    :hook (corfu-mode-hook . corfu-doc-mode))
+    (leaf
+      corfu-doc
+      :straight t
+      :require t
+      :hook (corfu-mode-hook . corfu-doc-mode))
 #+end_src
 **** cape
 #+begin_src emacs-lisp
@@ -2063,13 +2070,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :straight t
     :require t
     :blackout t
-    :bind
-    (:yas-keymap
-     ("<tab>" . nil)
-     ("TAB" . nil)
-     ("<backtab>" . nil)
-     ("S-TAB" . nil)
-     ("C-o" . yas-next-field-or-maybe-expand))
     :global-minor-mode yas-global-mode)
 #+end_src
 **** yasnippet-snippets
@@ -2343,7 +2343,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (lsp-log-io . t)
      (lsp-completion-provider . :capf)
      (lsp-keymap-prefix . "s-l")))
-  
 #+end_src
 **** lsp-ui
  TODO: setup lsp ui tools
