@@ -2364,8 +2364,9 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (lsp-ui-doc-max-height . 30)
      (lsp-ui-doc-use-childframe . nil)
      (lsp-ui-doc-use-webkit . nil)
-     (lsp-ui-sideline-show-diagnostics . t)
+     (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
      (lsp-ui-sideline-show-hover . t)
+     (lsp-ui-sideline-show-code-actions . t)
      (lsp-ui-flycheck-enable . t)
      (lsp-ui-peek-enable . t)
      (lsp-ui-peek-peek-height . 20)
@@ -2374,12 +2375,13 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      )
     :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
-** Lua Mode
+*** COMMENT eglot
 #+begin_src emacs-lisp
-  (leaf lua-mode
+  (leaf eglot
     :straight t
     :require t
-   )
+    :hook
+    (c++-mode-hook . eglot-ensure))
 #+end_src
 * Boilerplate
 #+begin_src emacs-lisp
