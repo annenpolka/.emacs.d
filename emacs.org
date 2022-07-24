@@ -2086,6 +2086,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   :custom ((vertico-cycle . t)))
 #+end_src
 *** consult (Narrowing Functions)
+**** consult
 #+begin_src emacs-lisp
     (leaf
       consult
@@ -2157,6 +2158,17 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      )
     :custom
     (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+#+end_src
+**** consult-flyspell
+#+begin_src emacs-lisp
+    (leaf consult-flyspell
+      :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
+      :require t
+      :config
+      (setq consult-flyspell-select-function 'flyspell-correct-at-point
+            consult-flyspell-set-point-after-word t
+            consult-flyspell-always-check-buffer t)
+      )
 #+end_src
 *** embark
 #+begin_src emacs-lisp
