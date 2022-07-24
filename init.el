@@ -152,6 +152,28 @@
   :straight t
   :require t)
 
+;; mozc ime
+(leaf
+  mozc
+  ;; :depends emacs-mozc
+  :straight t
+  :require t
+  :bind* (("<zenkaku-hankaku>" . toggle-input-method)
+          ("<eisu-toggle>" . toggle-input-method))
+  :custom
+  ((default-input-method . "japanese-mozc")
+   (mozc-candidate-style . 'overlay))
+  :init
+  (defun off-input-method nil
+    "deactivate multilingual input method."
+    (interactive)
+    (deactivate-input-method))
+  (defun on-input-method nil
+    "activate multilingual input method."
+    (interactive)
+    (activate-input-method default-input-method))
+  )
+
 (set-face-attribute 'default nil :font "Iosevka Term-14")
 (set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
 (set-face-attribute 'variable-pitch nil :family "MigMix 1M" :height 1.0)
@@ -242,28 +264,6 @@
   (doom-modeline-def-modeline 'org-src
     '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
     '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
-  )
-
-;; mozc ime
-(leaf
-  mozc
-  ;; :depends emacs-mozc
-  :straight t
-  :require t
-  :bind* (("<zenkaku-hankaku>" . toggle-input-method)
-          ("<eisu-toggle>" . toggle-input-method))
-  :custom
-  ((default-input-method . "japanese-mozc")
-   (mozc-candidate-style . 'overlay))
-  :init
-  (defun off-input-method nil
-    "deactivate multilingual input method."
-    (interactive)
-    (deactivate-input-method))
-  (defun on-input-method nil
-    "activate multilingual input method."
-    (interactive)
-    (activate-input-method default-input-method))
   )
 
 (leaf
@@ -478,7 +478,7 @@
      ("U" diff-hl-unstage-file "unstage all"))
     "Magit"
     (("<RET>" magit-status "open magit" :color blue)
-     ("C" magit-commit "commit" :color blue)))))
+     ("c" magit-commit "commit" :color blue)))))
 
 (leaf
   forge
@@ -595,6 +595,7 @@
      '("k" . meow-prev)
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
+     '("/" . consult-line)
      '("<escape>" . ignore))
     (meow-leader-define-key
      ;; SPC j/k will run the original command in MOTION state.
@@ -603,6 +604,7 @@
      '("l" . "s-l") ;; lsp-command-map
      '("C-o" . "H-C-o")
      '("<C-i>" . "H-C-i")
+     '("/" . "H-/")
      ;; move-or-create-window prefix
      '("w j" . move-or-create-window-below)
      '("w k" . move-or-create-window-above)
@@ -684,7 +686,8 @@
      '("Q" . meow-goto-line)
      '("r" . meow-replace)
      ;; '("r" . embrace-commander)
-     '("R" . meow-swap-grab)
+     ;; '("R" . meow-swap-grab)
+     '("R" . repeat)
      '("s" . meow-kill)
      '("S" . embrace-commander)
      '("t" . meow-till)
@@ -717,10 +720,10 @@
         'insert
       '("C-g" . meow-insert-exit)
       )
-    ;; readline-style keymap
+    ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
     ;; key-chord shortcuts
-    ;; (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit) 
+    ;; (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
     ;; (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
     ;; anyblock thing object
     (meow-thing-register 'anyblock
@@ -747,6 +750,7 @@
   :custom
   (meow-use-clipboard . t)
   (meow-mode-state-list . '((helpful-mode . normal)
+                            (help-mode . normal)
                             (Man-mode . normal)
                             (vterm-mode . insert)
                             ))
@@ -874,8 +878,12 @@
   :straight t
   :require t
   :global-minor-mode global-flycheck-mode
+  :init
+  (leaf flycheck-inline
+    :straight t
+    :hook (flycheck-mode-hook . flycheck-inline-mode))
   :custom
-  (flycheck-display-errors-delay . 0.2))
+  (flycheck-display-errors-delay . 0.1))
 
 (leaf
   flyspell
@@ -1087,6 +1095,7 @@
   (
    (company-idle-delay . 0.1)
    (company-minimum-prefix-length . 2)
+   (company-selection-wrap-around . t)
    (company-tooltip-align-annotations . t)
    (company-dabbrev-other-buffers . t)
    (company-dabbrev-ignore-case . nil)
@@ -1182,13 +1191,6 @@
   :straight t
   :require t
   :blackout t
-  :bind
-  (:yas-keymap
-   ("<tab>" . nil)
-   ("TAB" . nil)
-   ("<backtab>" . nil)
-   ("S-TAB" . nil)
-   ("C-o" . yas-next-field-or-maybe-expand))
   :global-minor-mode yas-global-mode)
 
 (leaf yasnippet-snippets
@@ -1272,6 +1274,15 @@
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 
+(leaf consult-flyspell
+  :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
+  :require t
+  :config
+  (setq consult-flyspell-select-function 'flyspell-correct-at-point
+        consult-flyspell-set-point-after-word t
+        consult-flyspell-always-check-buffer t)
+  )
+
 ;;; embark
 (leaf embark :straight t :require t
   :doc "minibuffer actions"
@@ -1340,6 +1351,11 @@
   :custom
   (vterm-max-scrollback . 10000)
   )
+
+(leaf lua-mode
+  :straight t
+  :require t
+ )
 
 ;; org mode things
 (leaf org
@@ -1426,6 +1442,9 @@
    (lsp-ui-doc-max-height . 30)
    (lsp-ui-doc-use-childframe . nil)
    (lsp-ui-doc-use-webkit . nil)
+   (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
+   (lsp-ui-sideline-show-hover . t)
+   (lsp-ui-sideline-show-code-actions . t)
    (lsp-ui-flycheck-enable . t)
    (lsp-ui-peek-enable . t)
    (lsp-ui-peek-peek-height . 20)
@@ -1433,11 +1452,6 @@
    (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
    )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
-
-(leaf lua-mode
-  :straight t
-  :require t
- )
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
