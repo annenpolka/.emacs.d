@@ -749,6 +749,12 @@ Diredをオーバーホールするファイラ。
     (diff-hl-show-staged-changes . nil)
     (diff-hl-ask-before-revert-hunk . t))
 #+end_src
+** git-timemachine
+#+begin_src emacs-lisp
+  (leaf git-timemachine
+    :straight t
+    :require t)
+#+end_src
 * Projects/Sessions Management
 ** autorevert ( バッファの再読込 )
 
