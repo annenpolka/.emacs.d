@@ -85,6 +85,7 @@
   ((user-full-name . "annenpolka")
    (user-mail-address . "lancelbb@gmail.com")
    (user-login-name . "annenpolka")
+   (backup-directory-alist . '((".*" . "~/.backup")))
    (create-lockfiles . nil)
    (debug-on-error . t)
    (init-file-debug . t)
@@ -151,6 +152,27 @@
 (leaf restart-emacs
   :straight t
   :require t)
+
+(leaf exec-path-from-shell
+  :straight t
+  :require t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+  )
+
+;; WSL-specific setup
+(when (and (eq system-type 'gnu/linux)
+           (getenv "WSLENV"))
+
+  ;; Teach Emacs how to open links in your default Windows browser
+  (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
+        (cmd-args '("/c" "start")))
+    (when (file-exists-p cmd-exe)
+      (setq browse-url-generic-program  cmd-exe
+            browse-url-generic-args     cmd-args
+            browse-url-browser-function 'browse-url-generic
+            search-web-default-browser 'browse-url-generic))))
 
 ;; mozc ime
 (leaf
@@ -509,6 +531,10 @@
   (diff-hl-show-staged-changes . nil)
   (diff-hl-ask-before-revert-hunk . t))
 
+(leaf git-timemachine
+  :straight t
+  :require t)
+
 (leaf
   autorevert
   :doc "revert buffers when files on disk change"
@@ -802,6 +828,19 @@
 (leaf embrace
   :straight t
   :require t)
+
+(leaf smart-hungry-delete
+  :straight t
+  :require t
+  :bind
+  (("<deletechar>" . 'smart-hungry-delete-backward-char)
+   ("<delete>" . 'smart-hungry-delete-backward-char)
+   ("C-d" . 'smart-hungry-delete-forward-char)
+   ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+   ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+   ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init
+  (smart-hungry-delete-add-default-hooks))
 
 (leaf backward-forward
   :straight t
@@ -1352,11 +1391,6 @@
   (vterm-max-scrollback . 10000)
   )
 
-(leaf lua-mode
-  :straight t
-  :require t
- )
-
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
@@ -1452,6 +1486,19 @@
    (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
    )
   :hook ((lsp-mode-hook . lsp-ui-mode)))
+
+(leaf lua-mode
+  :straight t
+  :require t
+ )
+
+(leaf rustic
+  :straight t
+  :require t
+  :custom
+  (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
+  (lsp-rust-analyzer-cargo-watch-command . "clippy")
+  )
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
