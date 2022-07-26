@@ -249,7 +249,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :require t)
 #+end_src
 
-** COMMENT exec-path-from-shell
+** exec-path-from-shell
 #+begin_src emacs-lisp
   (leaf exec-path-from-shell
     :straight t
@@ -258,7 +258,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize))
     )
-
 #+end_src
 
 ** WSL-specific Setup
@@ -2420,6 +2419,18 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :require t
    )
 #+end_src
+** Rust Mode
+*** rustic
+#+begin_src emacs-lisp
+  (leaf rustic
+    :straight t
+    :require t
+    :custom
+    (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
+    (lsp-rust-analyzer-cargo-watch-command . "clippy")
+    )
+#+end_src
+
 * Boilerplate
 #+begin_src emacs-lisp
 ;; ╭──────────────────────────────────────────────────────────╮
