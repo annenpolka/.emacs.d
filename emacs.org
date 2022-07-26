@@ -2295,13 +2295,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
-** Lua Mode
-#+begin_src emacs-lisp
-  (leaf lua-mode
-    :straight t
-    :require t
-   )
-#+end_src
 ** Org Mode
 *** org-mode
 #+begin_src emacs-lisp
@@ -2419,6 +2412,13 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :require t
     :hook
     (c++-mode-hook . eglot-ensure))
+#+end_src
+** Lua Mode
+#+begin_src emacs-lisp
+  (leaf lua-mode
+    :straight t
+    :require t
+   )
 #+end_src
 * Boilerplate
 #+begin_src emacs-lisp
