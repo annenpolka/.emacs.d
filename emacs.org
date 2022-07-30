@@ -2371,6 +2371,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :custom
     ((lsp-idle-delay . 0.5)
      (lsp-log-io . t)
+     (lsp-auto-guess-root . t)
      (lsp-completion-provider . :capf)
      (lsp-keymap-prefix . "s-l")))
 #+end_src
