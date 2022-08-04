@@ -288,6 +288,19 @@
     '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
   )
 
+(leaf centaur-tabs
+  :straight t
+  :require t
+  :config (centaur-tabs-mode t)
+  :custom
+  (centaur-tabs-style . "bar")
+  (centaur-tabs-set-icons . t)
+  (centaur-tabs-cycle-scope . 'tabs)
+  :bind
+  ("C-<tab>" . centaur-tabs-forward)
+  ("C-<iso-lefttab>" . centaur-tabs-backward)
+  )
+
 (leaf
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
