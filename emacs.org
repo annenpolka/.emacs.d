@@ -2274,6 +2274,17 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :custom
     (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 #+end_src
+**** consult-projectile
+projectile integration
+#+begin_src emacs-lisp
+  (leaf consult-projectile
+    :straight (consult-projectile
+               :type git
+               :host gitlab
+               :repo "OlMon/consult-projectile"
+               )
+    :require t)
+#+end_src
 **** consult-flyspell
 #+begin_src emacs-lisp
     (leaf consult-flyspell
