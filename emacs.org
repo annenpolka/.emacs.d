@@ -811,6 +811,14 @@ Diredをオーバーホールするファイラ。
   :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
   :global-minor-mode t)
 #+end_src
+** COMMENT perspective
+#+begin_src emacs-lisp
+  (leaf perspective
+    :straight t
+    :require t
+    :init
+    (persp-mode))
+#+end_src
 ** burly
 #+begin_src emacs-lisp
 ;; sessions as bookmark
