@@ -2375,6 +2375,15 @@ projectile integration
     (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
     )
 #+end_src
+** Hyperbole
+#+begin_src emacs-lisp
+  (leaf hyperbole
+    :straight t
+    :require t
+    :config
+    (hyperbole-mode 1))
+#+end_src
+
 * Treesitter Configs
 *** treesitter
 #+begin_src emacs-lisp
