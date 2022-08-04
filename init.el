@@ -489,6 +489,10 @@
     ([remap dired-do-copy] . dirvish-yank-menu)
     ([remap mode-line-other-buffer] . dirvish-history-last))))
 
+(leaf git-modes
+  :straight t
+  :require t)
+
 (leaf
   magit
   :doc "great git client"
