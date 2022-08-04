@@ -686,6 +686,12 @@ Diredをオーバーホールするファイラ。
       ([remap mode-line-other-buffer] . dirvish-history-last))))
 #+end_src
 * Git/Version Management
+** git-modes
+#+begin_src emacs-lisp
+  (leaf git-modes
+    :straight t
+    :require t)
+#+end_src
 ** magit (Git Frontend)
 #+begin_src emacs-lisp
   (leaf
