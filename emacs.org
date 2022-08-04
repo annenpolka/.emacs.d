@@ -435,15 +435,20 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :global-minor-mode minions-mode)
 #+end_src
 * Tabline
-** COMMENT centaur-tabs
+** centaur-tabs
 #+begin_src emacs-lisp
   (leaf centaur-tabs
     :straight t
     :require t
     :config (centaur-tabs-mode t)
+    :custom
+    (centaur-tabs-style . "bar")
+    (centaur-tabs-set-icons . t)
+    (centaur-tabs-cycle-scope . 'tabs)
     :bind
     ("C-<tab>" . centaur-tabs-forward)
-    ("C-S-<tab>" . centaur-tabs-backward))
+    ("C-<iso-lefttab>" . centaur-tabs-backward)
+    )
 #+end_src
 ** COMMENT awesome-tab
 #+begin_src emacs-lisp
