@@ -2375,6 +2375,23 @@ projectile integration
     (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
     )
 #+end_src
+* Treesitter Configs
+*** treesitter
+#+begin_src emacs-lisp
+  (leaf tree-sitter
+    :straight t
+    :require t
+    :global-minor-mode global-tree-sitter-mode
+    :hook
+    (treesitter-after-on-hook . tree-sitter-hl-mode))
+#+end_src
+*** treesitter-langs
+#+begin_src emacs-lisp
+  (leaf tree-sitter-langs
+    :straight t
+    :config t
+    :after tree-sitter)
+#+end_src
 * Terminal
 ** vterm
 #+begin_src emacs-lisp
