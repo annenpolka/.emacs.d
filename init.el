@@ -636,6 +636,8 @@
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
      '("k" . meow-prev)
+     '("C-u" . ccm-scroll-down)
+     '("C-d" . ccm-scroll-up)
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
      '("/" . consult-line)
@@ -644,6 +646,8 @@
      ;; SPC j/k will run the original command in MOTION state.
      '("j" . "H-j")
      '("k" . "H-k")
+     '("C-u" . "H-C-u")
+     '("C-d" . "H-C-d")
      '("l" . "s-l") ;; lsp-command-map
      '("C-o" . "H-C-o")
      '("<C-i>" . "H-C-i")
@@ -753,6 +757,7 @@
      '("C-d" . ccm-scroll-up)
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
+     '("C-f" . consult-line)
      '("C-s" . save-buffer)
      ;; '("TAB" . origami-toggle-node)
      ;; '("<tab>" . origami-toggle-node)
@@ -766,7 +771,7 @@
     ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
     ;; key-chord shortcuts
-    ;; (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
+    (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
     ;; (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
     ;; anyblock thing object
     (meow-thing-register 'anyblock
@@ -797,6 +802,7 @@
                             (Man-mode . normal)
                             (vterm-mode . insert)
                             ))
+  (meow--kbd-forward-char . "<right>")
   (meow--kbd-delete-char . "<deletechar>")
   (meow--kbd-kill-region . "S-<delete>")
   (meow-selection-command-fallback .
@@ -907,17 +913,6 @@
   ;; :after evil
   :global-minor-mode global-origami-mode)
 
-(leaf sidekick
-  :straight (sidekick
-             :type git
-             :host github
-             :repo "VernonGrant/sidekick.el")
-  :require t ;; sidekick-evil
-  :bind
-  ;; (:evil-normal-state-map
-  ;;  ("<leader>sn" . 'sidekick-at-point))
-  )
-
 (leaf avy
   :straight t
   :require t
@@ -927,6 +922,13 @@
     '((avy-goto-char-0 . avy-order-closest)
       (avy-goto-word-0 . avy-order-closest)))
   )
+
+(leaf dumb-jump
+  :straight t
+  :require t
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
 ;; flycheck syntax checking
 (leaf
@@ -939,7 +941,48 @@
     :straight t
     :hook (flycheck-mode-hook . flycheck-inline-mode))
   :custom
-  (flycheck-display-errors-delay . 0.1))
+  (flycheck-display-errors-delay . 0.1)
+  :config
+  ;; tweak fringe icons
+  (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
+    (vector #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00111000
+            #b01111100
+            #b11111110
+            #b11111110
+            #b01111100
+            #b00111000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000
+            #b00000000))
+
+  (flycheck-define-error-level 'error
+    :severity 2
+    :overlay-category 'flycheck-error-overlay
+    :fringe-bitmap 'flycheck-fringe-bitmap-ball
+    :fringe-face 'flycheck-fringe-error)
+
+  (flycheck-define-error-level 'warning
+    :severity 1
+    :overlay-category 'flycheck-warning-overlay
+    :fringe-bitmap 'flycheck-fringe-bitmap-ball
+    :fringe-face 'flycheck-fringe-warning
+    )
+
+  (flycheck-define-error-level 'info
+    :severity 0
+    :overlay-category 'flycheck-info-overlay
+    :fringe-bitmap 'flycheck-fringe-bitmap-ball
+    :fringe-face 'flycheck-fringe-info
+    )
+  )
 
 (leaf
   flyspell
@@ -1262,55 +1305,58 @@
   :custom ((vertico-cycle . t)))
 
 (leaf
-    consult
-    :straight t
-    :require t
-    :defvar (consult-buffer-sources)
-    :setq
+  consult
+  :straight t
+  :require t
+  :defvar (consult-buffer-sources)
+  :setq
+  (
+   (completion-in-region-function
+    .
+    (lambda (&rest args)
+      (apply
+       (if vertico-mode
+           #'consult-completion-in-region
+         #'completion--in-region)
+       args)))
+   (consult-buffer-sources
+    .
+    '
     (
-     (completion-in-region-function
-      .
-      (lambda (&rest args)
-        (apply
-         (if vertico-mode
-             #'consult-completion-in-region
-           #'completion--in-region)
-         args)))
-     (consult-buffer-sources
-      .
-      '
-      (
-       consult--source-project-buffer
-       consult--source-buffer
-       consult--source-hidden-buffer
-       consult--source-bookmark
-       consult--source-recent-file)))
-    :config
-    (consult-customize
-     consult-ripgrep consult-git-grep consult-grep
-     consult-bookmark consult-recent-file consult-xref
-     consult--source-bookmark consult--source-recent-file
-     consult--source-project-recent-file
-     :preview-key '(:debounce 0.2 any))
-    :bind
-    ;; ((:evil-normal-state-map
-    ;;   ;; ("C-f" . consult-line)
-    ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-    ;;   ("<leader>SPC" . 'consult-buffer)
-    ;;   ))
-    )
+     consult-projectile--source-projectile-buffer
+     ;; persp-consult-source
+     consult--source-buffer
+     consult--source-hidden-buffer
+     consult--source-bookmark
+     consult-projectile--source-projectile-project
+     consult-projectile--source-projectile-recentf
+     consult--source-recent-file)))
+  :config
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-recent-file
+   consult--source-project-recent-file
+   :preview-key '(:debounce 0.2 any))
+  :bind
+  ;; ((:evil-normal-state-map
+  ;;   ;; ("C-f" . consult-line)
+  ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+  ;;   ("<leader>SPC" . 'consult-buffer)
+  ;;   ))
+  )
 
-  ;; flycheck integration
-  (leaf consult-flycheck
-    :straight t
-    :require t
-    :after consult flycheck
-    :bind
-    (
-;; (:evil-normal-state-map
-;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-;;       )
-))
+;; flycheck integration
+(leaf consult-flycheck
+  :straight t
+  :require t
+  :after consult flycheck
+  :bind
+  (
+   ;; (:evil-normal-state-map
+   ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
+   ;;       )
+   ))
 
 ;; dir extension
 (leaf
@@ -1329,6 +1375,14 @@
    )
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+
+(leaf consult-projectile
+  :straight (consult-projectile
+             :type git
+             :host gitlab
+             :repo "OlMon/consult-projectile"
+             )
+  :require t)
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
@@ -1390,6 +1444,38 @@
         (select-window (active-minibuffer-window))
       nil))
   )
+
+(leaf define-it
+  :straight t
+  :require t
+  :custom
+  (google-translate-backend-method . 'curl)
+  ;; Auto detect language.
+  (google-translate-default-source-language . "auto")
+  ;; Set your target language.
+  (google-translate-default-target-language ."ja")
+  :config
+  ;; workaround serach tkk error
+  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  )
+
+(leaf hyperbole
+  :straight t
+  :require t
+  :config
+  (hyperbole-mode 1))
+
+(leaf tree-sitter
+  :straight t
+  :require t
+  :global-minor-mode global-tree-sitter-mode
+  :hook
+  (treesitter-after-on-hook . tree-sitter-hl-mode))
+
+(leaf tree-sitter-langs
+  :straight t
+  :config t
+  :after tree-sitter)
 
 (leaf vterm
   :straight t
@@ -1473,6 +1559,7 @@
   :custom
   ((lsp-idle-delay . 0.5)
    (lsp-log-io . t)
+   (lsp-auto-guess-root . t)
    (lsp-completion-provider . :capf)
    (lsp-keymap-prefix . "s-l")))
 
