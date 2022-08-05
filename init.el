@@ -484,6 +484,10 @@
   :init
   (persp-mode))
 
+(leaf persp-projectile
+  :straight t
+  :require t)
+
 ;; sessions as bookmark
 (leaf burly
   :straight
@@ -674,6 +678,7 @@
      '("C-d" . ccm-scroll-up)
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
+     '("C-w" . kill-this-buffer)
      '("/" . consult-line)
      '("<escape>" . ignore))
     (meow-leader-define-key
@@ -685,6 +690,7 @@
      '("l" . "s-l") ;; lsp-command-map
      '("C-o" . "H-C-o")
      '("<C-i>" . "H-C-i")
+     '("C-w" . "H-C-w")
      '("/" . "H-/")
      ;; move-or-create-window prefix
      '("w j" . move-or-create-window-below)

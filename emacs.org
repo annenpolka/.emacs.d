@@ -663,6 +663,7 @@ Diredをオーバーホールするファイラ。
   :global-minor-mode t)
 #+end_src
 ** perspective
+*** perspective
 #+begin_src emacs-lisp
   (leaf perspective
     :straight t
@@ -671,6 +672,12 @@ Diredをオーバーホールするファイラ。
     (persp-suppress-no-prefix-key-warning . t)
     :init
     (persp-mode))
+#+end_src
+*** persp-projectile (Automatic per-Project perspective workspace)
+#+begin_src emacs-lisp
+  (leaf persp-projectile
+    :straight t
+    :require t)
 #+end_src
 ** burly
 #+begin_src emacs-lisp
