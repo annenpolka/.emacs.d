@@ -2206,56 +2206,61 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 *** consult (Narrowing Functions)
 **** consult
 #+begin_src emacs-lisp
-    (leaf
-      consult
-      :straight t
-      :require t
-      :defvar (consult-buffer-sources)
-      :setq
+  (leaf
+    consult
+    :straight t
+    :require t
+    :defvar (consult-buffer-sources)
+    :setq
+    (
+     (completion-in-region-function
+      .
+      (lambda (&rest args)
+        (apply
+         (if vertico-mode
+             #'consult-completion-in-region
+           #'completion--in-region)
+         args)))
+     (consult-buffer-sources
+      .
+      '
       (
-       (completion-in-region-function
-        .
-        (lambda (&rest args)
-          (apply
-           (if vertico-mode
-               #'consult-completion-in-region
-             #'completion--in-region)
-           args)))
-       (consult-buffer-sources
-        .
-        '
-        (
-         consult--source-project-buffer
-         consult--source-buffer
-         consult--source-hidden-buffer
-         consult--source-bookmark
-         consult--source-recent-file)))
-      :config
-      (consult-customize
-       consult-ripgrep consult-git-grep consult-grep
-       consult-bookmark consult-recent-file consult-xref
-       consult--source-bookmark consult--source-recent-file
-       consult--source-project-recent-file
-       :preview-key '(:debounce 0.2 any))
-      :bind
-      ;; ((:evil-normal-state-map
-      ;;   ;; ("C-f" . consult-line)
-      ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-      ;;   ("<leader>SPC" . 'consult-buffer)
-      ;;   ))
-      )
-
-    ;; flycheck integration
-    (leaf consult-flycheck
-      :straight t
-      :require t
-      :after consult flycheck
-      :bind
-      (
-  ;; (:evil-normal-state-map
-  ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-  ;;       )
-  ))
+       consult-projectile--source-projectile-buffer
+       consult--source-bookmark
+       consult-projectile--source-projectile-project
+       consult-projectile--source-projectile-recentf
+       ;; persp-consult-source
+       consult--source-buffer
+       consult--source-hidden-buffer
+       consult--source-recent-file)))
+    :config
+    (consult-customize
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-recent-file
+     consult--source-project-recent-file
+     :preview-key '(:debounce 0.3 any))
+    :bind
+    ;; ((:evil-normal-state-map
+    ;;   ;; ("C-f" . consult-line)
+    ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+    ;;   ("<leader>SPC" . 'consult-buffer)
+    ;;   ))
+    )
+#+end_src
+**** consult-flycheck
+#+begin_src emacs-lisp
+  ;; flycheck integration
+  (leaf consult-flycheck
+    :straight t
+    :require t
+    :after consult flycheck
+    :bind
+    (
+     ;; (:evil-normal-state-map
+     ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
+     ;;       )
+     ))
 #+end_src
 **** consult-dir
 #+begin_src emacs-lisp
