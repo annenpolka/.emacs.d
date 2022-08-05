@@ -302,119 +302,6 @@
   )
 
 (leaf
-  display-line-numbers
-  :bind ("<f9>" . display-line-numbers-mode)
-  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 4))
-
-(leaf hl-line :global-minor-mode global-hl-line-mode)
-
-(leaf
-  hl-block-mode
-  :doc "blockman thing"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-block-mode)
-
-(leaf
-  hl-todo
-  :doc "TODO keywords highlighting"
-  :straight t
-  :require t
-  :global-minor-mode global-hl-todo-mode)
-
-(leaf
-  highlight-indent-guides
-  :doc "indent lines"
-  :straight t
-  :require t
-  :blackout t
-  :hook
-  (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
-  :custom
-  ((highlight-indent-guides-method . 'character)
-   (highlight-indent-guides-auto-enabled . t)
-   (highlight-indent-guides-responsive . t)))
-
-(leaf
-  rainbow-delimiters
-  :straight t
-  :require t
-  :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
-
-(leaf rainbow-mode
-  :straight t
-  :require t
-  :blackout t
-  :hook
-  (prog-mode-hook . rainbow-mode)
-  (org-mode-hook . rainbow-mode))
-
-;; focus window
-(leaf
-  zoom
-  :straight t
-  :ensure t
-  :blackout t
-  :global-minor-mode zoom-mode
-  :custom (zoom-size . '(0.618 . 0.618)))
-
-(leaf move-or-create-window
-  :doc "focus.nvim in emacs"
-  :init
-  (defun move-or-create-window-above nil
-    (interactive)
-    (if (window-in-direction 'above)
-        (windmove-up)
-      (progn
-        (split-window-below)
-        (windmove-up))))
-
-  (defun move-or-create-window-below nil
-    (interactive)
-    (if (window-in-direction 'below)
-        (windmove-down)
-      (progn
-        (split-window-below)
-        (windmove-down))))
-
-  (defun move-or-create-window-left nil
-    (interactive)
-    (if (window-in-direction 'left)
-        (windmove-left)
-      (progn
-        (split-window-right)
-        (windmove-left))))
-
-  (defun move-or-create-window-right nil
-    (interactive)
-    (if (window-in-direction 'right)
-        (windmove-right)
-      (progn
-        (split-window-right)
-        (windmove-right))))
-  )
-
-(leaf centered-cursor-mode
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode global-centered-cursor-mode
-  :custom (ccm-step-size . 2)
-  :config
-  ;; exclude on vterm
-  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
-
-;; enhanced help
-(leaf helpful
-  :straight t
-  :require t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
-
-(leaf
   dirvish
   :straight t
   :require (all-the-icons dirvish)
@@ -578,6 +465,7 @@
     ".howm-keys"
     "^/tmp/"
     "^/scp:"
+    "~/.emacs.d/straight/.*"
     (lambda (file) (file-in-directory-p file package-user-dir)))))
 
 ;; project management
@@ -588,6 +476,14 @@
   :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
   :global-minor-mode t)
 
+(leaf perspective
+  :straight t
+  :require t
+  :custom
+  (persp-suppress-no-prefix-key-warning . t)
+  :init
+  (persp-mode))
+
 ;; sessions as bookmark
 (leaf burly
   :straight
@@ -595,6 +491,139 @@
    :type git
    :host github
    :repo "alphapapa/burly.el"))
+
+;; my utility keymap
+(defvar kurumi-utility-map)
+(setq kurumi-utility-map (make-sparse-keymap))
+(bind-keys :map kurumi-utility-map
+           ("g d" . xref-find-deifnitions)
+           ("g r" . xref-find-reference)
+           )
+
+(leaf
+  which-key
+  :doc "which-key in emacs"
+  :straight t
+  :require t
+  :defun (which-key-setup-side-window-right which-key-mode)
+  :blackout which-key-mode
+  :custom (which-key-idle-delay . 0.25)
+  :init
+  (which-key-setup-side-window-right-bottom)
+  (which-key-mode t))
+
+(leaf
+  display-line-numbers
+  :bind ("<f9>" . display-line-numbers-mode)
+  :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
+  :custom (display-line-numbers-width . 4))
+
+(leaf hl-line :global-minor-mode global-hl-line-mode)
+
+(leaf
+  hl-block-mode
+  :doc "blockman thing"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-block-mode)
+
+(leaf
+  hl-todo
+  :doc "TODO keywords highlighting"
+  :straight t
+  :require t
+  :global-minor-mode global-hl-todo-mode)
+
+(leaf
+  highlight-indent-guides
+  :doc "indent lines"
+  :straight t
+  :require t
+  :blackout t
+  :hook
+  (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
+  :custom
+  ((highlight-indent-guides-method . 'character)
+   (highlight-indent-guides-auto-enabled . t)
+   (highlight-indent-guides-responsive . t)))
+
+(leaf
+  rainbow-delimiters
+  :straight t
+  :require t
+  :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
+
+(leaf rainbow-mode
+  :straight t
+  :require t
+  :blackout t
+  :hook
+  (prog-mode-hook . rainbow-mode)
+  (org-mode-hook . rainbow-mode))
+
+;; focus window
+(leaf
+  zoom
+  :straight t
+  :ensure t
+  :blackout t
+  :global-minor-mode zoom-mode
+  :custom (zoom-size . '(0.618 . 0.618)))
+
+(leaf move-or-create-window
+  :doc "focus.nvim in emacs"
+  :init
+  (defun move-or-create-window-above nil
+    (interactive)
+    (if (window-in-direction 'above)
+        (windmove-up)
+      (progn
+        (split-window-below)
+        (windmove-up))))
+
+  (defun move-or-create-window-below nil
+    (interactive)
+    (if (window-in-direction 'below)
+        (windmove-down)
+      (progn
+        (split-window-below)
+        (windmove-down))))
+
+  (defun move-or-create-window-left nil
+    (interactive)
+    (if (window-in-direction 'left)
+        (windmove-left)
+      (progn
+        (split-window-right)
+        (windmove-left))))
+
+  (defun move-or-create-window-right nil
+    (interactive)
+    (if (window-in-direction 'right)
+        (windmove-right)
+      (progn
+        (split-window-right)
+        (windmove-right))))
+  )
+
+(leaf centered-cursor-mode
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode global-centered-cursor-mode
+  :custom (ccm-step-size . 2)
+  :config
+  ;; exclude on vterm
+  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
 
 (leaf meow
   :straight t
@@ -630,6 +659,11 @@
     (interactive)
     (let ((current-prefix-arg -1))
       (call-interactively 'meow-search)))
+  (defun meow-close-window-or-buffer ()
+    (interactive)
+    (if (> (seq-length (window-list (selected-frame))) 1)
+        (delete-window)
+      (kill-this-buffer)))
   ;; setup keymap
   (defun meow-setup nil
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -758,21 +792,25 @@
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
      '("C-f" . consult-line)
+     '("C-e" . find-file)
      '("C-s" . save-buffer)
+     '("C-w" . kill-this-buffer)
      ;; '("TAB" . origami-toggle-node)
      ;; '("<tab>" . origami-toggle-node)
+     (cons "<RET>" kurumi-utility-map)
      '("C-s" . save-buffer)
      '("<escape>" . ignore))
     ;; insert state keymap
     (meow-define-keys
-        'insert
-      '("C-g" . meow-insert-exit)
+        '("C-g" . meow-insert-exit)
       )
     ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
+    ;; remap universal-argument
+    (bind-key "C-M-u" 'universal-argument)
     ;; key-chord shortcuts
     (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
-    ;; (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
+    (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
     ;; anyblock thing object
     (meow-thing-register 'anyblock
                          '(
@@ -1324,12 +1362,12 @@
     '
     (
      consult-projectile--source-projectile-buffer
-     ;; persp-consult-source
-     consult--source-buffer
-     consult--source-hidden-buffer
      consult--source-bookmark
      consult-projectile--source-projectile-project
      consult-projectile--source-projectile-recentf
+     ;; persp-consult-source
+     consult--source-buffer
+     consult--source-hidden-buffer
      consult--source-recent-file)))
   :config
   (consult-customize
@@ -1337,7 +1375,7 @@
    consult-bookmark consult-recent-file consult-xref
    consult--source-bookmark consult--source-recent-file
    consult--source-project-recent-file
-   :preview-key '(:debounce 0.2 any))
+   :preview-key '(:debounce 0.3 any))
   :bind
   ;; ((:evil-normal-state-map
   ;;   ;; ("C-f" . consult-line)
