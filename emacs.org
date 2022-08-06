@@ -530,7 +530,7 @@ Diredをオーバーホールするファイラ。
       ("h" . dired-up-directory)
       ;; ("j" . dired-next-line)
       ;; ("k" . dired-previous-line)
-      ;; ("l" . dired-find-file)
+      ("l" . dired-find-file)
       ;; ("i" . wdired-change-to-wdired-mode)
       ;; ("." . dired-omit-mode)
       ("TAB" . dirvish-subtree-toggle)
