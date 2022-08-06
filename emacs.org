@@ -440,7 +440,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   (leaf centaur-tabs
     :straight t
     :require t
-    :config (centaur-tabs-mode t)
+    :config
+    (centaur-tabs-mode t)
+    (centaur-tabs-group-by-projectile-project)
     :custom
     (centaur-tabs-style . "bar")
     (centaur-tabs-set-icons . t)
@@ -654,13 +656,13 @@ Diredをオーバーホールするファイラ。
 ** saveplace ( カーソル位置の保存 )
 ** projectile
 #+begin_src emacs-lisp
-;; project management
-(leaf
-  projectile
-  :straight t
-  :require t
-  :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
-  :global-minor-mode t)
+  ;; project management
+  (leaf
+    projectile
+    :straight t
+    :require t
+    :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
+    :global-minor-mode t)
 #+end_src
 ** perspective
 *** perspective
@@ -673,7 +675,7 @@ Diredをオーバーホールするファイラ。
     :init
     (persp-mode))
 #+end_src
-*** persp-projectile (Automatic per-Project perspective workspace)
+*** persp-projectile (per-Project perspective workspace)
 #+begin_src emacs-lisp
   (leaf persp-projectile
     :straight t
