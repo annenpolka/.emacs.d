@@ -663,6 +663,11 @@ Diredをオーバーホールするファイラ。
       (lambda (file) (file-in-directory-p file package-user-dir)))))
 #+end_src
 ** saveplace ( カーソル位置の保存 )
+#+begin_src emacs-lisp
+  (leaf saveplace
+    :config
+    (save-place-mode 1))
+#+end_src
 ** projectile
 #+begin_src emacs-lisp
   ;; project management
