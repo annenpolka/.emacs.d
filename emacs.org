@@ -2235,9 +2235,10 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
      (company-minimum-prefix-length . 2)
      (company-selection-wrap-around . t)
      (company-tooltip-align-annotations . t)
-     (company-dabbrev-other-buffers . t)
+     (company-dabbrev-other-buffers . 'all)
      (company-dabbrev-ignore-case . nil)
      (company-dabbrev-downcase . nil)
+     (company-dabbrev-code-everywhere . t)     ;;  include comments and strings.
      (company-require-match . 'never)
      (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
      (company-auto-complete . nil))
@@ -2250,8 +2251,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               :with
                               company-keywords
                               company-yasnippet
-                              company-dabbrev
-                              ;; company-dabbrev-code
+                              ;; company-dabbrev
+                              company-dabbrev-code
                               company-same-mode-buffers
                               company-semantic
                               company-gtags
@@ -2261,8 +2262,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               )
                              (company-keywords
                               company-yasnippet
-                              company-dabbrev
-                              ;; company-dabbrev-code
+                              ;; company-dabbrev
+                              company-dabbrev-code
                               company-same-mode-buffers
                               company-semantic
                               company-gtags
@@ -2272,10 +2273,10 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
                               )
                              company-files
                              company-dabbrev
+                             company-same-mode-buffers
                              company-wordfreq
                              company-bbdb
                              company-oddmuse
-                             company-same-mode-buffers
                              ))
     )
 #+end_src
@@ -2318,9 +2319,9 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :custom
     (company-same-mode-buffers-matchers .
                                         '(
-                                          ;; company-same-mode-buffers-matcher-partial
-                                          ;; company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                           company-same-mode-buffers-matcher-flex
+                                          company-same-mode-buffers-matcher-partial
+                                          company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                           ))
     :config
     (company-same-mode-buffers-initialize)
