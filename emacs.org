@@ -684,7 +684,10 @@ Diredをオーバーホールするファイラ。
   (leaf perspective
     :straight t
     :require t
+    :hook
+    ;; (kill-emacs-hook . persp-state-save)
     :custom
+    ;; (persp-state-default-file . "~/.emacs.d/persp-state-file")
     (persp-suppress-no-prefix-key-warning . t)
     :init
     (persp-mode))
@@ -697,13 +700,88 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** burly
 #+begin_src emacs-lisp
-;; sessions as bookmark
-(leaf burly
-  :straight
-  (burly
-   :type git
-   :host github
-   :repo "alphapapa/burly.el"))
+  ;; sessions as bookmark
+  (leaf burly
+    :straight
+    (burly
+     :type git
+     :host github
+     :repo "alphapapa/burly.el")
+    :config
+    ;; save current windows with project name
+    (defun burly-perspective-init-project-persp nil
+      "Save burly windows bookmark with current buffer's project name, then set persp's name to project one."
+      (interactive)
+      (let ((project-name (projectile-project-name projectile-project-root))
+            (persp-name (persp-current-name)))
+
+        ;; override project-name if it's "-" (saved with *scratch*)
+        (when (equal project-name "-")
+          (setq project-name persp-name))
+        ;; rename perspective when current persp is not project's name
+        (when (not (equal project-name persp-name))
+          ;; kill existing project's perspective before rename
+          (when (gethash project-name (perspectives-hash))
+            (persp-kill project-name)
+            )
+          (persp-rename project-name)
+          ;; ;; create perspective with last perspective name
+          ;; (persp-new persp-name)
+          )
+
+        ;; ;; ask persp-name interactively if it's "main"
+        ;; (when (and (equal persp-name persp-initial-frame-name)
+        ;;            ;; NOTE: shouldn't ask when going from *dashboard* to any burly bookmark
+        ;;            ;; FIXME: buffer-name doesn't work in this case
+        ;;            (string-match "\*dashboard\*" (buffer-name)))
+        ;;   (call-interactively 'persp-rename)
+        ;;   (setq project-name persp-name)
+        ;;   )
+        ;; ;; don't save "main" persp
+        ;; (unless (equal persp-name persp-initial-frame-name)
+        ;;   (burly-bookmark-windows project-name))
+        ;; )
+
+        (burly-bookmark-windows project-name))
+      )
+
+    ;; initalize only if in "main" persp
+    (defun burly-perspective-init-if-initial-frame (&rest _ignore)
+      (when (equal persp-initial-frame-name (persp-current-name))
+        (burly-perspective-init-project-persp)
+        )
+      )
+    ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
+    ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
+
+
+    ;; save current windows with perspective name
+    (defun burly-bookmark-perspective-windows (&rest _ignore)
+      "Save burly windows bookmark with current perspective name."
+      (interactive)
+      ;; save non-"main" perspective
+      (when (not (equal persp-initial-frame-name (persp-current-name)))
+        (burly-bookmark-windows (persp-current-name)))
+      ;; save "main" perspective as project one
+      (when (equal persp-initial-frame-name (persp-current-name))
+        (burly-perspective-init-project-persp)
+        )
+      )
+
+    ;; save perspective on change/save
+    (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
+    ;; (add-hook 'auto-save-hook 'burly-bookmark-perspective-windows)
+    (add-hook 'before-save-hook 'burly-bookmark-perspective-windows)
+    ;; (add-hook 'window-configuration-change-hook 'burly-bookmark-perspective-windows)
+    (advice-add 'save-buffers-kill-emacs :before 'burly-bookmark-perspective-windows)
+
+    ;; create perspective with burly
+    (defun burly-perspective--windows-set-before-advice (&rest _ignore)
+      "Create or Switch perspective before setting burly windows."
+      (persp-switch burly-opened-bookmark-name)
+      )
+    (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice)
+    )
 #+end_src
 
 * Utility Keymap
