@@ -258,6 +258,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :config
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-initialize))
+    ;; add mason's executable to emacs's exec-path
+    (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
+      (setq exec-path (add-to-list 'exec-path mason-path)))
     )
 #+end_src
 
