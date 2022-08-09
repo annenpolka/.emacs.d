@@ -122,6 +122,14 @@
   "help"
   :custom `((custom-file . ,(locate-user-emacs-file "custom.el"))))
 
+(leaf
+  persistent-scratch
+  :doc "keep scratch buffer state across sessions"
+  :straight t
+  :require t
+  :defun (persistent-scratch-setup-default)
+  :config (persistent-scratch-setup-default))
+
 ;; Tangle the code blocks on save.
 (defun my/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
@@ -159,6 +167,9 @@
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize))
+  ;; add mason's executable to emacs's exec-path
+  (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
+    (setq exec-path (add-to-list 'exec-path mason-path)))
   )
 
 ;; WSL-specific setup
@@ -212,7 +223,7 @@
   (modus-themes-bold-constructs . nil)
   (modus-themes-tabs-accented . nil)
   (modus-themes-mode-line . '(borderless))
-  (modus-themes-hl-line . '(underline))
+  (modus-themes-hl-line . '(intense underline))
   (modus-themes-region . '(bg-only no-extend))
   (modus-themes-scale-headings . t)
   (modus-themes-prompts . '(background bold gray intense italic))
@@ -357,7 +368,7 @@
     ("h" . dired-up-directory)
     ;; ("j" . dired-next-line)
     ;; ("k" . dired-previous-line)
-    ;; ("l" . dired-find-file)
+    ("l" . dired-find-file)
     ;; ("i" . wdired-change-to-wdired-mode)
     ;; ("." . dired-omit-mode)
     ("TAB" . dirvish-subtree-toggle)
@@ -470,6 +481,10 @@
     "~/.emacs.d/straight/.*"
     (lambda (file) (file-in-directory-p file package-user-dir)))))
 
+(leaf saveplace
+  :config
+  (save-place-mode 1))
+
 ;; project management
 (leaf
   projectile
@@ -481,7 +496,10 @@
 (leaf perspective
   :straight t
   :require t
+  :hook
+  ;; (kill-emacs-hook . persp-state-save)
   :custom
+  ;; (persp-state-default-file . "~/.emacs.d/persp-state-file")
   (persp-suppress-no-prefix-key-warning . t)
   :init
   (persp-mode))
@@ -496,7 +514,82 @@
   (burly
    :type git
    :host github
-   :repo "alphapapa/burly.el"))
+   :repo "alphapapa/burly.el")
+  :config
+  ;; save current windows with project name
+  (defun burly-perspective-init-project-persp nil
+    "Save burly windows bookmark with current buffer's project name, then set persp's name to project one."
+    (interactive)
+    (let ((project-name (projectile-project-name projectile-project-root))
+          (persp-name (persp-current-name)))
+
+      ;; override project-name if it's "-" (saved with *scratch*)
+      (when (equal project-name "-")
+        (setq project-name persp-name))
+      ;; rename perspective when current persp is not project's name
+      (when (not (equal project-name persp-name))
+        ;; kill existing project's perspective before rename
+        (when (gethash project-name (perspectives-hash))
+          (persp-kill project-name)
+          )
+        (persp-rename project-name)
+        ;; ;; create perspective with last perspective name
+        ;; (persp-new persp-name)
+        )
+
+      ;; ;; ask persp-name interactively if it's "main"
+      ;; (when (and (equal persp-name persp-initial-frame-name)
+      ;;            ;; NOTE: shouldn't ask when going from *dashboard* to any burly bookmark
+      ;;            ;; FIXME: buffer-name doesn't work in this case
+      ;;            (string-match "\*dashboard\*" (buffer-name)))
+      ;;   (call-interactively 'persp-rename)
+      ;;   (setq project-name persp-name)
+      ;;   )
+      ;; ;; don't save "main" persp
+      ;; (unless (equal persp-name persp-initial-frame-name)
+      ;;   (burly-bookmark-windows project-name))
+      ;; )
+
+      (burly-bookmark-windows project-name))
+    )
+
+  ;; initalize only if in "main" persp
+  (defun burly-perspective-init-if-initial-frame (&rest _ignore)
+    (when (equal persp-initial-frame-name (persp-current-name))
+      (burly-perspective-init-project-persp)
+      )
+    )
+  ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
+  ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
+
+
+  ;; save current windows with perspective name
+  (defun burly-bookmark-perspective-windows (&rest _ignore)
+    "Save burly windows bookmark with current perspective name."
+    (interactive)
+    ;; save non-"main" perspective
+    (when (not (equal persp-initial-frame-name (persp-current-name)))
+      (burly-bookmark-windows (persp-current-name)))
+    ;; save "main" perspective as project one
+    (when (equal persp-initial-frame-name (persp-current-name))
+      (burly-perspective-init-project-persp)
+      )
+    )
+
+  ;; save perspective on change/save
+  (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
+  ;; (add-hook 'auto-save-hook 'burly-bookmark-perspective-windows)
+  (add-hook 'before-save-hook 'burly-bookmark-perspective-windows)
+  ;; (add-hook 'window-configuration-change-hook 'burly-bookmark-perspective-windows)
+  (advice-add 'save-buffers-kill-emacs :before 'burly-bookmark-perspective-windows)
+
+  ;; create perspective with burly
+  (defun burly-perspective--windows-set-before-advice (&rest _ignore)
+    "Create or Switch perspective before setting burly windows."
+    (persp-switch burly-opened-bookmark-name)
+    )
+  (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice)
+  )
 
 ;; my utility keymap
 (leaf kurumi-utility
@@ -506,9 +599,7 @@
   (bind-keys :map kurumi-utility-map
              ("g d" . xref-find-definitions)
              ("g r" . xref-find-references)
-             ;; ("p" . 'persp-mode-map)
-             )
-  )
+             ))
 
 (leaf
   which-key
@@ -530,12 +621,17 @@
 
 (leaf hl-line :global-minor-mode global-hl-line-mode)
 
-(leaf
-  hl-block-mode
+(leaf hl-block-mode
   :doc "blockman thing"
   :straight t
-  :require t
-  :global-minor-mode global-hl-block-mode)
+  :custom
+  (hl-block-delay . 0.1)
+  (hl-block-bracket . nil)
+  (hl-block-multi-line . nil)
+  (hl-block-color-tint . "#08080A")
+  :config
+  (global-hl-block-mode 1)
+  )
 
 (leaf
   hl-todo
@@ -580,6 +676,29 @@
   :global-minor-mode zoom-mode
   :custom (zoom-size . '(0.618 . 0.618)))
 
+(leaf centered-cursor-mode
+  :straight t
+  :require t
+  :blackout ;TODO:
+  :global-minor-mode global-centered-cursor-mode
+  :custom (ccm-step-size . 2)
+  :config
+  ;; exclude on vterm
+  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+
+;; enhanced help
+(leaf helpful
+  :straight t
+  :require t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
+
+(leaf winner-mode
+  :config
+  (winner-mode 1))
+
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
   :init
@@ -615,25 +734,6 @@
         (split-window-right)
         (windmove-right))))
   )
-
-(leaf centered-cursor-mode
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode global-centered-cursor-mode
-  :custom (ccm-step-size . 2)
-  :config
-  ;; exclude on vterm
-  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
-
-;; enhanced help
-(leaf helpful
-  :straight t
-  :require t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
 
 (leaf meow
   :straight t
@@ -755,7 +855,7 @@
      '("e" . meow-next-word)
      '("E" . meow-next-symbol)
      '("f" . meow-find)
-     '("F" . meow-find-backward)
+     '("F" . avy-goto-char-timer)
      '("g" . meow-cancel-selection)
      '("G" . meow-grab)
      '("h" . meow-left)
@@ -804,17 +904,19 @@
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
      '("C-f" . consult-line)
+     '("C-p" . affe-find)
      '("C-e" . find-file)
      '("C-s" . save-buffer)
      '("C-w" . kill-this-buffer)
      ;; '("TAB" . origami-toggle-node)
      ;; '("<tab>" . origami-toggle-node)
-     (cons "<RET>" kurumi-utility-map)
+     (cons "S-SPC" kurumi-utility-map)
      '("C-s" . save-buffer)
      '("<escape>" . ignore))
     ;; insert state keymap
     (meow-define-keys
-        '("C-g" . meow-insert-exit)
+        'insert
+      '("C-g" . meow-insert-exit)
       )
     ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
@@ -853,6 +955,8 @@
                             (vterm-mode . insert)
                             ))
   (meow--kbd-forward-char . "<right>")
+  (meow--kbd-forward-line . "<down>")
+  (meow--kbd-backward-line . "<up>")
   (meow--kbd-delete-char . "<deletechar>")
   (meow--kbd-kill-region . "S-<delete>")
   (meow-selection-command-fallback .
@@ -1246,9 +1350,10 @@
    (company-minimum-prefix-length . 2)
    (company-selection-wrap-around . t)
    (company-tooltip-align-annotations . t)
-   (company-dabbrev-other-buffers . t)
+   (company-dabbrev-other-buffers . 'all)
    (company-dabbrev-ignore-case . nil)
    (company-dabbrev-downcase . nil)
+   (company-dabbrev-code-everywhere . t)     ;;  include comments and strings.
    (company-require-match . 'never)
    (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
    (company-auto-complete . nil))
@@ -1261,8 +1366,8 @@
                             :with
                             company-keywords
                             company-yasnippet
-                            company-dabbrev
-                            ;; company-dabbrev-code
+                            ;; company-dabbrev
+                            company-dabbrev-code
                             company-same-mode-buffers
                             company-semantic
                             company-gtags
@@ -1272,8 +1377,8 @@
                             )
                            (company-keywords
                             company-yasnippet
-                            company-dabbrev
-                            ;; company-dabbrev-code
+                            ;; company-dabbrev
+                            company-dabbrev-code
                             company-same-mode-buffers
                             company-semantic
                             company-gtags
@@ -1283,10 +1388,10 @@
                             )
                            company-files
                            company-dabbrev
+                           company-same-mode-buffers
                            company-wordfreq
                            company-bbdb
                            company-oddmuse
-                           company-same-mode-buffers
                            ))
   )
 
@@ -1321,9 +1426,9 @@
   :custom
   (company-same-mode-buffers-matchers .
                                       '(
-                                        ;; company-same-mode-buffers-matcher-partial
-                                        ;; company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                         company-same-mode-buffers-matcher-flex
+                                        company-same-mode-buffers-matcher-partial
+                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest
                                         ))
   :config
   (company-same-mode-buffers-initialize)
@@ -1374,14 +1479,18 @@
     '
     (
      consult-projectile--source-projectile-buffer
+     persp-consult-source
      consult--source-bookmark
      consult-projectile--source-projectile-project
      consult-projectile--source-projectile-recentf
-     ;; persp-consult-source
      consult--source-buffer
      consult--source-hidden-buffer
-     consult--source-recent-file)))
+     ;; consult--source-recent-file
+     )))
   :config
+  ;; don't set sources on top
+  (consult-customize consult--source-buffer persp-consult-source :default nil)
+  ;; preview delay
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
@@ -1432,7 +1541,18 @@
              :host gitlab
              :repo "OlMon/consult-projectile"
              )
-  :require t)
+  :require t
+  :custom
+  ;; (consult-projectile-use-projectile-switch-project . t)
+  (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
+  :config
+  ;; create persp and cd before consult-projectile
+  (defun kurumi-consult-projectile--project-persp-action (dir)
+    (persp-switch (projectile-project-name dir))
+    (cd (projectile-project-root dir))
+    (consult-projectile--file dir)
+    )
+  )
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
