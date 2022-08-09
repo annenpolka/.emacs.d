@@ -788,6 +788,7 @@ Diredをオーバーホールするファイラ。
 #+end_src
 
 * Utility Keymap
+** kurumi-utility
 #+begin_src emacs-lisp
   ;; my utility keymap
   (leaf kurumi-utility
@@ -797,9 +798,7 @@ Diredをオーバーホールするファイラ。
     (bind-keys :map kurumi-utility-map
                ("g d" . xref-find-definitions)
                ("g r" . xref-find-references)
-               ;; ("p" . 'persp-mode-map)
-               )
-    )
+               ))
 #+end_src
 ** which-key
 #+begin_src emacs-lisp
@@ -905,6 +904,37 @@ TODO: set ignore major modes like dired
   :blackout t
   :global-minor-mode zoom-mode
   :custom (zoom-size . '(0.618 . 0.618)))
+#+end_src
+** centered-cursor-mode
+#+begin_src emacs-lisp
+  (leaf centered-cursor-mode
+    :straight t
+    :require t
+    :blackout ;TODO:
+    :global-minor-mode global-centered-cursor-mode
+    :custom (ccm-step-size . 2)
+    :config
+    ;; exclude on vterm
+    (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+#+end_src
+** helpful
+#+begin_src emacs-lisp
+  ;; enhanced help
+  (leaf helpful
+    :straight t
+    :require t
+    :bind
+    ("C-h f" . helpful-callable)
+    ("C-h k" . helpful-key)
+    ("C-h v" . helpful-variable))
+#+end_src
+
+* Window Management
+** winner-mode
+#+begin_src emacs-lisp
+  (leaf winner-mode
+    :config
+    (winner-mode 1))
 #+end_src
 ** move-or-create-window
 #+begin_src emacs-lisp
