@@ -2369,14 +2369,18 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
       '
       (
        consult-projectile--source-projectile-buffer
+       persp-consult-source
        consult--source-bookmark
        consult-projectile--source-projectile-project
        consult-projectile--source-projectile-recentf
-       ;; persp-consult-source
        consult--source-buffer
        consult--source-hidden-buffer
-       consult--source-recent-file)))
+       ;; consult--source-recent-file
+       )))
     :config
+    ;; don't set sources on top
+    (consult-customize consult--source-buffer persp-consult-source :default nil)
+    ;; preview delay
     (consult-customize
      consult-ripgrep consult-git-grep consult-grep
      consult-bookmark consult-recent-file consult-xref
@@ -2434,7 +2438,18 @@ projectile integration
                :host gitlab
                :repo "OlMon/consult-projectile"
                )
-    :require t)
+    :require t
+    :custom
+    ;; (consult-projectile-use-projectile-switch-project . t)
+    (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
+    :config
+    ;; create persp and cd before consult-projectile
+    (defun kurumi-consult-projectile--project-persp-action (dir)
+      (persp-switch (projectile-project-name dir))
+      (cd (projectile-project-root dir))
+      (consult-projectile--file dir)
+      )
+    )
 #+end_src
 **** consult-flyspell
 #+begin_src emacs-lisp
