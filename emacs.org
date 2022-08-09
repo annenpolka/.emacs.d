@@ -826,12 +826,17 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** hl-block-mode
 #+begin_src emacs-lisp
-  (leaf
-    hl-block-mode
+  (leaf hl-block-mode
     :doc "blockman thing"
     :straight t
-    :require t
-    :global-minor-mode global-hl-block-mode)
+    :custom
+    (hl-block-delay . 0.1)
+    (hl-block-bracket . nil)
+    (hl-block-multi-line . nil)
+    (hl-block-color-tint . "#08080A")
+    :config
+    (global-hl-block-mode 1)
+    )
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
