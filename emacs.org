@@ -862,6 +862,17 @@ Diredをオーバーホールするファイラ。
      (highlight-indent-guides-auto-enabled . t)
      (highlight-indent-guides-responsive . t)))
 #+end_src
+** COMMENT hl-indent-scope (in early development, not stable for now)
+#+begin_src emacs-lisp
+  (leaf hl-indent-scope
+    :straight
+    (emacs-hl-indent-scope
+     :type git
+     :host nil
+     :repo "https://codeberg.org/ideasman42/emacs-hl-indent-scope")
+    :global-minor-mode hl-indent-scope-mode
+    )
+#+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (leaf
