@@ -327,7 +327,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (modus-themes-bold-constructs . nil)
     (modus-themes-tabs-accented . nil)
     (modus-themes-mode-line . '(borderless))
-    (modus-themes-hl-line . '(underline))
+    (modus-themes-hl-line . '(intense underline))
     (modus-themes-region . '(bg-only no-extend))
     (modus-themes-scale-headings . t)
     (modus-themes-prompts . '(background bold gray intense italic))
