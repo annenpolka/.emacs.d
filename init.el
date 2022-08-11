@@ -1,4 +1,5 @@
 ;;; init.el --- My init.el  -*- lexical-binding: t; -*-
+;; test tagnling
 
 ;; Author: annenpolka <lancelbb@gmail.com>
 
@@ -126,19 +127,8 @@
   persistent-scratch
   :doc "keep scratch buffer state across sessions"
   :straight t
-  :require t
   :defun (persistent-scratch-setup-default)
   :config (persistent-scratch-setup-default))
-
-;; Tangle the code blocks on save.
-(defun my/org-babel-tangle-config ()
-  (when (string-equal (buffer-file-name)
-                      (expand-file-name "emacs.org" user-emacs-directory))
-    ;; Dynamic scoping to the rescue
-    (let ((org-confirm-babel-evaluate nil))
-      (org-babel-tangle))))
-
-(add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'my/org-babel-tangle-config)))
 
 (leaf gcmh
   :straight t
@@ -753,11 +743,10 @@
     (interactive)
     (meow-line 1)
     (call-interactively #'meow-save))
-  (defun meow-insert-at-first-non-whitespace nil
+  (defun meow-insert-at-first-non-whitespace nil ;; vim's "I"
     (interactive)
-    (back-to-indentation)
     (meow-insert))
-  (defun meow-insert-at-end-of-line nil
+  (defun meow-insert-at-end-of-line nil ;; vim's "A"
     (interactive)
     (move-end-of-line 1)
     (meow-insert))
@@ -774,6 +763,7 @@
     (if (> (seq-length (window-list (selected-frame))) 1)
         (delete-window)
       (kill-this-buffer)))
+
   ;; setup keymap
   (defun meow-setup nil
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -906,6 +896,7 @@
      '("C-f" . consult-line)
      '("C-p" . affe-find)
      '("C-e" . find-file)
+     '("C-t" . burly-perspective-init-project-persp)
      '("C-s" . save-buffer)
      '("C-w" . kill-this-buffer)
      ;; '("TAB" . origami-toggle-node)
@@ -924,7 +915,15 @@
     (bind-key "C-M-u" 'universal-argument)
     ;; key-chord shortcuts
     (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
-    (key-chord-define meow-normal-state-keymap "gd" 'embark-dwim)
+    (key-chord-define meow-keypad-state-keymap "gd" 'embark-dwim)
+    ;; quit meow-keypad-mode
+    ;; NOTE: this won't work
+    ;; (defun key-chord--advice-quit-keypad-mode (&rest _ignore)
+    ;;   (when meow-keypad-mode
+    ;;     (meow-keypad-quit))
+    ;;   )
+    ;; (advice-add #'key-chord-input-method :after #'key-chord--advice-quit-keypad-mode)
+
     ;; anyblock thing object
     (meow-thing-register 'anyblock
                          '(
@@ -1684,6 +1683,13 @@
                ("C-S-k" . org-move-subtree-up))
     )
   )
+
+(leaf org-auto-tangle
+  :straight t
+  :hook
+  (org-mode-hook . org-auto-tangle-mode)
+  :custom
+  (org-auto-tangle-default . t))
 
 (leaf org-bullets
   :straight t
