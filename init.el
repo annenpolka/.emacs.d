@@ -1,5 +1,4 @@
 ;;; init.el --- My init.el  -*- lexical-binding: t; -*-
-;; test tagnling
 
 ;; Author: annenpolka <lancelbb@gmail.com>
 
@@ -89,7 +88,7 @@
    (backup-directory-alist . '((".*" . "~/.backup")))
    (create-lockfiles . nil)
    (debug-on-error . t)
-   (init-file-debug . t)
+   (init-file-debug . nil)
    (frame-resize-pixelwise . t)
    (enable-recursive-minibuffers . t)
    (history-length . 1000)
@@ -149,17 +148,18 @@
 
 (leaf restart-emacs
   :straight t
-  :require t)
+  :commands (restart-emacs restart-emacs-start-new-emacs))
 
 (leaf exec-path-from-shell
   :straight t
-  :require t
   :config
+  ;; setup on mac/linux
   (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize))
-  ;; add mason's executable to emacs's exec-path
-  (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
-    (setq exec-path (add-to-list 'exec-path mason-path)))
+    (exec-path-from-shell-initialize)
+    ;; add mason's executable to emacs's exec-path
+    (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
+      (setq exec-path (add-to-list 'exec-path mason-path)))
+    )
   )
 
 ;; WSL-specific setup
@@ -180,7 +180,6 @@
   mozc
   ;; :depends emacs-mozc
   :straight t
-  :require t
   :bind* (("<zenkaku-hankaku>" . toggle-input-method)
           ("<eisu-toggle>" . toggle-input-method))
   :custom
@@ -221,7 +220,8 @@
   :config (load-theme 'modus-vivendi))
 
 ;; icons dependency
-(leaf all-the-icons :straight t :require t
+(leaf all-the-icons
+  :straight t
   :custom
   (all-the-icons-scale-factor . 1.1)
   )
@@ -229,7 +229,6 @@
 (leaf
   kind-icon
   :straight t
-  :require t
   :after corfu
   :custom
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
@@ -238,7 +237,7 @@
 
 (leaf dashboard
   :straight t
-  :require t
+  :hook (after-init-hook . dashboard-setup-startup-hook)
   :custom
   (dashboard-banner-logo-title . "Kurumi Emacs")
   (dashboard-startup-banner . 'logo)
@@ -254,19 +253,17 @@
   (dashboard-items . '((recents  . 5)
                        (bookmarks . 5)
                        (projects . 5)))
-  :config
+  :defer-config
   (setq dashboard-footer-icon (all-the-icons-material "dashboard"
                                                       :height 1.0
                                                       :v-adjust -0.05
                                                       :face 'font-lock-keyword-face))
-  (dashboard-setup-startup-hook))
+  )
 
 (leaf doom-modeline
   :straight t
-  :require t
-  :init
   :hook
-  (after-init-hook . doom-modeline-mode)
+  (window-setup-hook . doom-modeline-mode)
   :custom
   (doom-modeline-minor-modes . nil)
   (doom-modeline-major-mode-icon . t)
@@ -274,7 +271,7 @@
   (doom-modeline-height . 15)
   (doom-modeline-modal-icon . nil)
   (doom-modeline-icon . t)
-  :config
+  :defer-config
   (custom-set-faces
    '(mode-line ((t (:family "Hack" :height 0.9))))
    ;; '(mode-line-active ((t (:family "Hack" :height 0.9 :weight light))))
@@ -292,8 +289,13 @@
 (leaf centaur-tabs
   :straight t
   :require t
-  :config
-  (centaur-tabs-mode t)
+  :hook
+  ;; disable on specific modes
+  (dired-mode-hook . centaur-tabs-local-mode)
+  (dirvish-mode-hook . centaur-tabs-local-mode)
+  (backtrace-mode-hook . centaur-tabs-local-mode)
+  :defer-config
+  (centaur-tabs-mode 1)
   (centaur-tabs-group-by-projectile-project)
   :custom
   (centaur-tabs-style . "bar")
@@ -307,8 +309,6 @@
 (leaf
   dirvish
   :straight t
-  :require (all-the-icons dirvish)
-  ;; :after evil
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
@@ -380,14 +380,12 @@
     ([remap mode-line-other-buffer] . dirvish-history-last))))
 
 (leaf git-modes
-  :straight t
-  :require t)
+  :straight t)
 
 (leaf
   magit
   :doc "great git client"
   :straight t
-  :require t
   :bind
   (:magit-status-mode-map
    ("x" . magit-delete-thing))
@@ -413,7 +411,6 @@
   forge
   :doc "remote repo control with magit"
   :straight t
-  :require t
   :after magit
   :custom
   ((bug-reference-mode . 0) (forge-add-default-bindings . nil)))
@@ -422,14 +419,12 @@
   magit-todos
   :doc "manage TODO keywords with magit"
   :straight t
-  :require t
   :after magit
   :hook (magit-mode-hook . magit-todos-mode))
 
 (leaf
   diff-hl
   :straight t
-  :require t
   :hook
   ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
    (magit-post-refresh-hook . diff-hl-magit-post-refresh))
@@ -439,8 +434,7 @@
   (diff-hl-ask-before-revert-hunk . t))
 
 (leaf git-timemachine
-  :straight t
-  :require t)
+  :straight t)
 
 (leaf
   autorevert
@@ -479,13 +473,11 @@
 (leaf
   projectile
   :straight t
-  :require t
   :bind (:projectile-mode-map ("C-c p" . projectile-command-map))
   :global-minor-mode t)
 
 (leaf perspective
   :straight t
-  :require t
   :hook
   ;; (kill-emacs-hook . persp-state-save)
   :custom
@@ -495,8 +487,7 @@
   (persp-mode))
 
 (leaf persp-projectile
-  :straight t
-  :require t)
+  :straight t)
 
 ;; sessions as bookmark
 (leaf burly
@@ -535,12 +526,11 @@
       ;;   (call-interactively 'persp-rename)
       ;;   (setq project-name persp-name)
       ;;   )
-      ;; ;; don't save "main" persp
-      ;; (unless (equal persp-name persp-initial-frame-name)
-      ;;   (burly-bookmark-windows project-name))
-      ;; )
 
-      (burly-bookmark-windows project-name))
+      ;; save as burly-bookmark, don't save "main" persp
+      (unless (equal persp-name persp-initial-frame-name)
+        (burly-bookmark-windows project-name))
+      )
     )
 
   ;; initalize only if in "main" persp
@@ -595,11 +585,10 @@
   which-key
   :doc "which-key in emacs"
   :straight t
-  :require t
   :defun (which-key-setup-side-window-right which-key-mode)
   :blackout which-key-mode
   :custom (which-key-idle-delay . 0.25)
-  :init
+  :config
   (which-key-setup-side-window-right-bottom)
   (which-key-mode t))
 
@@ -607,34 +596,31 @@
   display-line-numbers
   :bind ("<f9>" . display-line-numbers-mode)
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
-  :custom (display-line-numbers-width . 4))
+  :custom (display-line-numbers-width . 3))
 
 (leaf hl-line :global-minor-mode global-hl-line-mode)
 
 (leaf hl-block-mode
   :doc "blockman thing"
   :straight t
+  :hook (prog-mode-hook . global-hl-block-mode)
   :custom
   (hl-block-delay . 0.1)
   (hl-block-bracket . nil)
   (hl-block-multi-line . nil)
   (hl-block-color-tint . "#08080A")
-  :config
-  (global-hl-block-mode 1)
   )
 
 (leaf
   hl-todo
   :doc "TODO keywords highlighting"
   :straight t
-  :require t
   :global-minor-mode global-hl-todo-mode)
 
 (leaf
   highlight-indent-guides
   :doc "indent lines"
   :straight t
-  :require t
   :blackout t
   :hook
   (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
@@ -646,12 +632,10 @@
 (leaf
   rainbow-delimiters
   :straight t
-  :require t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
 (leaf rainbow-mode
   :straight t
-  :require t
   :blackout t
   :hook
   (prog-mode-hook . rainbow-mode)
@@ -661,15 +645,13 @@
 (leaf
   zoom
   :straight t
-  :ensure t
   :blackout t
   :global-minor-mode zoom-mode
   :custom (zoom-size . '(0.618 . 0.618)))
 
 (leaf centered-cursor-mode
   :straight t
-  :require t
-  :blackout ;TODO:
+  :blackout t
   :global-minor-mode global-centered-cursor-mode
   :custom (ccm-step-size . 2)
   :config
@@ -679,15 +661,16 @@
 ;; enhanced help
 (leaf helpful
   :straight t
-  :require t
   :bind
   ("C-h f" . helpful-callable)
   ("C-h k" . helpful-key)
   ("C-h v" . helpful-variable))
 
 (leaf winner-mode
-  :config
-  (winner-mode 1))
+  :bind
+  (("C-z" . winner-undo))
+  :global-minor-mode winner-mode
+  )
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
@@ -743,10 +726,11 @@
     (interactive)
     (meow-line 1)
     (call-interactively #'meow-save))
-  (defun meow-insert-at-first-non-whitespace nil ;; vim's "I"
+  (defun meow-insert-at-first-non-whitespace nil
     (interactive)
+    (back-to-indentation)
     (meow-insert))
-  (defun meow-insert-at-end-of-line nil ;; vim's "A"
+  (defun meow-insert-at-end-of-line nil
     (interactive)
     (move-end-of-line 1)
     (meow-insert))
@@ -894,7 +878,7 @@
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
      '("C-f" . consult-line)
-     '("C-p" . affe-find)
+     ;; '("C-p" . affe-find)
      '("C-e" . find-file)
      '("C-t" . burly-perspective-init-project-persp)
      '("C-s" . save-buffer)
@@ -915,15 +899,7 @@
     (bind-key "C-M-u" 'universal-argument)
     ;; key-chord shortcuts
     (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
-    (key-chord-define meow-keypad-state-keymap "gd" 'embark-dwim)
-    ;; quit meow-keypad-mode
-    ;; NOTE: this won't work
-    ;; (defun key-chord--advice-quit-keypad-mode (&rest _ignore)
-    ;;   (when meow-keypad-mode
-    ;;     (meow-keypad-quit))
-    ;;   )
-    ;; (advice-add #'key-chord-input-method :after #'key-chord--advice-quit-keypad-mode)
-
+    (key-chord-define meow-normal-state-keymap "gd" 'xref-find-definitions)
     ;; anyblock thing object
     (meow-thing-register 'anyblock
                          '(
@@ -954,8 +930,8 @@
                             (vterm-mode . insert)
                             ))
   (meow--kbd-forward-char . "<right>")
-  (meow--kbd-forward-line . "<down>")
-  (meow--kbd-backward-line . "<up>")
+  ;; (meow--kbd-forward-line . "<down>")
+  ;; (meow--kbd-backward-line . "<up>")
   (meow--kbd-delete-char . "<deletechar>")
   (meow--kbd-kill-region . "S-<delete>")
   (meow-selection-command-fallback .
@@ -1044,17 +1020,8 @@
         (my/backward-forward-next-location))))
   )
 
-;; undo
-(leaf undo-fu :straight t :require t)
-(leaf
-  undo-fu-session
-  :straight t
-  :require t
-  :global-minor-mode global-undo-fu-session-mode)
-
 (leaf super-save
   :straight t
-  :require t
   :blackout t
   :global-minor-mode super-save-mode)
 
@@ -1062,13 +1029,11 @@
 (leaf
   origami
   :straight t
-  :require t
   ;; :after evil
   :global-minor-mode global-origami-mode)
 
 (leaf avy
   :straight t
-  :require t
   :custom
   (avy-timeout-seconds . 0.3)
   (avy-orders-alist .
@@ -1078,7 +1043,6 @@
 
 (leaf dumb-jump
   :straight t
-  :require t
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
@@ -1361,7 +1325,7 @@
   ;; (add-to-list 'company-frontends 'company-echo-metadata-frontend t)
   (setq company-backends '(
                            ;; get lsp completion first when available
-                           (comany-capf
+                           (company-capf
                             :with
                             company-keywords
                             company-yasnippet
@@ -1461,7 +1425,6 @@
 (leaf
   consult
   :straight t
-  :require t
   :defvar (consult-buffer-sources)
   :setq
   (
@@ -1507,7 +1470,6 @@
 ;; flycheck integration
 (leaf consult-flycheck
   :straight t
-  :require t
   :after consult flycheck
   :bind
   (
@@ -1520,7 +1482,6 @@
 (leaf
   consult-dir
   :straight t
-  :require t
   :after consult
   :bind
   (("C-x C-d" . consult-dir)
@@ -1555,7 +1516,7 @@
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
-  :require t
+  :after (consult flyspell)
   :config
   (setq consult-flyspell-select-function 'flyspell-correct-at-point
         consult-flyspell-set-point-after-word t
@@ -1563,7 +1524,8 @@
   )
 
 ;;; embark
-(leaf embark :straight t :require t
+(leaf embark
+  :straight t
   :doc "minibuffer actions"
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
@@ -1574,13 +1536,12 @@
 ;; consult integration
 (leaf embark-consult
   :straight t
-  :require t)
+  :after (embark consult))
 
 ;; marginalia
 (leaf
   marginalia
   :straight t
-  :require t
   :defvar (marginalia-mode)
   :global-minor-mode marginalia-mode)
 
@@ -1588,7 +1549,7 @@
 (leaf
   affe
   :straight t
-  :require t
+  :commands (affe-grep affe-find)
   :init
   (leaf orderless :straight t :commands (orderless-pattern-compiler))
   (defun affe-orderless-regexp-compiler (input _type _ignorecase)
@@ -1599,7 +1560,6 @@
 (leaf
   savehist
   :straight t
-  :require t
   :defvar (savehist-coding-system)
   :init (savehist-mode)
   :setq (savehist-coding-system . 'utf-8-emacs))
@@ -1616,44 +1576,40 @@
 
 (leaf define-it
   :straight t
-  :require t
+  :commands (define-it define-it-at-point)
   :custom
   (google-translate-backend-method . 'curl)
   ;; Auto detect language.
   (google-translate-default-source-language . "auto")
   ;; Set your target language.
   (google-translate-default-target-language ."ja")
-  :config
+  :init
   ;; workaround serach tkk error
   (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
   )
 
 (leaf hyperbole
   :straight t
-  :require t
-  :config
-  (hyperbole-mode 1))
+  :hook
+  (window-setup-hook . hyperbole-mode)
+  )
 
 (leaf tree-sitter
   :straight t
-  :require t
   :global-minor-mode global-tree-sitter-mode
   :hook
   (treesitter-after-on-hook . tree-sitter-hl-mode))
 
 (leaf tree-sitter-langs
   :straight t
-  :config t
   :after tree-sitter)
 
 (leaf vterm
   :straight t
   :ensure-system-package cmake libtool (libtool . libtool-bin)
-  :require t
   :init
   (leaf vterm-toggle
-    :straight t
-    :require t)
+    :straight t)
   :bind
   (("C-@" . vterm-toggle)
    (:vterm-mode-map
@@ -1663,13 +1619,37 @@
   (vterm-max-scrollback . 10000)
   )
 
+(leaf eshell
+  :custom
+  (eshell-cmpl-ignore-case . t)
+  (eshell-hist-ignoredups . t)
+  )
+
+(leaf esh-autosuggest
+  :straight t
+  :hook (eshell-mode-hook . esh-autosuggest-mode)
+  )
+
+;; FIXME: doesn't work now, confirmed working in doom-emacs
+(leaf eshell-did-you-mean
+  :straight t
+  :after esh-mode ;; not eshell
+  :config
+  (eshell-did-you-mean-setup)
+  ;; HACK There is a known issue with `eshell-did-you-mean' where it does not
+  ;;      work on first invocation, so we invoke it once manually by setting the
+  ;;      last command and then calling the output filter.
+  (setq eshell-last-command-name "catt")
+  (eshell-did-you-mean-output-filter "catt: command not found")
+  )
+
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
-  :require t org-tempo
+  ;; :require t org-tempo
   :custom
   (org-catch-invisible-edits . 'smart)
-  :config
+  :defer-config
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block)
@@ -1693,7 +1673,6 @@
 
 (leaf org-bullets
   :straight t
-  :require t
   :after org
   :hook (org-mode-hook . org-bullets-mode)
   :custom
@@ -1701,15 +1680,14 @@
 
 (leaf
   org-appear
-  :require t
   :straight
   (org-appear
    :type git
    :host github
    :repo "awth13/org-appear")
+  :after org
   :hook
   (org-mode-hook . org-appear-mode)
-  :after org-mode
   :custom
   (org-appear-autolinks . t)
   (org-appear-autosubmarkers . t)
@@ -1744,7 +1722,6 @@
   :doc "UI modules for lsp-mode"
   :url "https://github.com/emacs-lsp/lsp-ui"
   :straight t
-  :require t
   :after lsp-mode
   :custom
   ((lsp-ui-doc-enable . t)
@@ -1769,12 +1746,10 @@
 
 (leaf lua-mode
   :straight t
-  :require t
  )
 
 (leaf rustic
   :straight t
-  :require t
   :custom
   (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
@@ -1782,7 +1757,6 @@
 
 (leaf typescript-mode
   :straight t
-  :require t
   :after tree-sitter
   :config
   ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
