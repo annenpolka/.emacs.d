@@ -2626,6 +2626,37 @@ projectile integration
     (vterm-max-scrollback . 10000)
     )
 #+end_src
+** eshell
+*** eshell
+#+begin_src emacs-lisp
+  (leaf eshell
+    :custom
+    (eshell-cmpl-ignore-case . t)
+    (eshell-hist-ignoredups . t)
+    )
+#+end_src
+*** esh-autosuggest
+#+begin_src emacs-lisp
+  (leaf esh-autosuggest
+    :straight t
+    :hook (eshell-mode-hook . esh-autosuggest-mode)
+    )
+#+end_src
+*** eshell-did-you-mean
+#+begin_src emacs-lisp
+  ;; FIXME: doesn't work now, confirmed working in doom-emacs
+  (leaf eshell-did-you-mean
+    :straight t
+    :after esh-mode ;; not eshell
+    :config
+    (eshell-did-you-mean-setup)
+    ;; HACK There is a known issue with `eshell-did-you-mean' where it does not
+    ;;      work on first invocation, so we invoke it once manually by setting the
+    ;;      last command and then calling the output filter.
+    (setq eshell-last-command-name "catt")
+    (eshell-did-you-mean-output-filter "catt: command not found")
+    )
+#+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
 ** Org Mode
