@@ -52,7 +52,6 @@
   (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
 
   (leaf leaf-keywords
-    :require t
     :init
     ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
     (straight-use-package 'hydra)
@@ -64,9 +63,12 @@
     :config
     ;; initialize leaf-keywords.el
     (leaf-keywords-init)))
+
+
 ;; leaf plugins
 (leaf leaf
-  ;; :config (leaf leaf-convert :straight t :require t)
+  :config
+  (leaf leaf-convert :straight t)
   )
 
 ;; set builtin configs via leaf
@@ -88,7 +90,7 @@
    (user-login-name . "annenpolka")
    (backup-directory-alist . '((".*" . "~/.backup")))
    (create-lockfiles . nil)
-   (debug-on-error . t)
+   (debug-on-error . nil)
    (init-file-debug . nil)
    (frame-resize-pixelwise . t)
    (enable-recursive-minibuffers . t)
@@ -106,7 +108,8 @@
    (indent-tabs-mode . nil)
    (vc-follow-symlinks . t)
    (select-enable-primary . nil)
-   (show-paren-style . 'parenthesis))
+   (show-paren-style . 'parenthesis)
+   (bookmark-watch-bookmark-file . 'silent))
   :init
   (defalias 'yes-or-no-p 'y-or-n-p)
   (define-key key-translation-map [?\C-h] [?\C-?])
@@ -722,7 +725,6 @@
   ;; key-chord dependency
   (leaf key-chord
     :straight t
-    :require t
     :global-minor-mode t
     :custom
     (key-chord-two-keys-delay . 0.1)
@@ -935,6 +937,7 @@
                             (help-mode . normal)
                             (Man-mode . normal)
                             (vterm-mode . insert)
+                            (eshell-mode . insert)
                             ))
   (meow--kbd-forward-char . "<right>")
   ;; (meow--kbd-forward-line . "<down>")
@@ -964,7 +967,7 @@
                            (?l . line)
                            (?d . defun)
                            (?. . sentence)))
-  :config
+  :defer-config
   (meow-setup)
   ;; vim-way cursor
   ;; Must set before enable `meow-global-mode`
@@ -974,23 +977,20 @@
   )
 
 (leaf expand-region
-    :straight t
-    :require t)
+    :straight t)
 
 (leaf
   smartparens
   :straight t
-  :require t smartparens-config
+  :require smartparens-config
   :blackout t
   :global-minor-mode smartparens-global-mode)
 
 (leaf embrace
-  :straight t
-  :require t)
+  :straight t)
 
 (leaf smart-hungry-delete
   :straight t
-  :require t
   :bind
   (("<deletechar>" . 'smart-hungry-delete-backward-char)
    ("<delete>" . 'smart-hungry-delete-backward-char)
@@ -1025,11 +1025,6 @@
       (when (and (equal recent (point-marker)) purge)
         (my/backward-forward-next-location))))
   )
-
-(leaf super-save
-  :straight t
-  :blackout t
-  :global-minor-mode super-save-mode)
 
 ;; Code folding
 (leaf
@@ -1615,7 +1610,8 @@
   (leaf vterm-toggle
     :straight t)
   :bind
-  (("C-@" . vterm-toggle)
+  (
+   ;; ("C-@" . vterm-toggle)
    (:vterm-mode-map
     ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
     ))
@@ -1624,20 +1620,45 @@
   )
 
 (leaf eshell
+  :require t
   :custom
   (eshell-cmpl-ignore-case . t)
   (eshell-hist-ignoredups . t)
+  :defer-config
+  ;; HACK: can't map directly to eshell-mode-map
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (progn
+                ;; avoid overriding c-n/c-p for meow compatibility
+                (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
+                (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input))))
   )
+
+(leaf eshell-toggle
+  :straight t
+  :require t
+  :custom
+  (eshell-toggle-size-fraction . 3)
+  (eshell-toggle-use-projectile-root . t)
+  (eshell-toggle-run-command . nil)
+  (eshell-toggle-init-function . #'eshell-toggle-init-eshell)
+  ;; (eshell-toggle-init-function . #'eshell-toggle-init-ansi-term)
+  :bind
+  ("C-@" . eshell-toggle))
 
 (leaf esh-autosuggest
   :straight t
   :hook (eshell-mode-hook . esh-autosuggest-mode)
   )
 
-;; FIXME: doesn't work now, confirmed working in doom-emacs
+(leaf eshell-syntax-highlighting
+  :straight t
+  :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode)
+  )
+
 (leaf eshell-did-you-mean
   :straight t
-  :after esh-mode ;; not eshell
+  :after eshell-mode ;; not eshell
   :config
   (eshell-did-you-mean-setup)
   ;; HACK There is a known issue with `eshell-did-you-mean' where it does not
@@ -1645,6 +1666,22 @@
   ;;      last command and then calling the output filter.
   (setq eshell-last-command-name "catt")
   (eshell-did-you-mean-output-filter "catt: command not found")
+  )
+
+(leaf eshell-prompt-extras
+  :straight t
+  :commands (epe-theme-dakrone)
+  :custom
+  (eshell-highlight-prompt . nil)
+  (eshell-prompt-function . #'epe-theme-dakrone)
+  )
+
+(leaf eshell-vterm
+  :straight t
+  ;; :after eshell
+  :config
+  (eshell-vterm-mode)
+  (defalias 'eshell/v 'eshell-exec-visual)
   )
 
 ;; org mode things
