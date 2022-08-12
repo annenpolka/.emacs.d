@@ -555,6 +555,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (dired-mode-hook . centaur-tabs-local-mode)
     (dirvish-mode-hook . centaur-tabs-local-mode)
     (backtrace-mode-hook . centaur-tabs-local-mode)
+    (eshell-mode-hook . centaur-tabs-local-mode)
     :defer-config
     (centaur-tabs-mode 1)
     (centaur-tabs-group-by-projectile-project)
@@ -2051,7 +2052,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   (leaf
     flyspell-correct
     :straight t
-    :require t
     :after flyspell
 
     :bind (([remap ispell-word] . flyspell-correct-at-point)
