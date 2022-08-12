@@ -1003,7 +1003,6 @@
 
 (leaf backward-forward
   :straight t
-  :require t
   :global-minor-mode t
   :custom
   (backward-forward-mark-ring-max . 100)
@@ -1424,7 +1423,6 @@
 (leaf
   vertico
   :straight t
-  :require t
   :global-minor-mode vertico-mode
   :custom ((vertico-cycle . t)))
 
