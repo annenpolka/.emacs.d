@@ -2451,11 +2451,21 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 ** Minibuffer
 *** vertico
 #+begin_src emacs-lisp
-(leaf
-  vertico
-  :straight t
-  :global-minor-mode vertico-mode
-  :custom ((vertico-cycle . t)))
+  (leaf
+    vertico
+    :straight t
+    :global-minor-mode vertico-mode
+    :custom ((vertico-cycle . t))
+    :config
+    ;; Use `consult-completion-in-region' if Vertico is enabled.
+    ;; Otherwise use the default `completion--in-region' function.
+    (setq completion-in-region-function
+          (lambda (&rest args)
+            (apply (if vertico-mode
+                       #'consult-completion-in-region
+                     #'completion--in-region)
+                   args)))
+    )
 #+end_src
 *** consult (Narrowing Functions)
 **** consult
