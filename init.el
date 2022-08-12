@@ -22,13 +22,13 @@
 ;;; Code:
 
 (eval-and-compile
-  (customize-set-variable
-   'package-archives
-   '
-   (("gnu" . "https://elpa.gnu.org/packages/")
-    ("melpa" . "https://melpa.org/packages/")
-    ("org" . "https://orgmode.org/elpa/")))
-  (package-initialize)
+  ;; (customize-set-variable
+  ;;  'package-archives
+  ;;  '
+  ;;  (("gnu" . "https://elpa.gnu.org/packages/")
+  ;;   ("melpa" . "https://melpa.org/packages/")
+  ;;   ("org" . "https://orgmode.org/elpa/")))
+  ;; (package-initialize)
 
   ;; setup straight.el
   (defvar bootstrap-version)
@@ -66,7 +66,8 @@
     (leaf-keywords-init)))
 ;; leaf plugins
 (leaf leaf
-  :config (leaf leaf-convert :straight t :require t))
+  ;; :config (leaf leaf-convert :straight t :require t)
+  )
 
 ;; set builtin configs via leaf
 (leaf
@@ -131,13 +132,16 @@
 
 (leaf gcmh
   :straight t
-  :require t
   :blackout t
   :defun (gcmh-mode)
+  :hook (windows-startup-hook . gcmh-mode)
   :custom
   (gcmh-verbose . t)
   :config
-  (gcmh-mode 1))
+  (setq gcmh-idle-delay 'auto  ; default is 15s
+        gcmh-auto-idle-delay-factor 10
+        gcmh-high-cons-threshold (* 16 1024 1024))  ; 16mb
+  )
 
 ;; explain macro by step
 (leaf
@@ -154,7 +158,8 @@
   :straight t
   :config
   ;; setup on mac/linux
-  (when (memq window-system '(mac ns x))
+  (when (or IS-MAC IS-LINUX)
+    ;; (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)
     ;; add mason's executable to emacs's exec-path
     (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
@@ -434,7 +439,8 @@
   (diff-hl-ask-before-revert-hunk . t))
 
 (leaf git-timemachine
-  :straight t)
+  :straight t
+  :commands (git-timemachine git-timemachine-toggle))
 
 (leaf
   autorevert
@@ -668,7 +674,8 @@
 
 (leaf winner-mode
   :bind
-  (("C-z" . winner-undo))
+  (("C-z" . winner-undo)
+   ("C-S-z" . winner-redo))
   :global-minor-mode winner-mode
   )
 
@@ -1299,7 +1306,6 @@
 
 (leaf company
   :straight t
-  :require t
   :bind
   (([remap indent-for-tab-command] . company-indent-or-complete-common)
    ([remap c-indent-line-or-region] . company-indent-or-complete-common)
@@ -1447,7 +1453,7 @@
      consult-projectile--source-projectile-recentf
      consult--source-buffer
      consult--source-hidden-buffer
-     ;; consult--source-recent-file
+     consult--source-recent-file
      )))
   :config
   ;; don't set sources on top
@@ -1646,7 +1652,7 @@
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
-  ;; :require t org-tempo
+  :require org-tempo
   :custom
   (org-catch-invisible-edits . 'smart)
   :defer-config
