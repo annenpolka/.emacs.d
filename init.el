@@ -485,7 +485,9 @@
   ;; (persp-state-default-file . "~/.emacs.d/persp-state-file")
   (persp-suppress-no-prefix-key-warning . t)
   :init
-  (persp-mode))
+  (customize-set-variable 'persp-mode-prefix-key (kbd "C-c M-p")) ; HACK: kbd doesn't work on :custom
+  (persp-mode)
+  )
 
 (leaf persp-projectile
   :straight t)
@@ -606,12 +608,13 @@
 (leaf hl-block-mode
   :doc "blockman thing"
   :straight t
-  :hook (prog-mode-hook . global-hl-block-mode)
+  :hook
+  (prog-mode-hook . global-hl-block-mode)
   :custom
   (hl-block-delay . 0.1)
   (hl-block-bracket . nil)
   (hl-block-multi-line . nil)
-  (hl-block-color-tint . "#08080A")
+  (hl-block-color-tint . "#060609")
   )
 
 (leaf
@@ -770,7 +773,6 @@
      '("k" . "H-k")
      '("C-u" . "H-C-u")
      '("C-d" . "H-C-d")
-     '("l" . "s-l") ;; lsp-command-map
      '("C-o" . "H-C-o")
      '("<C-i>" . "H-C-i")
      '("C-w" . "H-C-w")
@@ -784,6 +786,10 @@
      '("v" . my-git-actions/body)
      ;; spell correction
      '("z g" . flyspell-correct-at-point)
+     ;; lsp-command-map
+     '("l" . "s-l")
+     ;; perspective
+     '("p" . "C-c M-p")
      ;; help
      '("K" . helpful-at-point)
      ;; consult search operations
@@ -1829,7 +1835,7 @@
    (lsp-ui-doc-use-childframe . nil)
    (lsp-ui-doc-use-webkit . nil)
    (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
-   (lsp-ui-sideline-show-hover . t)
+   (lsp-ui-sideline-show-hover . nil)
    (lsp-ui-sideline-show-code-actions . t)
    (lsp-ui-flycheck-enable . t)
    (lsp-ui-peek-enable . t)
