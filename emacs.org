@@ -469,6 +469,12 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :config
     (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 #+end_src
+** emojify
+#+begin_src emacs-lisp
+  (leaf emojify
+    :straight t
+    :hook (after-init-hook . global-emojify-mode))
+#+end_src
 * Themes
 ** COMMENT Modus Themes
 #+begin_src emacs-lisp
