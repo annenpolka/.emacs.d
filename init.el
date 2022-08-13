@@ -21,49 +21,38 @@
 
 ;;; Code:
 
-(eval-and-compile
-  ;; (customize-set-variable
-  ;;  'package-archives
-  ;;  '
-  ;;  (("gnu" . "https://elpa.gnu.org/packages/")
-  ;;   ("melpa" . "https://melpa.org/packages/")
-  ;;   ("org" . "https://orgmode.org/elpa/")))
-  ;; (package-initialize)
+(setq straight-repository-branch "develop"
+      ;; don't check on find-at-startup
+      straight-check-for-modifications '(check-on-save find-when-checking))
 
-  ;; setup straight.el
-  (defvar bootstrap-version)
-  (let
-      (
-       (bootstrap-file
-        (expand-file-name
-         "straight/repos/straight.el/bootstrap.el"
-         user-emacs-directory))
-       (bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent
-           'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
-  ;; install leaf requirements by straight
-  (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
+;; setup straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+;; install leaf requirements by straight
+(straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
 
-  (leaf leaf-keywords
-    :init
-    ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-    (straight-use-package 'hydra)
-    (straight-use-package 'major-mode-hydra)
-    (straight-use-package 'blackout)
-    (straight-use-package 'system-packages)
-    ;; use bind-key for modal-depending keymapping
-    (straight-use-package 'bind-key)
-    :config
-    ;; initialize leaf-keywords.el
-    (leaf-keywords-init)))
-
+(leaf leaf-keywords
+  :init
+  ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+  (straight-use-package 'hydra)
+  (straight-use-package 'major-mode-hydra)
+  (straight-use-package 'blackout)
+  (straight-use-package 'system-packages)
+  ;; use bind-key for modal-depending keymapping
+  (straight-use-package 'bind-key)
+  :config
+  ;; initialize leaf-keywords.el
+  (leaf-keywords-init))
 
 ;; leaf plugins
 (leaf leaf
@@ -211,22 +200,6 @@
 ;; Japanese font
 (set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M"))
 
-;; modus theme
-(leaf modus-themes
-  :custom
-  (modus-themes-completions . 'subtle)
-  (modus-themes-fringes . 'subtle)
-  (modus-themes-italic-constructs . t)
-  (modus-themes-bold-constructs . nil)
-  (modus-themes-tabs-accented . nil)
-  (modus-themes-mode-line . '(borderless))
-  (modus-themes-hl-line . '(intense underline))
-  (modus-themes-region . '(bg-only no-extend))
-  (modus-themes-scale-headings . t)
-  (modus-themes-prompts . '(background bold gray intense italic))
-  (modus-themes-syntax . '(faint alt-syntax green-strings))
-  :config (load-theme 'modus-vivendi))
-
 ;; icons dependency
 (leaf all-the-icons
   :straight t
@@ -242,6 +215,24 @@
   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(leaf doom-themes
+  :straight t
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-dracula t)
+
+  ;; Enable flashing mode-line on errors
+  ;; (doom-themes-visual-bell-config)
+  ;; ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;; (doom-themes-neotree-config)
+  ;; ;; or for treemacs users
+  ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  ;; (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (leaf dashboard
   :straight t
@@ -302,6 +293,7 @@
   (dired-mode-hook . centaur-tabs-local-mode)
   (dirvish-mode-hook . centaur-tabs-local-mode)
   (backtrace-mode-hook . centaur-tabs-local-mode)
+  (eshell-mode-hook . centaur-tabs-local-mode)
   :defer-config
   (centaur-tabs-mode 1)
   (centaur-tabs-group-by-projectile-project)
@@ -588,6 +580,8 @@
   (bind-keys :map kurumi-utility-map
              ("g d" . xref-find-definitions)
              ("g r" . xref-find-references)
+             ("c a" . lsp-execute-code-action)
+             ("q" . flycheck-list-errors)
              ))
 
 (leaf
@@ -684,7 +678,7 @@
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
-  :init
+  :config
   (defun move-or-create-window-above nil
     (interactive)
     (if (window-in-direction 'above)
@@ -834,7 +828,8 @@
      '("B" . meow-back-symbol)
      '("c" . meow-change)
      '("d" . meow-delete)
-     '("D" . meow-backward-delete)
+     ;; '("D" . meow-backward-delete)
+     '("D" . kill-line)
      '("e" . meow-next-word)
      '("E" . meow-next-symbol)
      '("f" . meow-find)
@@ -1026,6 +1021,18 @@
         (my/backward-forward-next-location))))
   )
 
+;; undo
+(leaf undo-fu
+  :straight t
+  :bind
+  ([remap undo] . undo-fu-only-undo)
+  ([remap redo] . undo-fu-only-redo)
+  )
+(leaf
+  undo-fu-session
+  :straight t
+  :global-minor-mode global-undo-fu-session-mode)
+
 ;; Code folding
 (leaf
   origami
@@ -1102,8 +1109,7 @@
     )
   )
 
-(leaf
-  flyspell
+(leaf flyspell
   :blackout (flyspell-mode flyspell-prog-mode)
   :hook
   (text-mode-hook . flyspell-mode)
@@ -1140,10 +1146,24 @@
     (`hunspell (setq ispell-program-name "hunspell"))
     (`enchant (setq ispell-program-name "enchant-2"))
     (_ (system-packages-ensure "aspell"))))
+
+(leaf flyspell-lazy
+  :straight
+  (flyspell-lazy
+  :type git
+  :host github
+  :repo "rolandwalker/flyspell-lazy")
+  :after flyspell
+  :custom
+  (flyspell-lazy-idle-seconds . 1)
+  (flyspell-lazy-window-idle-seconds . 3)
+  :config
+  (flyspell-lazy-mode)
+  )
+
 (leaf
   flyspell-correct
   :straight t
-  :require t
   :after flyspell
 
   :bind (([remap ispell-word] . flyspell-correct-at-point)
@@ -1419,7 +1439,17 @@
   vertico
   :straight t
   :global-minor-mode vertico-mode
-  :custom ((vertico-cycle . t)))
+  :custom ((vertico-cycle . t))
+  :config
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args)))
+  )
 
 (leaf
   consult
@@ -1590,7 +1620,11 @@
 (leaf hyperbole
   :straight t
   :hook
-  (window-setup-hook . hyperbole-mode)
+  ;; (window-setup-hook . hyperbole-mode)
+  (text-mode-hook . hyperbole-mode)
+  (prog-mode-hook . hyperbole-mode)
+  (conf-mode-hook . hyperbole-mode)
+  (yaml-mode-hook . hyperbole-mode)
   )
 
 (leaf tree-sitter
@@ -1651,6 +1685,19 @@
   :hook (eshell-mode-hook . esh-autosuggest-mode)
   )
 
+(leaf fish-completion
+  :unless IS-WINDOWS
+  :hook (eshell-mode . fish-completion-mode)
+  :init (setq fish-completion-fallback-on-bash-p t)
+  :config
+  ;; HACK Even with `fish-completion-fallback-on-bash-p' non-nil,
+  ;;      `fish-completion--list-completions-with-desc' will throw an error if
+  ;;      fish isn't installed (and so, will fail to fall back to bash), so we
+  ;;      advise it to fail silently.
+  (defadvice! +eshell--fallback-to-bash-a (&rest _)
+    :before-until #'fish-completion--list-completions-with-desc
+    (unless (executable-find "fish") "")))
+
 (leaf eshell-syntax-highlighting
   :straight t
   :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode)
@@ -1670,10 +1717,10 @@
 
 (leaf eshell-prompt-extras
   :straight t
-  :commands (epe-theme-dakrone)
+  :commands (epe-theme-lambda)
   :custom
   (eshell-highlight-prompt . nil)
-  (eshell-prompt-function . #'epe-theme-dakrone)
+  (eshell-prompt-function . #'epe-theme-lambda)
   )
 
 (leaf eshell-vterm
@@ -1690,6 +1737,7 @@
   :require org-tempo
   :custom
   (org-catch-invisible-edits . 'smart)
+  (org-src-window-setup . 'split-window-right)
   :defer-config
   (defun disable-flycheck-in-org-src-block ()
     (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
@@ -1707,6 +1755,7 @@
 
 (leaf org-auto-tangle
   :straight t
+  :after org
   :hook
   (org-mode-hook . org-auto-tangle-mode)
   :custom
@@ -1764,6 +1813,11 @@
   :url "https://github.com/emacs-lsp/lsp-ui"
   :straight t
   :after lsp-mode
+  :bind
+  (:lsp-ui-mode-map
+   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+   ([remap xref-find-references] . lsp-ui-peek-find-references)
+   )
   :custom
   ((lsp-ui-doc-enable . t)
    (lsp-ui-doc-deley . 0.5)
