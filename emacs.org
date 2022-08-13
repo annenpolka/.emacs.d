@@ -2855,17 +2855,20 @@ fish-like history suggestion
 *** fish-completion (with bash-fallback)
 #+begin_src emacs-lisp
   (leaf fish-completion
-    :unless IS-WINDOWS
-    :hook (eshell-mode . fish-completion-mode)
-    :init (setq fish-completion-fallback-on-bash-p t)
+    ;; :unless IS-WINDOWS
+    :straight t
+    :hook (eshell-mode-hook . fish-completion-mode)
+    :custom
+    (fish-completion-fallback-on-bash-p . t)
     :config
     ;; HACK Even with `fish-completion-fallback-on-bash-p' non-nil,
     ;;      `fish-completion--list-completions-with-desc' will throw an error if
     ;;      fish isn't installed (and so, will fail to fall back to bash), so we
     ;;      advise it to fail silently.
-    (defadvice! +eshell--fallback-to-bash-a (&rest _)
-      :before-until #'fish-completion--list-completions-with-desc
-      (unless (executable-find "fish") "")))
+    (defun +eshell--fallback-to-bash-a (&rest _)
+      (unless (executable-find "fish") ""))
+    (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
+    )
 #+end_src
 *** eshell-syntax-highlighting
 #+begin_src emacs-lisp
