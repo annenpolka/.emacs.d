@@ -208,61 +208,50 @@ My configuration managed by leaf.el + straight.el
   ;;; early-init.el ends here
 #+end_src
 * Package Manager Setup
-
 package-archivesのURL設定と、straight.elとleaf.elのインストールを行う。
-
+** bootstrap
 #+begin_src emacs-lisp
-  (eval-and-compile
-    ;; (customize-set-variable
-    ;;  'package-archives
-    ;;  '
-    ;;  (("gnu" . "https://elpa.gnu.org/packages/")
-    ;;   ("melpa" . "https://melpa.org/packages/")
-    ;;   ("org" . "https://orgmode.org/elpa/")))
-    ;; (package-initialize)
+  (setq straight-repository-branch "develop"
+        ;; don't check on find-at-startup
+        straight-check-for-modifications '(check-on-save find-when-checking))
 
-    ;; setup straight.el
-    (defvar bootstrap-version)
-    (let
-        (
-         (bootstrap-file
-          (expand-file-name
-           "straight/repos/straight.el/bootstrap.el"
-           user-emacs-directory))
-         (bootstrap-version 5))
-      (unless (file-exists-p bootstrap-file)
-        (with-current-buffer
-            (url-retrieve-synchronously
-             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-             'silent
-             'inhibit-cookies)
-          (goto-char (point-max))
-          (eval-print-last-sexp)))
-      (load bootstrap-file nil 'nomessage))
-    ;; install leaf requirements by straight
-    (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
+  ;; setup straight.el
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  ;; install leaf requirements by straight
+  (straight-use-package 'leaf) (straight-use-package 'leaf-keywords)
 
-    (leaf leaf-keywords
-      :init
-      ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
-      (straight-use-package 'hydra)
-      (straight-use-package 'major-mode-hydra)
-      (straight-use-package 'blackout)
-      (straight-use-package 'system-packages)
-      ;; use bind-key for modal-depending keymapping
-      (straight-use-package 'bind-key)
-      :config
-      ;; initialize leaf-keywords.el
-      (leaf-keywords-init)))
-
-
+  (leaf leaf-keywords
+    :init
+    ;; optional packages if you want to use :hydra, :el-get, :blackout,,,
+    (straight-use-package 'hydra)
+    (straight-use-package 'major-mode-hydra)
+    (straight-use-package 'blackout)
+    (straight-use-package 'system-packages)
+    ;; use bind-key for modal-depending keymapping
+    (straight-use-package 'bind-key)
+    :config
+    ;; initialize leaf-keywords.el
+    (leaf-keywords-init))
+#+end_src
+** leaf
+#+begin_src emacs-lisp
   ;; leaf plugins
   (leaf leaf
     :config
     (leaf leaf-convert :straight t)
     )
 #+end_src
-
 * Emacs Basic/QOL Configuration
 ** cus-start ( Emacs本体の基本設定 )
 #+begin_src emacs-lisp
