@@ -2746,7 +2746,11 @@ projectile integration
   (leaf hyperbole
     :straight t
     :hook
-    (window-setup-hook . hyperbole-mode)
+    ;; (window-setup-hook . hyperbole-mode)
+    (text-mode-hook . hyperbole-mode)
+    (prog-mode-hook . hyperbole-mode)
+    (conf-mode-hook . hyperbole-mode)
+    (yaml-mode-hook . hyperbole-mode)
     )
 #+end_src
 
