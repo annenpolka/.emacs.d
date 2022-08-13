@@ -222,7 +222,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-dracula t)
+  (load-theme 'doom-horizon t)
 
   ;; Enable flashing mode-line on errors
   ;; (doom-themes-visual-bell-config)
@@ -513,6 +513,7 @@
       ;; rename perspective when current persp is not project's name
       (when (not (equal project-name persp-name))
         ;; kill existing project's perspective before rename
+
         (when (gethash project-name (perspectives-hash))
           (persp-kill project-name)
           )
@@ -1807,11 +1808,12 @@
   ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
   (c++-mode-hook . lsp)
   :custom
-  ((lsp-idle-delay . 0.5)
-   (lsp-log-io . t)
-   (lsp-auto-guess-root . t)
-   (lsp-completion-provider . :capf)
-   (lsp-keymap-prefix . "s-l")))
+  (lsp-idle-delay . 0.5)
+  (lsp-log-io . t)
+  (lsp-auto-guess-root . t)
+  (lsp-completion-provider . :capf)
+  (lsp-keymap-prefix . "s-l")
+  )
 
 (leaf
   lsp-ui
@@ -1854,6 +1856,7 @@
   :custom
   (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
+  (lsp-rust-analyzer-server-display-inlay-hints . t)
   )
 
 (leaf typescript-mode
