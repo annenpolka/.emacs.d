@@ -963,6 +963,7 @@ Diredをオーバーホールするファイラ。
                ("q" . flycheck-list-errors)
                ))
 #+end_src
+* Interface Enhancement/Eyecandies
 ** which-key
 #+begin_src emacs-lisp
   (leaf
