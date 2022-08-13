@@ -1855,6 +1855,33 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     :init
     (smart-hungry-delete-add-default-hooks))
 #+end_src
+*** backward-forward
+#+begin_src emacs-lisp
+  (leaf backward-forward
+    :straight t
+    :global-minor-mode t
+    :custom
+    (backward-forward-mark-ring-max . 100)
+    :init
+    ;; reference: https://emacs-china.org/t/emacs/19171/17
+    (defun my/backward-forward-previous-location ()
+      "A `backward-forward-previous-location' wrap for skip invalid locations."
+      (interactive)
+      (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
+            (recent (point-marker)))
+        (backward-forward-previous-location)
+        (when (and (equal recent (point-marker)) purge)
+          (my/backward-forward-previous-location))))
+    (defun my/backward-forward-next-location ()
+      "A `backward-forward-next-location' wrap for skip invalid locations."
+      (interactive)
+      (let ((purge (> backward-forward-mark-ring-traversal-position 0))
+            (recent (point-marker)))
+        (backward-forward-next-location)
+        (when (and (equal recent (point-marker)) purge)
+          (my/backward-forward-next-location))))
+    )
+#+end_src
 *** COMMENT better-jumper
 #+begin_src emacs-lisp
   (leaf better-jumper
@@ -1885,45 +1912,39 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     ;; (advice-add 'evil-goto-mark  :around #'my-jump-advice)
     )
 #+end_src
-*** backward-forward
+*** COMMENT dot-mode
+
+キーマクロを使う仕組み上、companyなどと組み合わせて使えないため没。興味深さはあるのでその内改造するかも。
+
 #+begin_src emacs-lisp
-  (leaf backward-forward
+  (leaf dot-mode
     :straight t
-    :global-minor-mode t
-    :custom
-    (backward-forward-mark-ring-max . 100)
-    :init
-    ;; reference: https://emacs-china.org/t/emacs/19171/17
-    (defun my/backward-forward-previous-location ()
-      "A `backward-forward-previous-location' wrap for skip invalid locations."
-      (interactive)
-      (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
-            (recent (point-marker)))
-        (backward-forward-previous-location)
-        (when (and (equal recent (point-marker)) purge)
-          (my/backward-forward-previous-location))))
-    (defun my/backward-forward-next-location ()
-      "A `backward-forward-next-location' wrap for skip invalid locations."
-      (interactive)
-      (let ((purge (> backward-forward-mark-ring-traversal-position 0))
-            (recent (point-marker)))
-        (backward-forward-next-location)
-        (when (and (equal recent (point-marker)) purge)
-          (my/backward-forward-next-location))))
+    :require t
+    :global-minor-mode global-dot-mode
+    :bind
+    ;; unmap default keys
+    (:dot-mode-map
+     ("C-." . nil)
+     ("C-M-." . nil)
+     ("C-c ." . nil))
     )
 #+end_src
 ** Utilities
-*** COMMENT undo-fu (with undo-fu-session)
+*** undo-fu (with undo-fu-session)
 
 今風なundo/redo。ファイル個別の履歴はundo-fu-sessionで実現する。
 
 #+begin_src emacs-lisp
   ;; undo
-  (leaf undo-fu :straight t :require t)
+  (leaf undo-fu
+    :straight t
+    :bind
+    ([remap undo] . undo-fu-only-undo)
+    ([remap redo] . undo-fu-only-redo)
+    )
   (leaf
     undo-fu-session
     :straight t
-    :require t
     :global-minor-mode global-undo-fu-session-mode)
 #+end_src
 *** COMMENT super-save
@@ -2803,6 +2824,21 @@ fish-like history suggestion
     :straight t
     :hook (eshell-mode-hook . esh-autosuggest-mode)
     )
+#+end_src
+*** fish-completion (with bash-fallback)
+#+begin_src emacs-lisp
+  (leaf fish-completion
+    :unless IS-WINDOWS
+    :hook (eshell-mode . fish-completion-mode)
+    :init (setq fish-completion-fallback-on-bash-p t)
+    :config
+    ;; HACK Even with `fish-completion-fallback-on-bash-p' non-nil,
+    ;;      `fish-completion--list-completions-with-desc' will throw an error if
+    ;;      fish isn't installed (and so, will fail to fall back to bash), so we
+    ;;      advise it to fail silently.
+    (defadvice! +eshell--fallback-to-bash-a (&rest _)
+      :before-until #'fish-completion--list-completions-with-desc
+      (unless (executable-find "fish") "")))
 #+end_src
 *** eshell-syntax-highlighting
 #+begin_src emacs-lisp
