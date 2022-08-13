@@ -437,7 +437,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
       (activate-input-method default-input-method))
     )
 #+end_src
-* Themes/Fonts/Icons
+* Fonts/Icons
 ** Font Config
 日本語てすとあいうえお、。
 
@@ -448,24 +448,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 
   ;; Japanese font
   (set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M"))
-#+end_src
-** Modus Themes
-#+begin_src emacs-lisp
-  ;; modus theme
-  (leaf modus-themes
-    :custom
-    (modus-themes-completions . 'subtle)
-    (modus-themes-fringes . 'subtle)
-    (modus-themes-italic-constructs . t)
-    (modus-themes-bold-constructs . nil)
-    (modus-themes-tabs-accented . nil)
-    (modus-themes-mode-line . '(borderless))
-    (modus-themes-hl-line . '(intense underline))
-    (modus-themes-region . '(bg-only no-extend))
-    (modus-themes-scale-headings . t)
-    (modus-themes-prompts . '(background bold gray intense italic))
-    (modus-themes-syntax . '(faint alt-syntax green-strings))
-    :config (load-theme 'modus-vivendi))
 #+end_src
 ** all-the-icons
 #+begin_src emacs-lisp
@@ -486,6 +468,45 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
     :config
     (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+* Themes
+** COMMENT Modus Themes
+#+begin_src emacs-lisp
+  ;; modus theme
+  (leaf modus-themes
+    :custom
+    (modus-themes-completions . 'subtle)
+    (modus-themes-fringes . 'subtle)
+    (modus-themes-italic-constructs . t)
+    (modus-themes-bold-constructs . nil)
+    (modus-themes-tabs-accented . nil)
+    (modus-themes-mode-line . '(borderless))
+    (modus-themes-hl-line . '(intense underline))
+    (modus-themes-region . '(bg-only no-extend))
+    (modus-themes-scale-headings . t)
+    (modus-themes-prompts . '(background bold gray intense italic))
+    (modus-themes-syntax . '(faint alt-syntax green-strings))
+    :config (load-theme 'modus-vivendi))
+#+end_src
+** doom-themes
+#+begin_src emacs-lisp
+  (leaf doom-themes
+    :straight t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-dracula t)
+
+    ;; Enable flashing mode-line on errors
+    ;; (doom-themes-visual-bell-config)
+    ;; ;; Enable custom neotree theme (all-the-icons must be installed!)
+    ;; (doom-themes-neotree-config)
+    ;; ;; or for treemacs users
+    ;; (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    ;; (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
 #+end_src
 * Startup Menu
 ** dashboard
