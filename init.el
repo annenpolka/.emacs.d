@@ -216,6 +216,10 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
+(leaf emojify
+  :straight t
+  :hook (after-init-hook . global-emojify-mode))
+
 (leaf doom-themes
   :straight t
   :config
@@ -250,7 +254,7 @@
                                "Sound of jet, they played for out."))
   (dashboard-projects . 'projectile)
   (dashboard-items . '((recents  . 5)
-                       (bookmarks . 5)
+                       (bookmarks . 10)
                        (projects . 5)))
   :defer-config
   (setq dashboard-footer-icon (all-the-icons-material "dashboard"
@@ -513,7 +517,6 @@
       ;; rename perspective when current persp is not project's name
       (when (not (equal project-name persp-name))
         ;; kill existing project's perspective before rename
-
         (when (gethash project-name (perspectives-hash))
           (persp-kill project-name)
           )
@@ -584,6 +587,7 @@
              ("g d" . xref-find-definitions)
              ("g r" . xref-find-references)
              ("c a" . lsp-execute-code-action)
+             ("r n" . lsp-rename)
              ("q" . flycheck-list-errors)
              ))
 
@@ -1458,8 +1462,7 @@
                  args)))
   )
 
-(leaf
-  consult
+(leaf consult
   :straight t
   :defvar (consult-buffer-sources)
   :setq
@@ -1488,6 +1491,8 @@
   :config
   ;; don't set sources on top
   (consult-customize consult--source-buffer persp-consult-source :default nil)
+  ;; hide outer-perspecitve sources
+  (consult-customize consult--source-buffer consult--source-recent-file :hidden t)
   ;; preview delay
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
@@ -1680,12 +1685,17 @@
   :require t
   :custom
   (eshell-toggle-size-fraction . 3)
-  (eshell-toggle-use-projectile-root . t)
+  (eshell-toggle-use-projectile-root . nil)
   (eshell-toggle-run-command . nil)
   (eshell-toggle-init-function . #'eshell-toggle-init-eshell)
   ;; (eshell-toggle-init-function . #'eshell-toggle-init-ansi-term)
   :bind
   ("C-@" . eshell-toggle))
+
+(leaf eshell-up
+  :straight t
+  :require t
+  )
 
 (leaf esh-autosuggest
   :straight t
@@ -1694,16 +1704,19 @@
 
 (leaf fish-completion
   :unless IS-WINDOWS
-  :hook (eshell-mode . fish-completion-mode)
-  :init (setq fish-completion-fallback-on-bash-p t)
+  :straight t
+  :hook (eshell-mode-hook . fish-completion-mode)
+  :custom
+  (fish-completion-fallback-on-bash-p . t)
   :config
   ;; HACK Even with `fish-completion-fallback-on-bash-p' non-nil,
   ;;      `fish-completion--list-completions-with-desc' will throw an error if
   ;;      fish isn't installed (and so, will fail to fall back to bash), so we
   ;;      advise it to fail silently.
-  (defadvice! +eshell--fallback-to-bash-a (&rest _)
-    :before-until #'fish-completion--list-completions-with-desc
-    (unless (executable-find "fish") "")))
+  (defun +eshell--fallback-to-bash-a (&rest _)
+    (unless (executable-find "fish") ""))
+  (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
+  )
 
 (leaf eshell-syntax-highlighting
   :straight t
@@ -1873,6 +1886,15 @@
   ;; by default, typescript-mode is mapped to the treesitter typescript parser
   ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+(leaf quickrun
+  :straight t
+  :commands
+  (quickrun quickrun-shell quickrun-with-arg quickrun-compile-only)
+  :custom
+  (quickrun-focus-p . nil)
+  :config
+  (quickrun-set-default "c++" "c++/g++"))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │

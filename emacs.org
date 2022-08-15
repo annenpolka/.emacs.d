@@ -533,7 +533,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
                                  "Sound of jet, they played for out."))
     (dashboard-projects . 'projectile)
     (dashboard-items . '((recents  . 5)
-                         (bookmarks . 5)
+                         (bookmarks . 10)
                          (projects . 5)))
     :defer-config
     (setq dashboard-footer-icon (all-the-icons-material "dashboard"
@@ -966,6 +966,7 @@ Diredをオーバーホールするファイラ。
                ("g d" . xref-find-definitions)
                ("g r" . xref-find-references)
                ("c a" . lsp-execute-code-action)
+               ("r n" . lsp-rename)
                ("q" . flycheck-list-errors)
                ))
 #+end_src
@@ -2569,8 +2570,7 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 *** consult (Narrowing Functions)
 **** consult
 #+begin_src emacs-lisp
-  (leaf
-    consult
+  (leaf consult
     :straight t
     :defvar (consult-buffer-sources)
     :setq
@@ -2599,6 +2599,8 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :config
     ;; don't set sources on top
     (consult-customize consult--source-buffer persp-consult-source :default nil)
+    ;; hide outer-perspecitve sources
+    (consult-customize consult--source-buffer consult--source-recent-file :hidden t)
     ;; preview delay
     (consult-customize
      consult-ripgrep consult-git-grep consult-grep
@@ -2785,8 +2787,9 @@ projectile integration
     :straight t
     :after tree-sitter)
 #+end_src
-* Terminal
-** vterm
+* Terminal/Shell Command
+** Terminal
+*** vterm
 #+begin_src emacs-lisp
   (leaf vterm
     :straight t
@@ -2804,8 +2807,8 @@ projectile integration
     (vterm-max-scrollback . 10000)
     )
 #+end_src
-** eshell
 *** eshell
+**** eshell
 #+begin_src emacs-lisp
   (leaf eshell
     :require t
@@ -2822,7 +2825,7 @@ projectile integration
                   (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input))))
     )
 #+end_src
-*** eshell-toggle
+**** eshell-toggle
 #+begin_src emacs-lisp
   (leaf eshell-toggle
     :straight t
@@ -2836,7 +2839,7 @@ projectile integration
     :bind
     ("C-@" . eshell-toggle))
 #+end_src
-*** eshell-up
+**** eshell-up
 #+begin_src emacs-lisp
   (leaf eshell-up
     :straight t
@@ -2844,7 +2847,7 @@ projectile integration
     )
 #+end_src
 
-*** esh-autosuggest
+**** esh-autosuggest
 fish-like history suggestion
 #+begin_src emacs-lisp
   (leaf esh-autosuggest
@@ -2852,10 +2855,10 @@ fish-like history suggestion
     :hook (eshell-mode-hook . esh-autosuggest-mode)
     )
 #+end_src
-*** fish-completion (with bash-fallback)
+**** fish-completion (with bash-fallback)
 #+begin_src emacs-lisp
   (leaf fish-completion
-    ;; :unless IS-WINDOWS
+    :unless IS-WINDOWS
     :straight t
     :hook (eshell-mode-hook . fish-completion-mode)
     :custom
@@ -2870,14 +2873,14 @@ fish-like history suggestion
     (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
     )
 #+end_src
-*** eshell-syntax-highlighting
+**** eshell-syntax-highlighting
 #+begin_src emacs-lisp
   (leaf eshell-syntax-highlighting
     :straight t
     :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode)
     )
 #+end_src
-*** eshell-did-you-mean
+**** eshell-did-you-mean
 #+begin_src emacs-lisp
   (leaf eshell-did-you-mean
     :straight t
@@ -2891,7 +2894,7 @@ fish-like history suggestion
     (eshell-did-you-mean-output-filter "catt: command not found")
     )
 #+end_src
-*** eshell-prompt-etras
+**** eshell-prompt-etras
 #+begin_src emacs-lisp
   (leaf eshell-prompt-extras
     :straight t
@@ -2901,7 +2904,7 @@ fish-like history suggestion
     (eshell-prompt-function . #'epe-theme-lambda)
     )
 #+end_src
-*** eshell-vterm
+**** eshell-vterm
 #+begin_src emacs-lisp
   (leaf eshell-vterm
     :straight t
