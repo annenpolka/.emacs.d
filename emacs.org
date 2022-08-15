@@ -2815,6 +2815,9 @@ projectile integration
     :custom
     (eshell-cmpl-ignore-case . t)
     (eshell-hist-ignoredups . t)
+    (eshell-scroll-to-bottom-on-input . 'all)
+    (eshell-scroll-to-bottom-on-output . 'all)
+    (eshell-kill-processes-on-exit . t)
     :defer-config
     ;; HACK: can't map directly to eshell-mode-map
     (add-hook 'eshell-mode-hook
@@ -2894,7 +2897,7 @@ fish-like history suggestion
     (eshell-did-you-mean-output-filter "catt: command not found")
     )
 #+end_src
-**** eshell-prompt-etras
+**** eshell-prompt-extras
 #+begin_src emacs-lisp
   (leaf eshell-prompt-extras
     :straight t
