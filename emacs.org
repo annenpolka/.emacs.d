@@ -2288,13 +2288,17 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :global-minor-mode editorconfig-mode)
 #+end_src
 *** dtrt-indent
+vim-sleuth like automatic indent guessing/adjusting
 #+begin_src emacs-lisp
   (leaf dtrt-indent
     :straight t
-    :init
-    (add-hook 'prog-mode-hook #'(lambda ()
-                                  (dtrt-indent-mode)
-                                  (dtrt-indent-adapt))))
+    :hook
+    (prog-mode-hook . dtrt-indent-mode)
+    :config
+    ;; (add-hook 'prog-mode-hook #'(lambda ()
+    ;;                               (dtrt-indent-mode)
+    ;;                               (dtrt-indent-adapt)))
+    )
 #+end_src
 ** Completion
 *** COMMENT corfu (with corfu-doc, cape)
