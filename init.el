@@ -644,10 +644,6 @@
   :straight t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
-(leaf prism
-  :straight t
-  :commands (prism-mode))
-
 (leaf rainbow-mode
   :straight t
   :blackout t
@@ -761,6 +757,7 @@
     (if (> (seq-length (window-list (selected-frame))) 1)
         (delete-window)
       (kill-this-buffer)))
+
   ;; setup keymap
   (defun meow-setup nil
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -898,7 +895,7 @@
      ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
      '("C-f" . consult-line)
      ;; '("C-p" . affe-find)
-     '("C-e" . find-file)
+     ;; '("C-e" . find-file)
      '("C-t" . burly-perspective-init-project-persp)
      '("C-s" . save-buffer)
      '("C-w" . kill-this-buffer)
@@ -1292,10 +1289,13 @@
 
 (leaf dtrt-indent
   :straight t
-  :init
-  (add-hook 'prog-mode-hook #'(lambda ()
-                                (dtrt-indent-mode)
-                                (dtrt-indent-adapt))))
+  :hook
+  (prog-mode-hook . dtrt-indent-mode)
+  :config
+  ;; (add-hook 'prog-mode-hook #'(lambda ()
+  ;;                               (dtrt-indent-mode)
+  ;;                               (dtrt-indent-adapt)))
+  )
 
 (leaf company
   :straight t
@@ -1355,6 +1355,20 @@
                            company-bbdb
                            company-oddmuse
                            ))
+  ;; magit commit message completion with magit-diff
+  (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
+    (let ((name (buffer-name)))
+      (and (string-match-p "\\`[ *]" name)
+           (not (string-match-p "\\*magit-diff:" name)))))
+
+  (defun my--git-commit-setup-hook ()
+    (setq-local fill-column 72)
+
+    (setq-local company-dabbrev-code-modes '(text-mode magit-diff-mode))
+    (setq-local company-dabbrev-ignore-buffers
+                #'my--company-dabbrev-ignore-except-magit-diff))
+
+  (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook)
   )
 
 (leaf company-box
@@ -1625,18 +1639,19 @@
       nil))
   )
 
-(leaf define-it
+(leaf go-translate
   :straight t
-  :commands (define-it define-it-at-point)
-  :custom
-  (google-translate-backend-method . 'curl)
-  ;; Auto detect language.
-  (google-translate-default-source-language . "auto")
-  ;; Set your target language.
-  (google-translate-default-target-language ."ja")
-  :init
-  ;; workaround serach tkk error
-  (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+  :require t
+  :config
+  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
+  (setq gts-default-translator
+        (gts-translator
+         :picker (gts-prompt-picker)
+         :engines (list
+                   (gts-bing-engine)
+                   (gts-google-engine)
+                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
+         :render (gts-buffer-render)))
   )
 
 (leaf hyperbole
