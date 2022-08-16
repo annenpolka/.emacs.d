@@ -310,8 +310,7 @@
   ("C-<iso-lefttab>" . centaur-tabs-backward)
   )
 
-(leaf
-  dirvish
+(leaf dirvish
   :straight t
   :custom
   ;; Go back home? Just press `bh'
@@ -645,6 +644,10 @@
   :straight t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
+(leaf prism
+  :straight t
+  :commands (prism-mode))
+
 (leaf rainbow-mode
   :straight t
   :blackout t
@@ -758,7 +761,6 @@
     (if (> (seq-length (window-list (selected-frame))) 1)
         (delete-window)
       (kill-this-buffer)))
-
   ;; setup keymap
   (defun meow-setup nil
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -892,6 +894,8 @@
      '("C-d" . ccm-scroll-up)
      '("C-o" . my/backward-forward-previous-location)
      '("<C-i>" . my/backward-forward-next-location)
+     ;; '("C-o" . gumshoe-persp-backtrack-back)
+     ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
      '("C-f" . consult-line)
      ;; '("C-p" . affe-find)
      '("C-e" . find-file)
@@ -1280,54 +1284,18 @@
   )
 
 ;; EditorConfig support
-(leaf
-  editorconfig
+(leaf editorconfig
   :straight t
   :require t
   :blackout t
   :global-minor-mode editorconfig-mode)
 
-;; completion style
-(leaf
-  fussy
+(leaf dtrt-indent
   :straight t
-  :require t
   :init
-  (leaf
-    fuz-bin
-    :straight
-    '
-    (fuz-bin
-     :repo "jcs-elpa/fuz-bin"
-     :fetcher github
-     :files (:defaults "bin"))
-    :require t
-    :defun (fuz-bin-load-dyn)
-    :config (fuz-bin-load-dyn))
-  :custom
-  ((completion-styles . '(fussy))
-   (completion-category-defaults . nil)
-   (compleiton-category-overrides . nil)
-   (fussy-filter-fn . 'fussy-filter-default)
-   (fussy-score-fn . 'fussy-fuz-bin-score)
-   (fussy-fuz-use-skim-p . t))
-  :config
-  ;; integrate with company
-  (defun j-company-capf (f &rest args)
-    "Manage `completion-styles'."
-    (let ((fussy-max-candidate-limit 5000)
-          (fussy-default-regex-fn 'fussy-pattern-first-letter)
-          (fussy-prefer-prefix nil))
-      (apply f args)))
-
-  (defun j-company-transformers (f &rest args)
-    "Manage `company-transformers'."
-    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args)))
-
-  (advice-add 'company--transform-candidates :around 'j-company-transformers)
-  (advice-add 'company-capf :around 'j-company-capf)
-  )
+  (add-hook 'prog-mode-hook #'(lambda ()
+                                (dtrt-indent-mode)
+                                (dtrt-indent-adapt))))
 
 (leaf company
   :straight t
@@ -1432,6 +1400,48 @@
   :straight t
   :require t
   :after company
+  )
+
+;; completion style
+(leaf
+  fussy
+  :straight t
+  :require t
+  :init
+  (leaf
+    fuz-bin
+    :straight
+    '
+    (fuz-bin
+     :repo "jcs-elpa/fuz-bin"
+     :fetcher github
+     :files (:defaults "bin"))
+    :require t
+    :defun (fuz-bin-load-dyn)
+    :config (fuz-bin-load-dyn))
+  :custom
+  ((completion-styles . '(fussy))
+   (completion-category-defaults . nil)
+   (compleiton-category-overrides . nil)
+   (fussy-filter-fn . 'fussy-filter-default)
+   (fussy-score-fn . 'fussy-fuz-bin-score)
+   (fussy-fuz-use-skim-p . t))
+  :config
+  ;; integrate with company
+  (defun j-company-capf (f &rest args)
+    "Manage `completion-styles'."
+    (let ((fussy-max-candidate-limit 5000)
+          (fussy-default-regex-fn 'fussy-pattern-first-letter)
+          (fussy-prefer-prefix nil))
+      (apply f args)))
+
+  (defun j-company-transformers (f &rest args)
+    "Manage `company-transformers'."
+    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+      (apply f args)))
+
+  (advice-add 'company--transform-candidates :around 'j-company-transformers)
+  (advice-add 'company-capf :around 'j-company-capf)
   )
 
 (leaf
@@ -1670,6 +1680,9 @@
   :custom
   (eshell-cmpl-ignore-case . t)
   (eshell-hist-ignoredups . t)
+  (eshell-scroll-to-bottom-on-input . 'all)
+  (eshell-scroll-to-bottom-on-output . 'all)
+  (eshell-kill-processes-on-exit . t)
   :defer-config
   ;; HACK: can't map directly to eshell-mode-map
   (add-hook 'eshell-mode-hook
@@ -1750,6 +1763,15 @@
   (eshell-vterm-mode)
   (defalias 'eshell/v 'eshell-exec-visual)
   )
+
+(leaf friendly-shell
+  :straight t)
+
+(leaf friendly-shell-command
+  :straight t)
+
+(leaf friendly-remote-shell
+  :straight t)
 
 ;; org mode things
 (leaf org
