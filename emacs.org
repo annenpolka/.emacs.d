@@ -3007,7 +3007,6 @@ fish-like history suggestion
   (leaf friendly-remote-shell
     :straight t)
 #+end_src
-*** 
 *** COMMENT dwim-shell-command
 #+begin_src emacs-lisp
   (leaf dwim-shell-command
@@ -3021,6 +3020,14 @@ fish-like history suggestion
 #+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
+*** parinfer-rust-mode
+#+begin_src emacs-lisp
+  (leaf parinfer-rust-mode
+    :straight t
+    :hook (emacs-lisp-mode-hook . parinfer-rust-mode)
+    :custom
+    (parinfer-rust-auto-download . t))
+#+end_src
 ** Org Mode
 *** org-mode
 #+begin_src emacs-lisp
