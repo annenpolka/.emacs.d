@@ -502,7 +502,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     ;; Global settings (defaults)
     (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
           doom-themes-enable-italic t) ; if nil, italics is universally disabled
-    (load-theme 'doom-horizon t)
+    (load-theme 'doom-molokai t)
 
     ;; Enable flashing mode-line on errors
     ;; (doom-themes-visual-bell-config)
@@ -1007,7 +1007,7 @@ Diredをオーバーホールするファイラ。
     (hl-block-delay . 0.1)
     (hl-block-bracket . nil)
     (hl-block-multi-line . nil)
-    (hl-block-color-tint . "#060609")
+    (hl-block-color-tint . "#060606")
     )
 #+end_src
 ** hl-todo

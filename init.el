@@ -226,7 +226,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-horizon t)
+  (load-theme 'doom-molokai t)
 
   ;; Enable flashing mode-line on errors
   ;; (doom-themes-visual-bell-config)
@@ -618,7 +618,7 @@
   (hl-block-delay . 0.1)
   (hl-block-bracket . nil)
   (hl-block-multi-line . nil)
-  (hl-block-color-tint . "#060609")
+  (hl-block-color-tint . "#060606")
   )
 
 (leaf
@@ -1787,6 +1787,12 @@
 
 (leaf friendly-remote-shell
   :straight t)
+
+(leaf parinfer-rust-mode
+  :straight t
+  :hook (emacs-lisp-mode-hook . parinfer-rust-mode)
+  :custom
+  (parinfer-rust-auto-download . t))
 
 ;; org mode things
 (leaf org
