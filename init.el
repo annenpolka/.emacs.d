@@ -1862,17 +1862,15 @@
   :hook
   ;; (lsp-mode . lsp-enable-which-key-integration)
   ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-  (c++-mode-hook . lsp)
+  (c++-mode-hook . lsp-deferred)
   :custom
   (lsp-idle-delay . 0.5)
   (lsp-log-io . t)
   (lsp-auto-guess-root . t)
   (lsp-completion-provider . :capf)
-  (lsp-keymap-prefix . "s-l")
-  )
+  (lsp-keymap-prefix . "s-l"))
 
-(leaf
-  lsp-ui
+(leaf lsp-ui
   :doc "UI modules for lsp-mode"
   :url "https://github.com/emacs-lsp/lsp-ui"
   :straight t
@@ -1880,8 +1878,8 @@
   :bind
   (:lsp-ui-mode-map
    ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-   ([remap xref-find-references] . lsp-ui-peek-find-references)
-   )
+   ([remap xref-find-references] . lsp-ui-peek-find-references))
+
   :custom
   ((lsp-ui-doc-enable . t)
    (lsp-ui-doc-deley . 0.5)
@@ -1899,13 +1897,13 @@
    (lsp-ui-peek-enable . t)
    (lsp-ui-peek-peek-height . 20)
    (lsp-ui-peek-list-width . 50)
-   (lsp-ui-peek-fontify . 'on-demand) ;; never, on-demand, or always
-   )
+   (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
+
   :hook ((lsp-mode-hook . lsp-ui-mode)))
 
 (leaf lua-mode
   :straight t
- )
+  :hook (lua-mode-hook . lsp-deferred))
 
 (leaf rustic
   :straight t
