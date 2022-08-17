@@ -249,11 +249,11 @@ package-archivesのURL設定と、straight.elとleaf.elのインストールを�
   ;; leaf plugins
   (leaf leaf
     :config
-    (leaf leaf-convert :straight t)
-    )
+    (leaf leaf-convert :straight t))
+    
 #+end_src
 * Emacs Basic/QOL Configuration
-** cus-start ( Emacs本体の基本設定 )
+** cus-start (Emacs本体の基本設定)
 #+begin_src emacs-lisp
 
   ;; set builtin configs via leaf
@@ -299,10 +299,10 @@ package-archivesのURL設定と、straight.elとleaf.elのインストールを�
     (defalias 'yes-or-no-p 'y-or-n-p)
     (define-key key-translation-map [?\C-h] [?\C-?])
     (global-set-key (kbd "C-?") 'help-for-help)
-    (define-key input-decode-map [?\C-i] [C-i])
-    )
+    (define-key input-decode-map [?\C-i] [C-i]))
+    
 #+end_src
-** cus-edit ( custom.elの二重管理抑止 )
+** cus-edit (custom.elの二重管理抑止)
 #+begin_src emacs-lisp
   
   (leaf
@@ -316,7 +316,7 @@ package-archivesのURL設定と、straight.elとleaf.elのインストールを�
 
 #+end_src
   
-** persistent-scratch ( scratchバッファの永続化 )
+** persistent-scratch (scratchバッファの永続化)
 #+begin_src emacs-lisp
   (leaf
     persistent-scratch
@@ -326,7 +326,7 @@ package-archivesのURL設定と、straight.elとleaf.elのインストールを�
     :config (persistent-scratch-setup-default))
 #+end_src
 
-** COMMENT Automatic Tangling ( orgファイル→init.elへの書き出し )
+** COMMENT Automatic Tangling (orgファイル→init.elへの書き出し)
 
 DEPRECATED: org-auto-tangleに移行した
 
@@ -358,8 +358,8 @@ gcmhはユーザー操作していない間にGCを行うことで、STWの影�
     :config
     (setq gcmh-idle-delay 'auto  ; default is 15s
           gcmh-auto-idle-delay-factor 10
-          gcmh-high-cons-threshold (* 16 1024 1024))  ; 16mb
-    )
+          gcmh-high-cons-threshold (* 16 1024 1024)))  ; 16mb
+    
 #+end_src
 
 ** Emacs Debugging
@@ -393,9 +393,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
       (exec-path-from-shell-initialize)
       ;; add mason's executable to emacs's exec-path
       (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
-        (setq exec-path (add-to-list 'exec-path mason-path)))
-      )
-    )
+        (setq exec-path (add-to-list 'exec-path mason-path)))))
+      
+    
 #+end_src
 
 ** WSL-specific Setup
@@ -434,8 +434,8 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (defun on-input-method nil
       "activate multilingual input method."
       (interactive)
-      (activate-input-method default-input-method))
-    )
+      (activate-input-method default-input-method)))
+    
 #+end_src
 * Fonts/Icons
 ** Font Config
@@ -455,8 +455,8 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
   (leaf all-the-icons
     :straight t
     :custom
-    (all-the-icons-scale-factor . 1.1)
-    )
+    (all-the-icons-scale-factor . 1.1))
+    
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
@@ -539,8 +539,8 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (setq dashboard-footer-icon (all-the-icons-material "dashboard"
                                                         :height 1.0
                                                         :v-adjust -0.05
-                                                        :face 'font-lock-keyword-face))
-    )
+                                                        :face 'font-lock-keyword-face)))
+    
 #+end_src
 * Modeline
 ** doom-modeline
@@ -568,8 +568,8 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
       '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
     (doom-modeline-def-modeline 'org-src
       '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
-      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
-    )
+      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " "))) ; <-- added padding here
+    
 #+end_src
 ** COMMENT moody
 #+begin_src emacs-lisp
@@ -616,8 +616,8 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (centaur-tabs-cycle-scope . 'tabs)
     :bind
     ("C-<tab>" . centaur-tabs-forward)
-    ("C-<iso-lefttab>" . centaur-tabs-backward)
-    )
+    ("C-<iso-lefttab>" . centaur-tabs-backward))
+    
 #+end_src
 ** COMMENT tabspaces
 #+begin_src emacs-lisp
@@ -799,7 +799,7 @@ Diredをオーバーホールするファイラ。
     :commands (git-timemachine git-timemachine-toggle))
 #+end_src
 * Projects/Sessions Management
-** autorevert ( バッファの再読込 )
+** autorevert (バッファの再読込)
 
 #+begin_src emacs-lisp
 (leaf
@@ -809,7 +809,7 @@ Diredをオーバーホールするファイラ。
   :custom ((auto-revert-interval . 1) (auto-revert-check-vc-info . t))
   :global-minor-mode global-auto-revert-mode)
 #+end_src
-** recentf ( 最近使用したファイルの履歴 )
+** recentf (最近使用したファイルの履歴)
 #+begin_src emacs-lisp
   (leaf
     recentf
@@ -833,7 +833,7 @@ Diredをオーバーホールするファイラ。
       "~/.emacs.d/straight/.*"
       (lambda (file) (file-in-directory-p file package-user-dir)))))
 #+end_src
-** saveplace ( カーソル位置の保存 )
+** saveplace (カーソル位置の保存)
 #+begin_src emacs-lisp
   (leaf saveplace
     :config
@@ -860,8 +860,8 @@ Diredをオーバーホールするファイラ。
     (persp-suppress-no-prefix-key-warning . t)
     :init
     (customize-set-variable 'persp-mode-prefix-key (kbd "C-c M-p")) ; HACK: kbd doesn't work on :custom
-    (persp-mode)
-    )
+    (persp-mode))
+    
 #+end_src
 *** persp-projectile (per-Project perspective workspace)
 #+begin_src emacs-lisp
@@ -892,12 +892,12 @@ Diredをオーバーホールするファイラ。
         (when (not (equal project-name persp-name))
           ;; kill existing project's perspective before rename
           (when (gethash project-name (perspectives-hash))
-            (persp-kill project-name)
-            )
-          (persp-rename project-name)
+            (persp-kill project-name))
+            
+          (persp-rename project-name))
           ;; ;; create perspective with last perspective name
           ;; (persp-new persp-name)
-          )
+          
 
         ;; ;; ask persp-name interactively if it's "main"
         ;; (when (and (equal persp-name persp-initial-frame-name)
@@ -910,16 +910,16 @@ Diredをオーバーホールするファイラ。
         
         ;; save as burly-bookmark, don't save "main" persp
         (unless (equal persp-name persp-initial-frame-name)
-          (burly-bookmark-windows project-name))
-        )
-      )
+          (burly-bookmark-windows project-name))))
+        
+      
 
     ;; initalize only if in "main" persp
     (defun burly-perspective-init-if-initial-frame (&rest _ignore)
       (when (equal persp-initial-frame-name (persp-current-name))
-        (burly-perspective-init-project-persp)
-        )
-      )
+        (burly-perspective-init-project-persp)))
+        
+      
     ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
     ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
 
@@ -933,9 +933,9 @@ Diredをオーバーホールするファイラ。
         (burly-bookmark-windows (persp-current-name)))
       ;; save "main" perspective as project one
       (when (equal persp-initial-frame-name (persp-current-name))
-        (burly-perspective-init-project-persp)
-        )
-      )
+        (burly-perspective-init-project-persp)))
+        
+      
 
     ;; save perspective on change/save
     (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
@@ -947,10 +947,10 @@ Diredをオーバーホールするファイラ。
     ;; create perspective with burly
     (defun burly-perspective--windows-set-before-advice (&rest _ignore)
       "Create or Switch perspective before setting burly windows."
-      (persp-switch burly-opened-bookmark-name)
-      )
-    (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice)
-    )
+      (persp-switch burly-opened-bookmark-name))
+      
+    (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
+    
 #+end_src
 
 * Kurumi Configs
@@ -966,8 +966,8 @@ Diredをオーバーホールするファイラ。
                ("g r" . xref-find-references)
                ("c a" . lsp-execute-code-action)
                ("r n" . lsp-rename)
-               ("q" . flycheck-list-errors)
-               ))
+               ("q" . flycheck-list-errors)))
+               
 #+end_src
 ** TODO kurumi-shell-commandset
 * Interface Enhancement/Eyecandies
@@ -998,17 +998,17 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** hl-block-mode
 #+begin_src emacs-lisp
-  (leaf hl-block-mode
-    :doc "blockman thing"
-    :straight t
-    :hook
-    (prog-mode-hook . global-hl-block-mode)
-    :custom
-    (hl-block-delay . 0.1)
-    (hl-block-bracket . nil)
-    (hl-block-multi-line . nil)
-    (hl-block-color-tint . "#060606")
-    )
+(leaf hl-block-mode
+  :doc "blockman thing"
+  :straight t
+  :hook
+  (prog-mode-hook . global-hl-block-mode)
+  :custom
+  (hl-block-delay . 0.1)
+  (hl-block-bracket . nil)
+  (hl-block-multi-line . nil)
+  (hl-block-color-tint . "#060606"))
+    
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -1020,17 +1020,17 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** highlight-indent-guides
 #+begin_src emacs-lisp
-  (leaf
-    highlight-indent-guides
-    :doc "indent lines"
-    :straight t
-    :blackout t
-    :hook
-    (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
-    :custom
-    ((highlight-indent-guides-method . 'character)
-     (highlight-indent-guides-auto-enabled . t)
-     (highlight-indent-guides-responsive . t)))
+(leaf
+  highlight-indent-guides
+  :doc "indent lines"
+  :straight t
+  :blackout t
+  :hook
+  (((prog-mode-hook yaml-mode-hook) . highlight-indent-guides-mode))
+  :custom
+  ((highlight-indent-guides-method . 'character)
+   (highlight-indent-guides-auto-enabled . t)
+   (highlight-indent-guides-responsive . t)))
 #+end_src
 ** COMMENT hl-indent-scope (in early development, not stable for now)
 #+begin_src emacs-lisp
@@ -1040,8 +1040,8 @@ Diredをオーバーホールするファイラ。
      :type git
      :host nil
      :repo "https://codeberg.org/ideasman42/emacs-hl-indent-scope")
-    :global-minor-mode hl-indent-scope-mode
-    )
+    :global-minor-mode hl-indent-scope-mode)
+    
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
@@ -1072,142 +1072,141 @@ TODO: set ignore major modes like dired
 #+end_src
 ** centered-cursor-mode
 #+begin_src emacs-lisp
-  (leaf centered-cursor-mode
-    :straight t
-    :blackout t
-    :global-minor-mode global-centered-cursor-mode
-    :custom (ccm-step-size . 2)
-    :config
-    ;; exclude on vterm
-    (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+(leaf centered-cursor-mode
+  :straight t
+  :blackout t
+  :global-minor-mode global-centered-cursor-mode
+  :custom (ccm-step-size . 2)
+  :config
+  ;; exclude on vterm
+  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
 #+end_src
 ** helpful
 #+begin_src emacs-lisp
   ;; enhanced help
-  (leaf helpful
-    :straight t
-    :bind
-    ("C-h f" . helpful-callable)
-    ("C-h k" . helpful-key)
-    ("C-h v" . helpful-variable))
+(leaf helpful
+  :straight t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
 #+end_src
 
 * Window Management
 ** winner-mode
 #+begin_src emacs-lisp
-  (leaf winner-mode
-    :bind
-    (("C-z" . winner-undo)
-     ("C-S-z" . winner-redo))
-    :global-minor-mode winner-mode
-    )
+(leaf winner-mode
+  :bind
+  (("C-z" . winner-undo)
+   ("C-S-z" . winner-redo))
+  :global-minor-mode winner-mode)
+    
 #+end_src
 ** move-or-create-window
 #+begin_src emacs-lisp
-  (leaf move-or-create-window
-    :doc "focus.nvim in emacs"
-    :config
-    (defun move-or-create-window-above nil
-      (interactive)
-      (if (window-in-direction 'above)
-          (windmove-up)
-        (progn
-          (split-window-below)
-          (windmove-up))))
+(leaf move-or-create-window
+  :doc "focus.nvim in emacs"
+  :config
+  (defun move-or-create-window-above nil
+    (interactive)
+    (if (window-in-direction 'above)
+        (windmove-up)
+      (progn
+        (split-window-below)
+        (windmove-up))))
 
-    (defun move-or-create-window-below nil
-      (interactive)
-      (if (window-in-direction 'below)
-          (windmove-down)
-        (progn
-          (split-window-below)
-          (windmove-down))))
+  (defun move-or-create-window-below nil
+    (interactive)
+    (if (window-in-direction 'below)
+        (windmove-down)
+      (progn
+        (split-window-below)
+        (windmove-down))))
 
-    (defun move-or-create-window-left nil
-      (interactive)
-      (if (window-in-direction 'left)
-          (windmove-left)
-        (progn
-          (split-window-right)
-          (windmove-left))))
+  (defun move-or-create-window-left nil
+    (interactive)
+    (if (window-in-direction 'left)
+        (windmove-left)
+      (progn
+        (split-window-right)
+        (windmove-left))))
 
-    (defun move-or-create-window-right nil
-      (interactive)
-      (if (window-in-direction 'right)
-          (windmove-right)
-        (progn
-          (split-window-right)
-          (windmove-right))))
-    )
+  (defun move-or-create-window-right nil
+    (interactive)
+    (if (window-in-direction 'right)
+        (windmove-right)
+      (progn
+        (split-window-right)
+        (windmove-right)))))
+    
 #+end_src
 * Editing
 ** COMMENT Evil Modal Setup
 Evilに統合して・合わせて設定をしているので、他の編集モードで同じパッケージを使う場合にも設定をDRYにしない。
 *** evil
 #+begin_src emacs-lisp
-  (leaf
-    evil
-    :doc "Extensible vi layer for Emacs."
-    :straight t
-    :require
-    evil
-    windmove
-    :defun
-    (evil-ex-nohighlight
-     evil-mc-undo-all-cursors
-     evil-set-leader
-     evil-mode
-     turn-on-evil-mode
-     evil-define-command
-     evil-define-key)
-    :defvar (evil-want-keybinding evil-undo-system)
-    :init
-    (defun my/clear-marks-and-cursors ()
-      (interactive)
-      (evil-ex-nohighlight)
-      (evil-mc-undo-all-cursors))
-    :pre-setq
-    ;; for evil-collection
-    (evil-want-keybinding . nil)
-    ;; undo system
-    (evil-undo-system . 'undo-fu)
-    :custom
-    ;; <C-u> to scroll (replace universal-argument)
-    (evil-want-C-u-scroll . t)
-    ;; don't kill on visual paste
-    (evil-kill-on-visual-paste . nil)
-    ;; serach module
-    (evil-search-module 'evil-search)
-    :config
-    ;; leader-key
-    (evil-set-leader 'normal (kbd "<SPC>"))
-    (evil-set-leader 'visual (kbd "<SPC>"))
-    ;; activate evil
-    (evil-mode 1)
-    (turn-on-evil-mode)
-    :bind
-    (
-     (:evil-normal-state-map
-      ("C-s" . save-buffer)
-      ("C-q" . 'evil-quit)
-      ("C-l" . 'my/clear-marks-and-cursors)
-      ("K" . 'helpful-at-point)
-      ("C-j" . 'evil-open-fold)
-      ("C-k" . 'evil-close-fold)
-      ("C-e" . find-file)
-      ("C-S-e" . find-file-other-window)
-      ("<leader>n" . 'my-mc-hydra/body)
-      ("<leader>g" . 'my-git-actions/body)
-      ("<leader>h" . 'move-or-create-window-left)
-      ("<leader>j" . 'move-or-create-window-below)
-      ("<leader>k" . 'move-or-create-window-above)
-      ("<leader>l" . 'move-or-create-window-right))
-     (:evil-visual-state-map
-      ("<leader>n" . 'my-mc-hydra/body)
-      ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
-      ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match)
-      )
-     ))
+(leaf evil
+  :doc "Extensible vi layer for Emacs."
+  :straight t
+  :require
+  evil
+  windmove
+  :defun
+  (evil-ex-nohighlight
+   evil-mc-undo-all-cursors
+   evil-set-leader
+   evil-mode
+   turn-on-evil-mode
+   evil-define-command
+   evil-define-key)
+  :defvar (evil-want-keybinding evil-undo-system)
+  :init
+  (defun my/clear-marks-and-cursors ()
+    (interactive)
+    (evil-ex-nohighlight)
+    (evil-mc-undo-all-cursors))
+  :pre-setq
+  ;; for evil-collection
+  (evil-want-keybinding . nil)
+  ;; undo system
+  (evil-undo-system . 'undo-fu)
+  :custom
+  ;; <C-u> to scroll (replace universal-argument)
+  (evil-want-C-u-scroll . t)
+  ;; don't kill on visual paste
+  (evil-kill-on-visual-paste . nil)
+  ;; serach module
+  (evil-search-module 'evil-search)
+  :config
+  ;; leader-key
+  (evil-set-leader 'normal (kbd "<SPC>"))
+  (evil-set-leader 'visual (kbd "<SPC>"))
+  ;; activate evil
+  (evil-mode 1)
+  (turn-on-evil-mode)
+  :bind
+  (
+   (:evil-normal-state-map
+    ("C-s" . save-buffer)
+    ("C-q" . 'evil-quit)
+    ("C-l" . 'my/clear-marks-and-cursors)
+    ("K" . 'helpful-at-point)
+    ("C-j" . 'evil-open-fold)
+    ("C-k" . 'evil-close-fold)
+    ("C-e" . find-file)
+    ("C-S-e" . find-file-other-window)
+    ("<leader>n" . 'my-mc-hydra/body)
+    ("<leader>g" . 'my-git-actions/body)
+    ("<leader>h" . 'move-or-create-window-left)
+    ("<leader>j" . 'move-or-create-window-below)
+    ("<leader>k" . 'move-or-create-window-above)
+    ("<leader>l" . 'move-or-create-window-right))
+   (:evil-visual-state-map
+    ("<leader>n" . 'my-mc-hydra/body)
+    ("C-n" . 'my-mc-hydra/evil-mc-make-and-goto-next-match)
+    ("C-p" . 'my-mc-hydra/evil-mc-make-and-goto-prev-match))))
+      
+     
 #+end_src
 *** evil-collection (Evil's binding presets)
 #+begin_src emacs-lisp
@@ -1222,14 +1221,14 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
       (evil-collection-define-key 'normal map (kbd "<SPC>h") 'move-or-create-window-left)
       (evil-collection-define-key 'normal map (kbd "<SPC>j") 'move-or-create-window-below)
       (evil-collection-define-key 'normal map (kbd "<SPC>k") 'move-or-create-window-above)
-      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'move-or-create-window-right)
-      )
+      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'move-or-create-window-right))
+      
     (defun my/evil-windmove-mapset (map)
       (evil-collection-define-key 'normal map (kbd "<SPC>h") 'windmove-left)
       (evil-collection-define-key 'normal map (kbd "<SPC>j") 'windmove-down)
       (evil-collection-define-key 'normal map (kbd "<SPC>k") 'windmove-up)
-      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'windmove-right)
-      )
+      (evil-collection-define-key 'normal map (kbd "<SPC>l") 'windmove-right))
+      
     (defun my/evil-minibuffer-map nil
       (dolist (map '(minibuffer-local-map
                      minibuffer-local-ns-map
@@ -1237,12 +1236,12 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
                      minibuffer-local-must-match-map
                      minibuffer-local-isearch-map))
         (evil-collection-define-key '(insert normal) map (kbd "<SPC>k") 'windmove-up)
-        (evil-collection-define-key '(insert normal) map (kbd "C-q") 'windmove-up)
-        )
-      )
+        (evil-collection-define-key '(insert normal) map (kbd "C-q") 'windmove-up)))
+        
+      
     (defun my/evil-magit-mode-map nil
-      (my/evil-windmove-mapset 'magit-mode-map)
-      )
+      (my/evil-windmove-mapset 'magit-mode-map))
+      
     :custom
     (evil-collection-setup-minibuffer . t)
     (evil-collection-want-unimpaired-p . nil)
@@ -1251,8 +1250,8 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     (evil-collection-init)
     ;; custom mappings
     (my/evil-minibuffer-map)
-    (my/evil-magit-mode-map)
-    )
+    (my/evil-magit-mode-map))
+    
 #+end_src
 *** evil-org (org-mode evil keybinding)
 #+begin_src emacs-lisp
@@ -1316,180 +1315,180 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
 #+end_src
 *** evil-escape
 #+begin_src emacs-lisp
-  (leaf
-    evil-escape
-    :after evil
-    :straight t
-    :require t
-    :blackout t
-    :global-minor-mode evil-escape-mode
-    :setq-default
-    (evil-escape-key-sequence . "jk")
-    (evil-escape-delay . 0.2)
-    (evil-escape-excluded-states . '(normal visual motion emacs))
-    (evil-escape-excluded-major-modes
-     .
-     '
-     (magit-status-mode
-      magit-revision-mode magit-diff-mode help-mode)))
+(leaf
+  evil-escape
+  :after evil
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode evil-escape-mode
+  :setq-default
+  (evil-escape-key-sequence . "jk")
+  (evil-escape-delay . 0.2)
+  (evil-escape-excluded-states . '(normal visual motion emacs))
+  (evil-escape-excluded-major-modes
+   .
+   '
+   (magit-status-mode
+    magit-revision-mode magit-diff-mode help-mode)))
 #+end_src
 *** evil-commentary
 #+begin_src emacs-lisp
-  (leaf
-    evil-commentary
-    :after evil
-    :straight t
-    :require t
-    :blackout t
-    :global-minor-mode evil-commentary-mode
-    :bind
-    (;; (:evil-normal-state-map
-     ;;  ("C-/" . 'evil-commentary-line)
-     ;;  )
-     )
-    )
+(leaf
+  evil-commentary
+  :after evil
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode evil-commentary-mode
+  :bind
+  ());; (:evil-normal-state-map
+   ;;  ("C-/" . 'evil-commentary-line)
+   ;;  )
+     
+    
 #+end_src
 *** evil-snipe
 #+begin_src emacs-lisp
-  (leaf evil-snipe
-    :straight t
-    :require t
-    :blackout t
-    :global-minor-mode evil-snipe-mode evil-snipe-override-mode
-    :hook
-    (magit-mode-hook . turn-off-evil-snipe-override-mode)
-    :custom
-    (evil-snipe-scope . 'visible)
-    (evil-snipe-smart-case . t)
-    )
+(leaf evil-snipe
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode evil-snipe-mode evil-snipe-override-mode
+  :hook
+  (magit-mode-hook . turn-off-evil-snipe-override-mode)
+  :custom
+  (evil-snipe-scope . 'visible)
+  (evil-snipe-smart-case . t))
+    
 #+end_src
 *** evil-mc
 #+begin_src emacs-lisp
-  (leaf
-    evil-mc
-    :after evil
-    :straight t
-    :require t
-    :global-minor-mode global-evil-mc-mode
-    :config
-    (evil-define-command
-      evil-mc-toggle-cursor-here
-      ()
-      "Create a cursor at point. If in visual block or line mode, then create
+(leaf
+  evil-mc
+  :after evil
+  :straight t
+  :require t
+  :global-minor-mode global-evil-mc-mode
+  :config
+  (evil-define-command
+    evil-mc-toggle-cursor-here
+    ()
+    "Create a cursor at point. If in visual block or line mode, then create
      cursors on each line of the selection, on the column of the cursor. Otherwise
      pauses cursors."
-      :repeat nil
-      :keep-visual nil
-      :evil-mc
-      t
-      (cond
-       (
-        (and
-         (evil-mc-has-cursors-p) (evil-normal-state-p)
-         (let*
-             (
-              (pos (point))
-              (cursor
-               (cl-find-if
-                (lambda (cursor)
-                  (eq pos (evil-mc-get-cursor-start cursor)))
-                evil-mc-cursor-list)))
-           (when cursor
-             (evil-mc-delete-cursor cursor)
-             (setq evil-mc-cursor-list
-                   (delq cursor evil-mc-cursor-list))
-             t))))
+    :repeat nil
+    :keep-visual nil
+    :evil-mc
+    t
+    (cond
+     (
+      (and
+       (evil-mc-has-cursors-p) (evil-normal-state-p)
+       (let*
+           (
+            (pos (point))
+            (cursor
+             (cl-find-if
+              (lambda (cursor)
+                (eq pos (evil-mc-get-cursor-start cursor)))
+              evil-mc-cursor-list)))
+         (when cursor
+           (evil-mc-delete-cursor cursor)
+           (setq evil-mc-cursor-list
+                 (delq cursor evil-mc-cursor-list))
+           t))))
 
-       ((memq evil-this-type '(block line))
-        (let
-            (
-             (col (evil-column))
-             (line-at-pt (line-number-at-pos)))
-          ;; Fix off-by-one error
-          (when (= evil-visual-direction 1)
-            (cl-decf col)
-            (backward-char))
-          (save-excursion
-            (evil-apply-on-block
-             (lambda (ibeg _)
-               (unless
-                   (or
-                    (= line-at-pt (line-number-at-pos ibeg))
-                    (invisible-p ibeg))
-                 (goto-char ibeg)
-                 (move-to-column col)
-                 (when (= (current-column) col)
-                   (evil-mc-make-cursor-here))))
-             evil-visual-beginning
-             (if (eq evil-this-type 'line)
-                 (1- evil-visual-end)
-               evil-visual-end)
-             nil)
-            (evil-exit-visual-state))))
-       (t
-        (evil-mc-pause-cursors)
-        ;; I assume I don't want the cursors to move yet
-        (evil-mc-make-cursor-here))))
+     ((memq evil-this-type '(block line))
+      (let
+          (
+           (col (evil-column))
+           (line-at-pt (line-number-at-pos)))
+        ;; Fix off-by-one error
+        (when (= evil-visual-direction 1)
+          (cl-decf col)
+          (backward-char))
+        (save-excursion
+          (evil-apply-on-block
+           (lambda (ibeg _)
+             (unless
+                 (or
+                  (= line-at-pt (line-number-at-pos ibeg))
+                  (invisible-p ibeg))
+               (goto-char ibeg)
+               (move-to-column col)
+               (when (= (current-column) col)
+                 (evil-mc-make-cursor-here))))
+           evil-visual-beginning
+           (if (eq evil-this-type 'line)
+               (1- evil-visual-end)
+             evil-visual-end)
+           nil)
+          (evil-exit-visual-state))))
+     (t
+      (evil-mc-pause-cursors)
+      ;; I assume I don't want the cursors to move yet
+      (evil-mc-make-cursor-here))))
 
-    (evil-define-command
-      evil-mc-undo-cursor
-      ()
-      "Undos last cursor, or all cursors in visual region."
-      :repeat nil
-      :evil-mc
-      t
-      (if (evil-visual-state-p)
-          (or
-           (mapc
-            (lambda (c)
-              (evil-mc-delete-cursor c)
-              (setq evil-mc-cursor-list (delq c evil-mc-cursor-list)))
-            (cl-remove-if-not
-             (lambda (pos)
-               (and
-                (>= pos evil-visual-beginning)
-                (< pos evil-visual-end)))
-             evil-mc-cursor-list
-             :key #'evil-mc-get-cursor-start))
-           (message "No cursors to undo in region"))
-        (evil-mc-undo-last-added-cursor)))
+  (evil-define-command
+    evil-mc-undo-cursor
+    ()
+    "Undos last cursor, or all cursors in visual region."
+    :repeat nil
+    :evil-mc
+    t
+    (if (evil-visual-state-p)
+        (or
+         (mapc
+          (lambda (c)
+            (evil-mc-delete-cursor c)
+            (setq evil-mc-cursor-list (delq c evil-mc-cursor-list)))
+          (cl-remove-if-not
+           (lambda (pos)
+             (and
+              (>= pos evil-visual-beginning)
+              (< pos evil-visual-end)))
+           evil-mc-cursor-list
+           :key #'evil-mc-get-cursor-start))
+         (message "No cursors to undo in region"))
+      (evil-mc-undo-last-added-cursor)))
 
-    ;; smartparens integration
-    (dolist
-        (sp-command
-         '
-         (sp-up-sexp
-          sp-copy-sexp
-          sp-down-sexp
-          sp-join-sexp
-          sp-kill-sexp
-          sp-next-sexp
-          sp-split-sexp
-          sp-wrap-curly
-          sp-wrap-round
-          sp-raise-sexp
-          sp-clone-sexp
-          sp-wrap-square
-          sp-splice-sexp
-          sp-end-of-sexp
-          sp-forward-sexp
-          sp-backward-sexp
-          sp-convolute-sexp
-          sp-transpose-sexp
-          sp-kill-whole-line
-          sp-beginning-of-sexp
-          sp-forward-barf-sexp
-          sp-forward-slurp-sexp
-          sp-backward-barf-sexp
-          sp-backward-slurp-sexp
-          sp-splice-sexp-killing-forward
-          sp-splice-sexp-killing-backward))
-      (add-to-list 'evil-mc-custom-known-commands
-                   `(,sp-command (:default . evil-mc-execute-call))))
-    :hydra
-    (my-mc-hydra
-     (:color pink :hint nil :pre (evil-mc-pause-cursors))
-     "
+  ;; smartparens integration
+  (dolist
+      (sp-command
+       '
+       (sp-up-sexp
+        sp-copy-sexp
+        sp-down-sexp
+        sp-join-sexp
+        sp-kill-sexp
+        sp-next-sexp
+        sp-split-sexp
+        sp-wrap-curly
+        sp-wrap-round
+        sp-raise-sexp
+        sp-clone-sexp
+        sp-wrap-square
+        sp-splice-sexp
+        sp-end-of-sexp
+        sp-forward-sexp
+        sp-backward-sexp
+        sp-convolute-sexp
+        sp-transpose-sexp
+        sp-kill-whole-line
+        sp-beginning-of-sexp
+        sp-forward-barf-sexp
+        sp-forward-slurp-sexp
+        sp-backward-barf-sexp
+        sp-backward-slurp-sexp
+        sp-splice-sexp-killing-forward
+        sp-splice-sexp-killing-backward))
+    (add-to-list 'evil-mc-custom-known-commands
+                 `(,sp-command (:default . evil-mc-execute-call))))
+  :hydra
+  (my-mc-hydra
+   (:color pink :hint nil :pre (evil-mc-pause-cursors))
+   "
       ^Match^            ^Line-wise^           ^Manual^
       ^^^^^^----------------------------------------------------
       _Z_: match all     _J_: make & go down   _z_: toggle here
@@ -1501,25 +1500,25 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
       Current pattern: %`evil-mc-pattern
 
       "
-     ("Z" #'evil-mc-make-all-cursors)
-     ("m" #'evil-mc-make-and-goto-next-match)
-     ("C-n" #'evil-mc-make-and-goto-next-match)
-     ("M" #'evil-mc-make-and-goto-prev-match)
-     ("C-p" #'evil-mc-make-and-goto-prev-match)
-     ("n" #'evil-mc-skip-and-goto-next-match)
-     ("N" #'evil-mc-skip-and-goto-prev-match)
-     ("J" #'evil-mc-make-cursor-move-next-line)
-     ("K" #'evil-mc-make-cursor-move-prev-line)
-     ("z" #'evil-mc-toggle-cursor-here)
-     ("r" #'evil-mc-undo-cursor)
-     ("R" #'evil-mc-undo-all-cursors)
-     ("p" #'evil-mc-pause-cursors)
-     ("P" #'evil-mc-resume-cursors)
-     ("q" #'evil-mc-resume-cursors "quit" :color blue)
-     ("Q"
-      #'evil-mc-undo-all-cursors
-      "quit with remove all"
-      :color blue)))
+   ("Z" #'evil-mc-make-all-cursors)
+   ("m" #'evil-mc-make-and-goto-next-match)
+   ("C-n" #'evil-mc-make-and-goto-next-match)
+   ("M" #'evil-mc-make-and-goto-prev-match)
+   ("C-p" #'evil-mc-make-and-goto-prev-match)
+   ("n" #'evil-mc-skip-and-goto-next-match)
+   ("N" #'evil-mc-skip-and-goto-prev-match)
+   ("J" #'evil-mc-make-cursor-move-next-line)
+   ("K" #'evil-mc-make-cursor-move-prev-line)
+   ("z" #'evil-mc-toggle-cursor-here)
+   ("r" #'evil-mc-undo-cursor)
+   ("R" #'evil-mc-undo-all-cursors)
+   ("p" #'evil-mc-pause-cursors)
+   ("P" #'evil-mc-resume-cursors)
+   ("q" #'evil-mc-resume-cursors "quit" :color blue)
+   ("Q"
+    #'evil-mc-undo-all-cursors
+    "quit with remove all"
+    :color blue)))
 #+end_src
 *** evil-owl (preview registers)
 #+begin_src emacs-lisp
@@ -1577,269 +1576,269 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
 *** meow
 **** meow
 #+begin_src emacs-lisp
-  (leaf meow
+(leaf meow
+  :straight t
+  :require t
+  :init
+  ;; key-chord dependency
+  (leaf key-chord
     :straight t
-    :require t
-    :init
-    ;; key-chord dependency
-    (leaf key-chord
-      :straight t
-      :global-minor-mode t
-      :custom
-      (key-chord-two-keys-delay . 0.1)
-      (key-chord-one-keys-delay . 0.2)
-      )
-    ;; command functions
-    (defun meow-save-line nil
-      (interactive)
-      (meow-line 1)
-      (call-interactively #'meow-save))
-    (defun meow-insert-at-first-non-whitespace nil
-      (interactive)
-      (back-to-indentation)
-      (meow-insert))
-    (defun meow-insert-at-end-of-line nil
-      (interactive)
-      (move-end-of-line 1)
-      (meow-insert))
-    (defun meow-find-backward nil
-      (interactive)
-      (let ((current-prefix-arg -1))
-        (call-interactively 'meow-find)))
-    (defun meow-search-backward nil
-      (interactive)
-      (let ((current-prefix-arg -1))
-        (call-interactively 'meow-search)))
-    (defun meow-close-window-or-buffer ()
-      (interactive)
-      (if (> (seq-length (window-list (selected-frame))) 1)
-          (delete-window)
-        (kill-this-buffer)))
-
-    ;; setup keymap
-    (defun meow-setup nil
-      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-      (meow-motion-overwrite-define-key
-       '("j" . meow-next)
-       '("k" . meow-prev)
-       '("C-u" . ccm-scroll-down)
-       '("C-d" . ccm-scroll-up)
-       '("C-o" . my/backward-forward-previous-location)
-       '("<C-i>" . my/backward-forward-next-location)
-       '("C-w" . kill-this-buffer)
-       '("/" . consult-line)
-       '("<escape>" . ignore))
-      (meow-leader-define-key
-       ;; SPC j/k will run the original command in MOTION state.
-       '("j" . "H-j")
-       '("k" . "H-k")
-       '("C-u" . "H-C-u")
-       '("C-d" . "H-C-d")
-       '("C-o" . "H-C-o")
-       '("<C-i>" . "H-C-i")
-       '("C-w" . "H-C-w")
-       '("/" . "H-/")
-       ;; move-or-create-window prefix
-       '("w j" . move-or-create-window-below)
-       '("w k" . move-or-create-window-above)
-       '("w h" . move-or-create-window-left)
-       '("w l" . move-or-create-window-right)
-       ;; version control operations
-       '("v" . my-git-actions/body)
-       ;; spell correction
-       '("z g" . flyspell-correct-at-point)
-       ;; lsp-command-map
-       '("l" . "s-l")
-       ;; perspective
-       '("p" . "C-c M-p")
-       ;; help
-       '("K" . helpful-at-point)
-       ;; consult search operations
-       '("SPC" . consult-buffer)
-       '("s p" . consult-ripgrep)
-       ;; Use SPC (0-9) for digit arguments.
-       '("1" . meow-digit-argument)
-       '("2" . meow-digit-argument)
-       '("3" . meow-digit-argument)
-       '("4" . meow-digit-argument)
-       '("5" . meow-digit-argument)
-       '("6" . meow-digit-argument)
-       '("7" . meow-digit-argument)
-       '("8" . meow-digit-argument)
-       '("9" . meow-digit-argument)
-       '("0" . meow-digit-argument)
-       '("/" . meow-keypad-describe-key)
-       '("?" . meow-cheatsheet))
-      (meow-normal-define-key
-       '("0" . meow-expand-0)
-       '("9" . meow-expand-9)
-       '("8" . meow-expand-8)
-       '("7" . meow-expand-7)
-       '("6" . meow-expand-6)
-       '("5" . meow-expand-5)
-       '("4" . meow-expand-4)
-       '("3" . meow-expand-3)
-       '("2" . meow-expand-2)
-       '("1" . meow-expand-1)
-       '("-" . negative-argument)
-       '("=" . meow-query-replace)
-       '("+" . meow-stellar-replace-regexp)
-       '(";" . meow-reverse)
-       '("," . meow-inner-of-thing)
-       '("." . meow-bounds-of-thing)
-       '("[" . meow-beginning-of-thing)
-       '("]" . meow-end-of-thing)
-       '("a" . meow-append)
-       '("A" . meow-insert-at-end-of-line)
-       '("o" . meow-open-below)
-       '("b" . meow-back-word)
-       '("B" . meow-back-symbol)
-       '("c" . meow-change)
-       '("d" . meow-delete)
-       ;; '("D" . meow-backward-delete)
-       '("D" . kill-line)
-       '("e" . meow-next-word)
-       '("E" . meow-next-symbol)
-       '("f" . meow-find)
-       '("F" . avy-goto-char-timer)
-       '("g" . meow-cancel-selection)
-       '("G" . meow-grab)
-       '("h" . meow-left)
-       '("H" . meow-left-expand)
-       '("i" . meow-insert)
-       '("I" . meow-insert-at-first-non-whitespace)
-       '("O" . meow-open-above)
-       '("j" . meow-next)
-       '("J" . meow-next-expand)
-       '("k" . meow-prev)
-       '("K" . meow-prev-expand)
-       '("l" . meow-right)
-       '("L" . meow-right-expand)
-       '("m" . meow-join)
-       '("n" . meow-search)
-       '("N" . meow-search-backward)
-       '("(" . meow-block)
-       '(")" . meow-to-block)
-       '("p" . meow-yank)
-       '("q" . meow-quit)
-       '("Q" . meow-goto-line)
-       '("r" . meow-replace)
-       ;; '("r" . embrace-commander)
-       ;; '("R" . meow-swap-grab)
-       '("R" . repeat)
-       '("s" . meow-kill)
-       '("S" . embrace-commander)
-       '("t" . meow-till)
-       '("u" . meow-undo)
-       '("U" . undo-redo)
-       '("C-r" . undo-redo)
-       '("v" . meow-visit)
-       '("V" . er/expand-region)
-       '("w" . meow-mark-word)
-       '("W" . meow-mark-symbol)
-       '("x" . meow-line)
-       '("X" . meow-goto-line)
-       '("y" . meow-save)
-       '("Y" . meow-sync-grab)
-       '("z" . meow-pop-selection)
-       '("'" . repeat)
-       '("\"" . consult-yank-pop)
-       '("/" . consult-line)
-       '("C-u" . ccm-scroll-down)
-       '("C-d" . ccm-scroll-up)
-       '("C-o" . my/backward-forward-previous-location)
-       '("<C-i>" . my/backward-forward-next-location)
-       ;; '("C-o" . gumshoe-persp-backtrack-back)
-       ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
-       '("C-f" . consult-line)
-       ;; '("C-p" . affe-find)
-       ;; '("C-e" . find-file)
-       '("C-t" . burly-perspective-init-project-persp)
-       '("C-s" . save-buffer)
-       '("C-w" . kill-this-buffer)
-       ;; '("TAB" . origami-toggle-node)
-       ;; '("<tab>" . origami-toggle-node)
-       (cons "S-SPC" kurumi-utility-map)
-       '("C-s" . save-buffer)
-       '("<escape>" . ignore))
-      ;; insert state keymap
-      (meow-define-keys
-          'insert
-        '("C-g" . meow-insert-exit)
-        )
-      ;; readline-style keymap in global map
-      (bind-key "C-w" 'backward-kill-word)
-      ;; remap universal-argument
-      (bind-key "C-M-u" 'universal-argument)
-      ;; key-chord shortcuts
-      (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
-      (key-chord-define meow-normal-state-keymap "gd" 'xref-find-definitions)
-      ;; anyblock thing object
-      (meow-thing-register 'anyblock
-                           '(
-                             (#'meow--inner-of-string)
-                             (pair ("[") ("]"))
-                             (pair ("(") (")"))
-                             (pair ("{") ("}"))
-                             (pair ("<") (">"))
-                             )
-                           '(
-                             (#'meow--bounds-of-string)
-                             (pair ("[") ("]"))
-                             (pair ("(") (")"))
-                             (pair ("{") ("}"))
-                             (pair ("<") (">"))
-                             )
-                           )
-      )
-    :bind
-    ;; readline style keymap for minibuffer
-    (:minibuffer-local-map
-     ("C-w" . backward-kill-word))
+    :global-minor-mode t
     :custom
-    (meow-use-clipboard . t)
-    (meow-mode-state-list . '((helpful-mode . normal)
-                              (help-mode . normal)
-                              (Man-mode . normal)
-                              (vterm-mode . insert)
-                              (eshell-mode . insert)
-                              ))
-    (meow--kbd-forward-char . "<right>")
-    ;; (meow--kbd-forward-line . "<down>")
-    ;; (meow--kbd-backward-line . "<up>")
-    (meow--kbd-delete-char . "<deletechar>")
-    (meow--kbd-kill-region . "S-<delete>")
-    (meow-selection-command-fallback .
-                                     '((meow-reverse . back-to-indentation)
-                                       (meow-change . meow-change-char)
-                                       (meow-save . meow-save-line)
-                                       (meow-kill . meow-kill-whole-line)
-                                       (meow-pop-selection . meow-pop-grab)
-                                       (meow-beacon-change . meow-beacon-change-char)
-                                       (meow-cancel . keyboard-quit)
-                                       (meow-delete . meow-C-d)))
-    (meow-char-thing-table .
-                           '((?r . round)
-                             (?\( . round)
-                             (?b . anyblock) ;; `b' for bracket
-                             (?c . curly)
-                             (?s . string)
-                             (?e . symbol)
-                             (?w . window)
-                             (?B . buffer)
-                             (?p . paragraph)
-                             (?\[ . square)
-                             (?l . line)
-                             (?d . defun)
-                             (?. . sentence)))
-    :defer-config
-    (meow-setup)
-    ;; vim-way cursor
-    ;; Must set before enable `meow-global-mode`
-    ;; (setq meow-use-cursor-position-hack t
-    ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
-    (meow-global-mode 1)
-    )
+    (key-chord-two-keys-delay . 0.1)
+    (key-chord-one-keys-delay . 0.2))
+      
+  ;; command functions
+  (defun meow-save-line nil
+    (interactive)
+    (meow-line 1)
+    (call-interactively #'meow-save))
+  (defun meow-insert-at-first-non-whitespace nil
+    (interactive)
+    (back-to-indentation)
+    (meow-insert))
+  (defun meow-insert-at-end-of-line nil
+    (interactive)
+    (move-end-of-line 1)
+    (meow-insert))
+  (defun meow-find-backward nil
+    (interactive)
+    (let ((current-prefix-arg -1))
+      (call-interactively 'meow-find)))
+  (defun meow-search-backward nil
+    (interactive)
+    (let ((current-prefix-arg -1))
+      (call-interactively 'meow-search)))
+  (defun meow-close-window-or-buffer ()
+    (interactive)
+    (if (> (seq-length (window-list (selected-frame))) 1)
+        (delete-window)
+      (kill-this-buffer)))
+
+  ;; setup keymap
+  (defun meow-setup nil
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    (meow-motion-overwrite-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("C-u" . ccm-scroll-down)
+     '("C-d" . ccm-scroll-up)
+     '("C-o" . my/backward-forward-previous-location)
+     '("<C-i>" . my/backward-forward-next-location)
+     '("C-w" . kill-this-buffer)
+     '("/" . consult-line)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     ;; SPC j/k will run the original command in MOTION state.
+     '("j" . "H-j")
+     '("k" . "H-k")
+     '("C-u" . "H-C-u")
+     '("C-d" . "H-C-d")
+     '("C-o" . "H-C-o")
+     '("<C-i>" . "H-C-i")
+     '("C-w" . "H-C-w")
+     '("/" . "H-/")
+     ;; move-or-create-window prefix
+     '("w j" . move-or-create-window-below)
+     '("w k" . move-or-create-window-above)
+     '("w h" . move-or-create-window-left)
+     '("w l" . move-or-create-window-right)
+     ;; version control operations
+     '("v" . my-git-actions/body)
+     ;; spell correction
+     '("z g" . flyspell-correct-at-point)
+     ;; lsp-command-map
+     '("l" . "s-l")
+     ;; perspective
+     '("p" . "C-c M-p")
+     ;; help
+     '("K" . helpful-at-point)
+     ;; consult search operations
+     '("SPC" . consult-buffer)
+     '("s p" . consult-ripgrep)
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '("=" . meow-query-replace)
+     '("+" . meow-stellar-replace-regexp)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-insert-at-end-of-line)
+     '("o" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     ;; '("D" . meow-backward-delete)
+     '("D" . kill-line)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("F" . avy-goto-char-timer)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-insert-at-first-non-whitespace)
+     '("O" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("N" . meow-search-backward)
+     '("(" . meow-block)
+     '(")" . meow-to-block)
+     '("p" . meow-yank)
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     ;; '("r" . embrace-commander)
+     ;; '("R" . meow-swap-grab)
+     '("R" . repeat)
+     '("s" . meow-kill)
+     '("S" . embrace-commander)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . undo-redo)
+     '("C-r" . undo-redo)
+     '("v" . meow-visit)
+     '("V" . er/expand-region)
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-goto-line)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("\"" . consult-yank-pop)
+     '("/" . consult-line)
+     '("C-u" . ccm-scroll-down)
+     '("C-d" . ccm-scroll-up)
+     '("C-o" . my/backward-forward-previous-location)
+     '("<C-i>" . my/backward-forward-next-location)
+     ;; '("C-o" . gumshoe-persp-backtrack-back)
+     ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
+     '("C-f" . consult-line)
+     ;; '("C-p" . affe-find)
+     ;; '("C-e" . find-file)
+     '("C-t" . burly-perspective-init-project-persp)
+     '("C-s" . save-buffer)
+     '("C-w" . kill-this-buffer)
+     ;; '("TAB" . origami-toggle-node)
+     ;; '("<tab>" . origami-toggle-node)
+     (cons "S-SPC" kurumi-utility-map)
+     '("C-s" . save-buffer)
+     '("<escape>" . ignore))
+    ;; insert state keymap
+    (meow-define-keys
+        'insert
+      '("C-g" . meow-insert-exit))
+        
+    ;; readline-style keymap in global map
+    (bind-key "C-w" 'backward-kill-word)
+    ;; remap universal-argument
+    (bind-key "C-M-u" 'universal-argument)
+    ;; key-chord shortcuts
+    (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
+    (key-chord-define meow-normal-state-keymap "gd" 'xref-find-definitions)
+    ;; anyblock thing object
+    (meow-thing-register 'anyblock
+                         '(
+                           (#'meow--inner-of-string)
+                           (pair ("[") ("]"))
+                           (pair ("(") (")"))
+                           (pair ("{") ("}"))
+                           (pair ("<") (">")))
+                             
+                         '(
+                           (#'meow--bounds-of-string)
+                           (pair ("[") ("]"))
+                           (pair ("(") (")"))
+                           (pair ("{") ("}"))
+                           (pair ("<") (">")))))
+                             
+                           
+      
+  :bind
+  ;; readline style keymap for minibuffer
+  (:minibuffer-local-map
+   ("C-w" . backward-kill-word))
+  :custom
+  (meow-use-clipboard . t)
+  (meow-mode-state-list . '((helpful-mode . normal)
+                            (help-mode . normal)
+                            (Man-mode . normal)
+                            (vterm-mode . insert)
+                            (eshell-mode . insert)))
+                              
+  (meow--kbd-forward-char . "<right>")
+  ;; (meow--kbd-forward-line . "<down>")
+  ;; (meow--kbd-backward-line . "<up>")
+  (meow--kbd-delete-char . "<deletechar>")
+  (meow--kbd-kill-region . "S-<delete>")
+  (meow-selection-command-fallback .
+                                   '((meow-reverse . back-to-indentation)
+                                     (meow-change . meow-change-char)
+                                     (meow-save . meow-save-line)
+                                     (meow-kill . meow-kill-whole-line)
+                                     (meow-pop-selection . meow-pop-grab)
+                                     (meow-beacon-change . meow-beacon-change-char)
+                                     (meow-cancel . keyboard-quit)
+                                     (meow-delete . meow-C-d)))
+  (meow-char-thing-table .
+                         '((?r . round)
+                           (?\( . round)
+                           (?b . anyblock) ;; `b' for bracket
+                           (?c . curly)
+                           (?s . string)
+                           (?e . symbol)
+                           (?w . window)
+                           (?B . buffer)
+                           (?p . paragraph)
+                           (?\[ . square)
+                           (?l . line)
+                           (?d . defun)
+                           (?. . sentence)))
+  :defer-config
+  (meow-setup)
+  ;; vim-way cursor
+  ;; Must set before enable `meow-global-mode`
+  ;; (setq meow-use-cursor-position-hack t
+  ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
+  (meow-global-mode 1))
+    
 #+end_src
 *** expand-region
 #+begin_src emacs-lisp
@@ -1854,127 +1853,127 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
   :require smartparens-config
   :blackout t
   :global-minor-mode smartparens-global-mode)
-  #+end_src
+#+end_src
 *** embrace
 #+begin_src emacs-lisp
-  (leaf embrace
-    :straight t)
+(leaf embrace
+  :straight t)
 #+end_src
 *** smart-hungry-delete
 #+begin_src emacs-lisp
-  (leaf smart-hungry-delete
-    :straight t
-    :bind
-    (("<deletechar>" . 'smart-hungry-delete-backward-char)
-     ("<delete>" . 'smart-hungry-delete-backward-char)
-     ("C-d" . 'smart-hungry-delete-forward-char)
-     ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
-     ([remap delete-backward-char] . smart-hungry-delete-backward-char)
-     ([remap delete-char] . smart-hungry-delete-forward-char))
-    :init
-    (smart-hungry-delete-add-default-hooks))
+(leaf smart-hungry-delete
+  :straight t
+  :bind
+  (("<deletechar>" . 'smart-hungry-delete-backward-char)
+   ("<delete>" . 'smart-hungry-delete-backward-char)
+   ("C-d" . 'smart-hungry-delete-forward-char)
+   ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+   ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+   ([remap delete-char] . smart-hungry-delete-forward-char))
+  :init
+  (smart-hungry-delete-add-default-hooks))
 #+end_src
 *** backward-forward
 #+begin_src emacs-lisp
-  (leaf backward-forward
-    :straight t
-    :global-minor-mode t
-    :custom
-    (backward-forward-mark-ring-max . 100)
-    :init
-    ;; reference: https://emacs-china.org/t/emacs/19171/17
-    (defun my/backward-forward-previous-location ()
-      "A `backward-forward-previous-location' wrap for skip invalid locations."
-      (interactive)
-      (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
-            (recent (point-marker)))
-        (backward-forward-previous-location)
-        (when (and (equal recent (point-marker)) purge)
-          (my/backward-forward-previous-location))))
-    (defun my/backward-forward-next-location ()
-      "A `backward-forward-next-location' wrap for skip invalid locations."
-      (interactive)
-      (let ((purge (> backward-forward-mark-ring-traversal-position 0))
-            (recent (point-marker)))
-        (backward-forward-next-location)
-        (when (and (equal recent (point-marker)) purge)
-          (my/backward-forward-next-location))))
-    )
+(leaf backward-forward
+  :straight t
+  :global-minor-mode t
+  :custom
+  (backward-forward-mark-ring-max . 100)
+  :init
+  ;; reference: https://emacs-china.org/t/emacs/19171/17
+  (defun my/backward-forward-previous-location ()
+    "A `backward-forward-previous-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
+          (recent (point-marker)))
+      (backward-forward-previous-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-previous-location))))
+  (defun my/backward-forward-next-location ()
+    "A `backward-forward-next-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (> backward-forward-mark-ring-traversal-position 0))
+          (recent (point-marker)))
+      (backward-forward-next-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-next-location)))))
+    
 #+end_src
 *** COMMENT gumshoe
 #+begin_src emacs-lisp
-  (leaf gumshoe
-    :straight (gumshoe :type git
-                       :host github
-                       :repo "Overdr0ne/gumshoe"
-                       :branch "master")
-    :global-minor-mode (global-gumshoe-persp-mode)
-    :init
-    ;; Enabing global-gumshoe-mode will initiate tracking
-    ;; (global-gumshoe-mode)
-    ;; customize peruse slot display if you like
-    ;; personally, I use perspectives, so I use the provided extension
-    ;; (global-gumshoe-persp-mode)
-    (setf gumshoe-slot-schema '(perspective time buffer position line))
-    :custom
-    (gumshoe-idle-time . 3)
-    (gumshoe-log-len . 50)
-    (gumshoe-follow-distance . 100)
-    (gumshoe-cursor-flash-p . nil)
-    )
+(leaf gumshoe
+  :straight (gumshoe :type git
+                     :host github
+                     :repo "Overdr0ne/gumshoe"
+                     :branch "master")
+  :global-minor-mode (global-gumshoe-persp-mode)
+  :init
+  ;; Enabing global-gumshoe-mode will initiate tracking
+  ;; (global-gumshoe-mode)
+  ;; customize peruse slot display if you like
+  ;; personally, I use perspectives, so I use the provided extension
+  ;; (global-gumshoe-persp-mode)
+  (setf gumshoe-slot-schema '(perspective time buffer position line))
+  :custom
+  (gumshoe-idle-time . 3)
+  (gumshoe-log-len . 50)
+  (gumshoe-follow-distance . 100)
+  (gumshoe-cursor-flash-p . nil))
+    
 #+end_src
 *** COMMENT dogears
 #+begin_src emacs-lisp
-  (leaf dogears
-    :straight t
-    :global-minor-mode dogears-mode)
+(leaf dogears
+  :straight t
+  :global-minor-mode dogears-mode)
 #+end_src
 *** COMMENT better-jumper
 #+begin_src emacs-lisp
-  (leaf better-jumper
-    :straight t
-    :global-minor-mode t
-    :custom
-    (better-jumper-context . 'window)
-    :config
-    ;; this is the key here. This advice makes it so you only set a jump point
-    ;; if you move more than one line with whatever command you call. For example
-    ;; if you add this advice around evil-next-line, you will set a jump point
-    ;; if you do 10 j, but not if you just hit j. I did not write this code, I
-    ;; I found it a while back and updated it to work with better-jumper.
-    (defun my-jump-advice (oldfun &rest args)
-      (let ((old-pos (point)))
-        (apply oldfun args)
-        (when (> (abs (- (line-number-at-pos old-pos) (line-number-at-pos (point))))
-                 1)
-          (better-jumper-set-jump old-pos))))
+(leaf better-jumper
+  :straight t
+  :global-minor-mode t
+  :custom
+  (better-jumper-context . 'window)
+  :config
+  ;; this is the key here. This advice makes it so you only set a jump point
+  ;; if you move more than one line with whatever command you call. For example
+  ;; if you add this advice around evil-next-line, you will set a jump point
+  ;; if you do 10 j, but not if you just hit j. I did not write this code, I
+  ;; I found it a while back and updated it to work with better-jumper.
+  (defun my-jump-advice (oldfun &rest args)
+    (let ((old-pos (point)))
+      (apply oldfun args)
+      (when (> (abs (- (line-number-at-pos old-pos) (line-number-at-pos (point))))
+               1)
+        (better-jumper-set-jump old-pos)))))
 
-    ;; jump scenarios
-    ;; (advice-add 'meow-search :around #'my-jump-advice)
-    ;; (advice-add 'meow-visit :around #'my-jump-advice)
-    ;; (advice-add 'consult--jump :around #'my-jump-advice)
-    ;; (advice-add 'ccm-scroll-up :around #'my-jump-advice)
-    ;; (advice-add 'ccm-scroll-down :around #'my-jump-advice)
-    ;; (advice-add 'evil-goto-definition :around #'my-jump-advice)
-    ;; (advice-add 'evil-goto-mark  :around #'my-jump-advice)
-    )
+  ;; jump scenarios
+  ;; (advice-add 'meow-search :around #'my-jump-advice)
+  ;; (advice-add 'meow-visit :around #'my-jump-advice)
+  ;; (advice-add 'consult--jump :around #'my-jump-advice)
+  ;; (advice-add 'ccm-scroll-up :around #'my-jump-advice)
+  ;; (advice-add 'ccm-scroll-down :around #'my-jump-advice)
+  ;; (advice-add 'evil-goto-definition :around #'my-jump-advice)
+  ;; (advice-add 'evil-goto-mark  :around #'my-jump-advice)
+    
 #+end_src
 *** COMMENT dot-mode
 
 キーマクロを使う仕組み上、companyなどと組み合わせて使えないため没。興味深さはあるのでその内改造するかも。
 
 #+begin_src emacs-lisp
-  (leaf dot-mode
-    :straight t
-    :require t
-    :global-minor-mode global-dot-mode
-    :bind
-    ;; unmap default keys
-    (:dot-mode-map
-     ("C-." . nil)
-     ("C-M-." . nil)
-     ("C-c ." . nil))
-    )
+(leaf dot-mode
+  :straight t
+  :require t
+  :global-minor-mode global-dot-mode
+  :bind
+  ;; unmap default keys
+  (:dot-mode-map
+   ("C-." . nil)
+   ("C-M-." . nil)
+   ("C-c ." . nil)))
+    
 #+end_src
 ** Utilities
 *** undo-fu (with undo-fu-session)
@@ -1987,8 +1986,8 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     :straight t
     :bind
     ([remap undo] . undo-fu-only-undo)
-    ([remap redo] . undo-fu-only-redo)
-    )
+    ([remap redo] . undo-fu-only-redo))
+
   (leaf
     undo-fu-session
     :straight t
@@ -2018,10 +2017,9 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
                :host github
                :repo "VernonGrant/sidekick.el")
     :require t ;; sidekick-evil
-    :bind
-    ;; (:evil-normal-state-map
-    ;;  ("<leader>sn" . 'sidekick-at-point))
-    )
+    :bind)
+  ;; (:evil-normal-state-map
+  ;;  ("<leader>sn" . 'sidekick-at-point))
 #+end_src
 *** avy
 #+begin_src emacs-lisp
@@ -2030,9 +2028,8 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     :custom
     (avy-timeout-seconds . 0.3)
     (avy-orders-alist .
-      '((avy-goto-char-0 . avy-order-closest)
-        (avy-goto-word-0 . avy-order-closest)))
-    )
+                      '((avy-goto-char-0 . avy-order-closest)
+                        (avy-goto-word-0 . avy-order-closest))))
 #+end_src
 *** dumb-jump
 #+begin_src emacs-lisp
@@ -2091,16 +2088,16 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
       :severity 1
       :overlay-category 'flycheck-warning-overlay
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-warning
-      )
+      :fringe-face 'flycheck-fringe-warning)
+      
 
     (flycheck-define-error-level 'info
       :severity 0
       :overlay-category 'flycheck-info-overlay
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-info
-      )
-    )
+      :fringe-face 'flycheck-fringe-info))
+      
+    
 #+end_src
 *** flyspell (with flyspell-correct)
 **** flyspell
@@ -2149,16 +2146,16 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
   (leaf flyspell-lazy
     :straight
     (flyspell-lazy
-    :type git
-    :host github
-    :repo "rolandwalker/flyspell-lazy")
+     :type git
+     :host github
+     :repo "rolandwalker/flyspell-lazy")
     :after flyspell
     :custom
     (flyspell-lazy-idle-seconds . 1)
     (flyspell-lazy-window-idle-seconds . 3)
     :config
-    (flyspell-lazy-mode)
-    )
+    (flyspell-lazy-mode))
+    
 #+end_src
 **** flyspell-correct
 #+begin_src emacs-lisp
@@ -2167,11 +2164,11 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     :straight t
     :after flyspell
 
-    :bind (([remap ispell-word] . flyspell-correct-at-point)
+    :bind (([remap ispell-word] . flyspell-correct-at-point)))
            ;; (:evil-normal-state-map
            ;;  ("zg" . flyspell-correct-at-point)
            ;;  )
-           ))
+           
 #+end_src
 *** eldoc
 #+begin_src emacs-lisp
@@ -2192,113 +2189,113 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 
 #+begin_src emacs-lisp
   ;; formatter bindings
-  (leaf
-    format-all
-    :straight t
-    :require t
-    :blackout t
-    :hook
-    (prog-mode-hook . format-all-mode)
-    (prog-mode-hook . format-all-ensure-formatter)
-    :custom
-    (format-all-default-formatters .
-                                   '(("Assembly" asmfmt)
-                                    ("ATS" atsfmt)
-                                    ("Bazel" buildifier)
-                                    ("BibTeX" emacs-bibtex)
-                                    ("C" clang-format)
-                                    ("C#" clang-format)
-                                    ("C++" clang-format)
-                                    ("Cabal Config" cabal-fmt)
-                                    ("Clojure" zprint)
-                                    ("CMake" cmake-format)
-                                    ("Crystal" crystal)
-                                    ("CSS" prettier)
-                                    ("Cuda" clang-format)
-                                    ("D" dfmt)
-                                    ("Dart" dart-format)
-                                    ("Dhall" dhall)
-                                    ("Dockerfile" dockfmt)
-                                    ("Elixir" mix-format)
-                                    ("Elm" elm-format)
-                                    ("Emacs Lisp" emacs-lisp)
-                                    ("Erlang" efmt)
-                                    ("F#" fantomas)
-                                    ("Fish" fish-indent)
-                                    ("Fortran Free Form" fprettify)
-                                    ("GLSL" clang-format)
-                                    ("Go" gofmt)
-                                    ("GraphQL" prettier)
-                                    ("Haskell" brittany)
-                                    ("HTML" html-tidy)
-                                    ("HTML+ERB" erb-format)
-                                    ("Java" clang-format)
-                                    ("JavaScript" prettier)
-                                    ("JSON" prettier)
-                                    ("JSON5" prettier)
-                                    ("Jsonnet" jsonnetfmt)
-                                    ("JSX" prettier)
-                                    ("Kotlin" ktlint)
-                                    ("LaTeX" latexindent)
-                                    ("Less" prettier)
-                                    ("Literate Haskell" brittany)
-                                    ("Lua" stylua)
-                                    ("Markdown" prettier)
-                                    ("Nix" nixpkgs-fmt)
-                                    ("Objective-C" clang-format)
-                                    ("OCaml" ocp-indent)
-                                    ("Perl" perltidy)
-                                    ("PHP" prettier)
-                                    ("Protocol Buffer" clang-format)
-                                    ("PureScript" purty)
-                                    ("Python" black)
-                                    ("R" styler)
-                                    ("Reason" bsrefmt)
-                                    ("ReScript" rescript)
-                                    ("Ruby" rufo)
-                                    ("Rust" rustfmt)
-                                    ("Scala" scalafmt)
-                                    ("SCSS" prettier)
-                                    ("Shell" shfmt)
-                                    ("Solidity" prettier)
-                                    ("SQL" sqlformat)
-                                    ("Svelte" prettier)
-                                    ("Swift" swiftformat)
-                                    ("Terraform" terraform-fmt)
-                                    ("TOML" prettier)
-                                    ("TSX" prettier)
-                                    ("TypeScript" prettier)
-                                    ("V" v-fmt)
-                                    ("Verilog" istyle-verilog)
-                                    ("Vue" prettier)
-                                    ("XML" html-tidy)
-                                    ("YAML" prettier)
-                                    )
-                                   )
-    )
+(leaf
+  format-all
+  :straight t
+  :require t
+  :blackout t
+  :hook
+  (prog-mode-hook . format-all-mode)
+  (prog-mode-hook . format-all-ensure-formatter)
+  :custom
+  (format-all-default-formatters .
+                                 '(("Assembly" asmfmt)
+                                   ("ATS" atsfmt)
+                                   ("Bazel" buildifier)
+                                   ("BibTeX" emacs-bibtex)
+                                   ("C" clang-format)
+                                   ("C#" clang-format)
+                                   ("C++" clang-format)
+                                   ("Cabal Config" cabal-fmt)
+                                   ("Clojure" zprint)
+                                   ("CMake" cmake-format)
+                                   ("Crystal" crystal)
+                                   ("CSS" prettier)
+                                   ("Cuda" clang-format)
+                                   ("D" dfmt)
+                                   ("Dart" dart-format)
+                                   ("Dhall" dhall)
+                                   ("Dockerfile" dockfmt)
+                                   ("Elixir" mix-format)
+                                   ("Elm" elm-format)
+                                   ("Emacs Lisp" emacs-lisp)
+                                   ("Erlang" efmt)
+                                   ("F#" fantomas)
+                                   ("Fish" fish-indent)
+                                   ("Fortran Free Form" fprettify)
+                                   ("GLSL" clang-format)
+                                   ("Go" gofmt)
+                                   ("GraphQL" prettier)
+                                   ("Haskell" brittany)
+                                   ("HTML" html-tidy)
+                                   ("HTML+ERB" erb-format)
+                                   ("Java" clang-format)
+                                   ("JavaScript" prettier)
+                                   ("JSON" prettier)
+                                   ("JSON5" prettier)
+                                   ("Jsonnet" jsonnetfmt)
+                                   ("JSX" prettier)
+                                   ("Kotlin" ktlint)
+                                   ("LaTeX" latexindent)
+                                   ("Less" prettier)
+                                   ("Literate Haskell" brittany)
+                                   ("Lua" stylua)
+                                   ("Markdown" prettier)
+                                   ("Nix" nixpkgs-fmt)
+                                   ("Objective-C" clang-format)
+                                   ("OCaml" ocp-indent)
+                                   ("Perl" perltidy)
+                                   ("PHP" prettier)
+                                   ("Protocol Buffer" clang-format)
+                                   ("PureScript" purty)
+                                   ("Python" black)
+                                   ("R" styler)
+                                   ("Reason" bsrefmt)
+                                   ("ReScript" rescript)
+                                   ("Ruby" rufo)
+                                   ("Rust" rustfmt)
+                                   ("Scala" scalafmt)
+                                   ("SCSS" prettier)
+                                   ("Shell" shfmt)
+                                   ("Solidity" prettier)
+                                   ("SQL" sqlformat)
+                                   ("Svelte" prettier)
+                                   ("Swift" swiftformat)
+                                   ("Terraform" terraform-fmt)
+                                   ("TOML" prettier)
+                                   ("TSX" prettier)
+                                   ("TypeScript" prettier)
+                                   ("V" v-fmt)
+                                   ("Verilog" istyle-verilog)
+                                   ("Vue" prettier)
+                                   ("XML" html-tidy)
+                                   ("YAML" prettier))))
+                                    
+                                   
+    
 #+end_src
 
 *** editorconfig
 #+begin_src emacs-lisp
   ;; EditorConfig support
-  (leaf editorconfig
-    :straight t
-    :require t
-    :blackout t
-    :global-minor-mode editorconfig-mode)
+(leaf editorconfig
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode editorconfig-mode)
 #+end_src
 *** dtrt-indent
 vim-sleuth like automatic indent guessing/adjusting
 #+begin_src emacs-lisp
-  (leaf dtrt-indent
-    :straight t
-    :hook
-    (prog-mode-hook . dtrt-indent-mode)
-    :config
-    ;; (add-hook 'prog-mode-hook #'(lambda ()
-    ;;                               (dtrt-indent-mode)
-    ;;                               (dtrt-indent-adapt)))
-    )
+(leaf dtrt-indent
+  :straight t
+  :hook
+  (prog-mode-hook . dtrt-indent-mode)
+  :config)
+  ;; (add-hook 'prog-mode-hook #'(lambda ()
+  ;;                               (dtrt-indent-mode)
+  ;;                               (dtrt-indent-adapt)))
+    
 #+end_src
 ** Completion
 *** COMMENT corfu (with corfu-doc, cape)
@@ -2348,13 +2345,13 @@ vim-sleuth like automatic indent guessing/adjusting
      :config
      (evil-make-overriding-map corfu-map)
      (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
-     (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
+     (advice-add 'corfu--teardown :after 'evil-normalize-keymaps)))
 
-    (leaf
-      corfu-doc
-      :straight t
-      :require t
-      :hook (corfu-mode-hook . corfu-doc-mode))
+  ;; show-doc
+  (leaf corfu-doc
+    :straight t
+    :require t
+    :hook (corfu-mode-hook . corfu-doc-mode))
 #+end_src
 **** cape
 #+begin_src emacs-lisp
@@ -2371,19 +2368,19 @@ vim-sleuth like automatic indent guessing/adjusting
                     #'cape-symbol
                     #'cape-keyword
                     #'cape-dabbrev
-                    #'cape-abbrev
+                    #'cape-abbrev)))
                     ;; #'cape-ispell
                     ;; #'cape-dict
                     ;; #'cape-line
-                    )))
+                    
 
     (defun my/convert-super-capf (arg-capf)
       (list (cape-capf-buster
              (cape-super-capf arg-capf
                               (cape-company-to-capf #'company-yasnippet)
-                              (cape-company-to-capf #'company-same-mode-buffers)
+                              (cape-company-to-capf #'company-same-mode-buffers)))
                               ;; (cape-company-to-capf #'company-wordfreq)
-                              ))
+                              
             #'cape-file
             #'cape-dabbrev
             #'cape-ispell))
@@ -2402,15 +2399,15 @@ vim-sleuth like automatic indent guessing/adjusting
     (lsp-completion-mode-hook . my/set-lsp-capf)
     (magit-mode-hook . my/set-basic-capf)
     :config
-    (my/add-default-capfs)
-    )
+    (my/add-default-capfs))
+    
 
   ;; to use company-backends
   (leaf company
     :straight t
     :require t
-    :after cape
-    )
+    :after cape)
+    
 #+end_src
 *** company-mode
 **** company
@@ -2421,8 +2418,8 @@ vim-sleuth like automatic indent guessing/adjusting
     (([remap indent-for-tab-command] . company-indent-or-complete-common)
      ([remap c-indent-line-or-region] . company-indent-or-complete-common)
      (:company-active-map
-      ("C-w" . nil)
-      ))
+      ("C-w" . nil)))
+      
     :global-minor-mode global-company-mode
     :custom
     (
@@ -2453,8 +2450,8 @@ vim-sleuth like automatic indent guessing/adjusting
                               company-gtags
                               company-etags
                               company-oddmuse
-                              company-bbdb
-                              )
+                              company-bbdb)
+                              
                              (company-keywords
                               company-yasnippet
                               ;; company-dabbrev
@@ -2464,15 +2461,15 @@ vim-sleuth like automatic indent guessing/adjusting
                               company-gtags
                               company-etags
                               company-oddmuse
-                              company-bbdb
-                              )
+                              company-bbdb)
+                              
                              company-files
                              company-dabbrev
                              company-same-mode-buffers
                              company-wordfreq
                              company-bbdb
-                             company-oddmuse
-                             ))
+                             company-oddmuse))
+                             
     ;; magit commit message completion with magit-diff
     (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
       (let ((name (buffer-name)))
@@ -2486,8 +2483,8 @@ vim-sleuth like automatic indent guessing/adjusting
       (setq-local company-dabbrev-ignore-buffers
                   #'my--company-dabbrev-ignore-except-magit-diff))
 
-    (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook)
-    )
+    (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook))
+    
 #+end_src
 **** company-box
 #+begin_src emacs-lisp
@@ -2495,8 +2492,8 @@ vim-sleuth like automatic indent guessing/adjusting
     :straight t
     :require t
     :after company
-    :hook (company-mode-hook . company-box-mode)
-    )
+    :hook (company-mode-hook . company-box-mode))
+    
 #+end_src
 **** company-dwim
 #+begin_src emacs-lisp
@@ -2530,19 +2527,19 @@ vim-sleuth like automatic indent guessing/adjusting
                                         '(
                                           company-same-mode-buffers-matcher-flex
                                           company-same-mode-buffers-matcher-partial
-                                          company-same-mode-buffers-matcher-exact-first-letter-flex-rest
-                                          ))
+                                          company-same-mode-buffers-matcher-exact-first-letter-flex-rest))
+                                          
     :config
-    (company-same-mode-buffers-initialize)
-    )
+    (company-same-mode-buffers-initialize))
+    
 #+end_src
 *** company-wordfreq (backend)
 #+begin_src emacs-lisp
   (leaf company-wordfreq
     :straight t
     :require t
-    :after company
-    )
+    :after company)
+    
 #+end_src
 *** fussy (fuzzy completion-styles)
 #+begin_src emacs-lisp
@@ -2585,8 +2582,8 @@ vim-sleuth like automatic indent guessing/adjusting
         (apply f args)))
 
     (advice-add 'company--transform-candidates :around 'j-company-transformers)
-    (advice-add 'company-capf :around 'j-company-capf)
-    )
+    (advice-add 'company-capf :around 'j-company-capf))
+    
 #+end_src
 *** yasnippet
 #+begin_src emacs-lisp
@@ -2620,8 +2617,8 @@ vim-sleuth like automatic indent guessing/adjusting
             (apply (if vertico-mode
                        #'consult-completion-in-region
                      #'completion--in-region)
-                   args)))
-    )
+                   args))))
+    
 #+end_src
 *** consult (Narrowing Functions)
 **** consult
@@ -2650,8 +2647,8 @@ vim-sleuth like automatic indent guessing/adjusting
        consult-projectile--source-projectile-recentf
        consult--source-buffer
        consult--source-hidden-buffer
-       consult--source-recent-file
-       )))
+       consult--source-recent-file)))
+       
     :config
     ;; don't set sources on top
     (consult-customize consult--source-buffer persp-consult-source :default nil)
@@ -2664,13 +2661,13 @@ vim-sleuth like automatic indent guessing/adjusting
      consult--source-bookmark consult--source-recent-file
      consult--source-project-recent-file
      :preview-key '(:debounce 0.3 any))
-    :bind
+    :bind)
     ;; ((:evil-normal-state-map
     ;;   ;; ("C-f" . consult-line)
     ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
     ;;   ("<leader>SPC" . 'consult-buffer)
     ;;   ))
-    )
+    
 #+end_src
 **** consult-flycheck
 #+begin_src emacs-lisp
@@ -2679,11 +2676,11 @@ vim-sleuth like automatic indent guessing/adjusting
     :straight t
     :after consult flycheck
     :bind
-    (
+    ())
      ;; (:evil-normal-state-map
      ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
      ;;       )
-     ))
+     
 #+end_src
 **** consult-dir
 #+begin_src emacs-lisp
@@ -2696,11 +2693,11 @@ vim-sleuth like automatic indent guessing/adjusting
     (("C-x C-d" . consult-dir)
      (:vertico-map
       ("C-x C-d" . consult-dir)
-      ("C-x C-j" . consult-dir-jump-file))
+      ("C-x C-j" . consult-dir-jump-file)))
      ;; (:evil-normal-state-map
      ;;  ("C-S-r" . consult-dir)
      ;;  )
-     )
+     
     :custom
     (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 #+end_src
@@ -2711,8 +2708,8 @@ projectile integration
     :straight (consult-projectile
                :type git
                :host gitlab
-               :repo "OlMon/consult-projectile"
-               )
+               :repo "OlMon/consult-projectile")
+               
     :require t
     :custom
     ;; (consult-projectile-use-projectile-switch-project . t)
@@ -2722,9 +2719,9 @@ projectile integration
     (defun kurumi-consult-projectile--project-persp-action (dir)
       (persp-switch (projectile-project-name dir))
       (cd (projectile-project-root dir))
-      (consult-projectile--file dir)
-      )
-    )
+      (consult-projectile--file dir)))
+      
+    
 #+end_src
 **** consult-flyspell
 #+begin_src emacs-lisp
@@ -2734,8 +2731,8 @@ projectile integration
     :config
     (setq consult-flyspell-select-function 'flyspell-correct-at-point
           consult-flyspell-set-point-after-word t
-          consult-flyspell-always-check-buffer t)
-    )
+          consult-flyspell-always-check-buffer t))
+    
 #+end_src
 *** embark
 #+begin_src emacs-lisp
@@ -2746,8 +2743,8 @@ projectile integration
     :bind
     (("C-." . embark-act)         ;; pick some comfortable binding
      ("M-." . embark-dwim)        ;; good alternative: M-.
-     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-    )
+     ("C-h B" . embark-bindings))) ;; alternative for `describe-bindings'
+    
 
   ;; consult integration
   (leaf embark-consult
@@ -2788,148 +2785,148 @@ projectile integration
 #+end_src
 *** switch-to-minibuffer
 #+begin_src emacs-lisp
-  (leaf switch-to-minibuffer
-    :init
-    (defun switch-to-minibuffer ()
-      "Switch to minibuffer window."
-      (interactive)
-      (if (active-minibuffer-window)
-          (select-window (active-minibuffer-window))
-        nil))
-    )
+(leaf switch-to-minibuffer
+  :init
+  (defun switch-to-minibuffer ()
+    "Switch to minibuffer window."
+    (interactive)
+    (if (active-minibuffer-window)
+        (select-window (active-minibuffer-window))
+      nil)))
+    
 #+end_src
 ** Translation
 *** COMMENT define-it
 #+begin_src emacs-lisp
-  (leaf define-it
-    :straight t
-    :commands (define-it define-it-at-point)
-    :custom
-    (google-translate-backend-method . 'curl)
-    ;; Auto detect language.
-    (google-translate-default-source-language . "auto")
-    ;; Set your target language.
-    (google-translate-default-target-language ."ja")
-    :init
-    ;; workaround serach tkk error
-    ;; (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
-    )
+(leaf define-it
+  :straight t
+  :commands (define-it define-it-at-point)
+  :custom
+  (google-translate-backend-method . 'curl)
+  ;; Auto detect language.
+  (google-translate-default-source-language . "auto")
+  ;; Set your target language.
+  (google-translate-default-target-language ."ja")
+  :init)
+  ;; workaround serach tkk error
+  ;; (defun google-translate--search-tkk () "Search TKK." (list 430675 2721866130))
+    
 #+end_src
 *** go-translate
 #+begin_src emacs-lisp
-  (leaf go-translate
-    :straight t
-    :require t
-    :config
-    (setq gts-translate-list '(("en" "ja") ("ja" "en")))
-    (setq gts-default-translator
-          (gts-translator
-           :picker (gts-prompt-picker)
-           :engines (list
-                     (gts-bing-engine)
-                     (gts-google-engine)
-                     (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
-           :render (gts-buffer-render)))
-    )
+(leaf go-translate
+  :straight t
+  :require t
+  :config
+  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
+  (setq gts-default-translator
+        (gts-translator
+         :picker (gts-prompt-picker)
+         :engines (list
+                   (gts-bing-engine)
+                   (gts-google-engine)
+                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
+         :render (gts-buffer-render))))
+    
 #+end_src
 ** Hyperbole
 #+begin_src emacs-lisp
-  (leaf hyperbole
-    :straight t
-    :hook
-    ;; (window-setup-hook . hyperbole-mode)
-    (text-mode-hook . hyperbole-mode)
-    (prog-mode-hook . hyperbole-mode)
-    (conf-mode-hook . hyperbole-mode)
-    (yaml-mode-hook . hyperbole-mode)
-    )
+(leaf hyperbole
+  :straight t
+  :hook
+  ;; (window-setup-hook . hyperbole-mode)
+  (text-mode-hook . hyperbole-mode)
+  (prog-mode-hook . hyperbole-mode)
+  (conf-mode-hook . hyperbole-mode)
+  (yaml-mode-hook . hyperbole-mode))
+    
 #+end_src
 
 * Treesitter Configs
 *** treesitter
 #+begin_src emacs-lisp
-  (leaf tree-sitter
-    :straight t
-    :global-minor-mode global-tree-sitter-mode
-    :hook
-    (treesitter-after-on-hook . tree-sitter-hl-mode))
+(leaf tree-sitter
+  :straight t
+  :global-minor-mode global-tree-sitter-mode
+  :hook
+  (treesitter-after-on-hook . tree-sitter-hl-mode))
 #+end_src
 *** treesitter-langs
 #+begin_src emacs-lisp
-  (leaf tree-sitter-langs
-    :straight t
-    :after tree-sitter)
+(leaf tree-sitter-langs
+  :straight t
+  :after tree-sitter)
 #+end_src
 * Terminal/Shell Command
 ** Terminal
 *** vterm
 #+begin_src emacs-lisp
-  (leaf vterm
-    :straight t
-    :ensure-system-package cmake libtool (libtool . libtool-bin)
-    :init
-    (leaf vterm-toggle
-      :straight t)
-    :bind
-    (
-     ;; ("C-@" . vterm-toggle)
-     (:vterm-mode-map
-      ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
-      ))
-    :custom
-    (vterm-max-scrollback . 10000)
-    )
+(leaf vterm
+  :straight t
+  :ensure-system-package cmake libtool (libtool . libtool-bin)
+  :init
+  (leaf vterm-toggle
+    :straight t)
+  :bind
+  (
+   ;; ("C-@" . vterm-toggle)
+   (:vterm-mode-map
+    ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
+      
+  :custom
+  (vterm-max-scrollback . 10000))
+    
 #+end_src
 *** eshell
 **** eshell
 #+begin_src emacs-lisp
-  (leaf eshell
-    :require t
-    :custom
-    (eshell-cmpl-ignore-case . t)
-    (eshell-hist-ignoredups . t)
-    (eshell-scroll-to-bottom-on-input . 'all)
-    (eshell-scroll-to-bottom-on-output . 'all)
-    (eshell-kill-processes-on-exit . t)
-    :defer-config
-    ;; HACK: can't map directly to eshell-mode-map
-    (add-hook 'eshell-mode-hook
-              (lambda ()
-                (progn
-                  ;; avoid overriding c-n/c-p for meow compatibility
-                  (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
-                  (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input))))
-    )
+(leaf eshell
+  :require t
+  :custom
+  (eshell-cmpl-ignore-case . t)
+  (eshell-hist-ignoredups . t)
+  (eshell-scroll-to-bottom-on-input . 'all)
+  (eshell-scroll-to-bottom-on-output . 'all)
+  (eshell-kill-processes-on-exit . t)
+  :defer-config
+  ;; HACK: can't map directly to eshell-mode-map
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (progn
+                ;; avoid overriding c-n/c-p for meow compatibility
+                (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
+                (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input)))))
+    
 #+end_src
 **** eshell-toggle
 #+begin_src emacs-lisp
-  (leaf eshell-toggle
-    :straight t
-    :require t
-    :custom
-    (eshell-toggle-size-fraction . 3)
-    (eshell-toggle-use-projectile-root . nil)
-    (eshell-toggle-run-command . nil)
-    (eshell-toggle-init-function . #'eshell-toggle-init-eshell)
-    ;; (eshell-toggle-init-function . #'eshell-toggle-init-ansi-term)
-    :bind
-    ("C-@" . eshell-toggle))
+(leaf eshell-toggle
+  :straight t
+  :require t
+  :custom
+  (eshell-toggle-size-fraction . 3)
+  (eshell-toggle-use-projectile-root . nil)
+  (eshell-toggle-run-command . nil)
+  (eshell-toggle-init-function . #'eshell-toggle-init-eshell)
+  ;; (eshell-toggle-init-function . #'eshell-toggle-init-ansi-term)
+  :bind
+  ("C-@" . eshell-toggle))
 #+end_src
 **** eshell-up
 #+begin_src emacs-lisp
-  (leaf eshell-up
-    :straight t
-    :require t
-    )
+(leaf eshell-up
+  :straight t
+  :require t)
+    
 #+end_src
 
 **** esh-autosuggest
 fish-like history suggestion
 #+begin_src emacs-lisp
-  (leaf esh-autosuggest
-    :straight t
-    :hook (eshell-mode-hook . esh-autosuggest-mode)
-    )
+(leaf esh-autosuggest
+  :straight t
+  :hook (eshell-mode-hook . esh-autosuggest-mode))
+    
 #+end_src
 **** fish-completion (with bash-fallback)
 #+begin_src emacs-lisp
@@ -2946,15 +2943,15 @@ fish-like history suggestion
     ;;      advise it to fail silently.
     (defun +eshell--fallback-to-bash-a (&rest _)
       (unless (executable-find "fish") ""))
-    (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
-    )
+    (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc))
+    
 #+end_src
 **** eshell-syntax-highlighting
 #+begin_src emacs-lisp
   (leaf eshell-syntax-highlighting
     :straight t
-    :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode)
-    )
+    :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode))
+    
 #+end_src
 **** eshell-did-you-mean
 #+begin_src emacs-lisp
@@ -2967,8 +2964,8 @@ fish-like history suggestion
     ;;      work on first invocation, so we invoke it once manually by setting the
     ;;      last command and then calling the output filter.
     (setq eshell-last-command-name "catt")
-    (eshell-did-you-mean-output-filter "catt: command not found")
-    )
+    (eshell-did-you-mean-output-filter "catt: command not found"))
+    
 #+end_src
 **** eshell-prompt-extras
 #+begin_src emacs-lisp
@@ -2977,8 +2974,8 @@ fish-like history suggestion
     :commands (epe-theme-lambda)
     :custom
     (eshell-highlight-prompt . nil)
-    (eshell-prompt-function . #'epe-theme-lambda)
-    )
+    (eshell-prompt-function . #'epe-theme-lambda))
+    
 #+end_src
 **** eshell-vterm
 #+begin_src emacs-lisp
@@ -2987,8 +2984,8 @@ fish-like history suggestion
     ;; :after eshell
     :config
     (eshell-vterm-mode)
-    (defalias 'eshell/v 'eshell-exec-visual)
-    )
+    (defalias 'eshell/v 'eshell-exec-visual))
+    
 #+end_src
 ** Shell Command
 *** TODO friendly-shell
@@ -3015,8 +3012,8 @@ fish-like history suggestion
     :bind (([remap shell-command] . dwim-shell-command)
            ([remap dired-do-async-shell-command] . dwim-shell-command)
            ([remap dired-do-shell-command] . dwim-shell-command)
-           ([remap dired-smart-shell-command] . dwim-shell-command))
-    )
+           ([remap dired-smart-shell-command] . dwim-shell-command)))
+    
 #+end_src
 * Languages/Modes Specific Settings
 ** Emacs Lisp Mode
@@ -3049,9 +3046,9 @@ fish-like history suggestion
                  ("C-j" . org-next-visible-heading)
                  ("C-k" . org-previous-visible-heading)
                  ("C-S-j" . org-move-subtree-down)
-                 ("C-S-k" . org-move-subtree-up))
-      )
-    )
+                 ("C-S-k" . org-move-subtree-up))))
+      
+    
 #+end_src
 *** org-auto-tangle
 #+begin_src emacs-lisp
@@ -3074,205 +3071,214 @@ fish-like history suggestion
 #+end_src
 *** org-appear
 #+begin_src emacs-lisp
-  (leaf
-    org-appear
-    :straight
-    (org-appear
-     :type git
-     :host github
-     :repo "awth13/org-appear")
-    :after org
-    :hook
-    (org-mode-hook . org-appear-mode)
-    :custom
-    (org-appear-autolinks . t)
-    (org-appear-autosubmarkers . t)
-    (org-appear-autoentities . t)
-    (org-appear-autokeywords . t)
-    (org-appear-inside-latex . t))
+(leaf
+  org-appear
+  :straight
+  (org-appear
+   :type git
+   :host github
+   :repo "awth13/org-appear")
+  :after org
+  :hook
+  (org-mode-hook . org-appear-mode)
+  :custom
+  (org-appear-autolinks . t)
+  (org-appear-autosubmarkers . t)
+  (org-appear-autoentities . t)
+  (org-appear-autokeywords . t)
+  (org-appear-inside-latex . t))
 #+end_src
 ** LSP Mode
 *** lsp-mode
 **** lsp-mode
 #+begin_src emacs-lisp
   ;;; lsp
-  (leaf
-    lsp-mode
-    :commands (lsp lsp-deferred)
-    :init
-    (defun my/lsp-mode-setup-completion ()
-      (setf
-       (alist-get
-        'styles
-        (alist-get 'lsp-capf completion-category-defaults))
-       '(orderless))) ;; Configure orderless
-    :hook
-    ;; (lsp-mode . lsp-enable-which-key-integration)
-    ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-    (c++-mode-hook . lsp-deferred)
-    :custom
-    (lsp-idle-delay . 0.5)
-    (lsp-log-io . t)
-    (lsp-auto-guess-root . t)
-    (lsp-completion-provider . :capf)
-    (lsp-keymap-prefix . "s-l"))
+(leaf
+  lsp-mode
+  :commands (lsp lsp-deferred)
+  :init
+  (defun my/lsp-mode-setup-completion ()
+    (setf
+     (alist-get
+      'styles
+      (alist-get 'lsp-capf completion-category-defaults))
+     '(orderless))) ;; Configure orderless
+  :hook
+  ;; (lsp-mode . lsp-enable-which-key-integration)
+  ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
+  (c++-mode-hook . lsp-deferred)
+  :custom
+  (lsp-idle-delay . 0.5)
+  (lsp-log-io . t)
+  (lsp-auto-guess-root . t)
+  (lsp-completion-provider . :capf)
+  (lsp-keymap-prefix . "s-l"))
 #+end_src
 **** lsp-ui
- TODO: setup lsp ui tools
+TODO: setup lsp ui tools
 #+begin_src emacs-lisp
-  (leaf lsp-ui
-    :doc "UI modules for lsp-mode"
-    :url "https://github.com/emacs-lsp/lsp-ui"
-    :straight t
-    :after lsp-mode
-    :bind
-    (:lsp-ui-mode-map
-     ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-     ([remap xref-find-references] . lsp-ui-peek-find-references))
+(leaf lsp-ui
+  :doc "UI modules for lsp-mode"
+  :url "https://github.com/emacs-lsp/lsp-ui"
+  :straight t
+  :after lsp-mode
+  :bind
+  (:lsp-ui-mode-map
+   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+   ([remap xref-find-references] . lsp-ui-peek-find-references))
 
-    :custom
-    ((lsp-ui-doc-enable . t)
-     (lsp-ui-doc-deley . 0.5)
-     (lsp-ui-doc-header . t)
-     (lsp-ui-doc-include-signature . t)
-     (lsp-ui-doc-position . 'at-point)
-     (lsp-ui-doc-max-width . 150)
-     (lsp-ui-doc-max-height . 30)
-     (lsp-ui-doc-use-childframe . nil)
-     (lsp-ui-doc-use-webkit . nil)
-     (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
-     (lsp-ui-sideline-show-hover . nil)
-     (lsp-ui-sideline-show-code-actions . t)
-     (lsp-ui-flycheck-enable . t)
-     (lsp-ui-peek-enable . t)
-     (lsp-ui-peek-peek-height . 20)
-     (lsp-ui-peek-list-width . 50)
-     (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
+  :custom
+  ((lsp-ui-doc-enable . t)
+   (lsp-ui-doc-deley . 0.5)
+   (lsp-ui-doc-header . t)
+   (lsp-ui-doc-include-signature . t)
+   (lsp-ui-doc-position . 'at-point)
+   (lsp-ui-doc-max-width . 150)
+   (lsp-ui-doc-max-height . 30)
+   (lsp-ui-doc-use-childframe . nil)
+   (lsp-ui-doc-use-webkit . nil)
+   (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
+   (lsp-ui-sideline-show-hover . nil)
+   (lsp-ui-sideline-show-code-actions . t)
+   (lsp-ui-flycheck-enable . t)
+   (lsp-ui-peek-enable . t)
+   (lsp-ui-peek-peek-height . 20)
+   (lsp-ui-peek-list-width . 50)
+   (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
 
-    :hook ((lsp-mode-hook . lsp-ui-mode)))
+  :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
 *** COMMENT eglot
 #+begin_src emacs-lisp
-  (leaf eglot
-    :straight t
-    :hook
-    (c++-mode-hook . eglot-ensure)
-    (rust-mode-hook . eglot-ensure)
-    :custom
-    (eglot-confirm-server-initiated-edits . nil)
-    (rustic-lsp-client . 'eglot)
-    :init
-    ;; flycheck integration
-    (defvar-local +lsp--flycheck-eglot--current-errors nil)
-    (defun +lsp--flycheck-eglot-init (checker callback)
-      "CHECKER is the checker (eglot).
+(leaf eglot
+  :straight t
+  :hook
+  (c++-mode-hook . eglot-ensure)
+  (rust-mode-hook . eglot-ensure)
+  :custom
+  (eglot-confirm-server-initiated-edits . nil)
+  (rustic-lsp-client . 'eglot)
+  :init
+  ;; flycheck integration
+  (defvar-local +lsp--flycheck-eglot--current-errors nil)
+  (defun +lsp--flycheck-eglot-init (checker callback)
+    "CHECKER is the checker (eglot).
        CALLBACK is the function that we need to call when we are done, on all the errors."
-      (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
-      (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
+    (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
+    (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
 
-    (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
-      (cl-labels
-          ((flymake-diag->flycheck-err
-            (diag)
-            (with-current-buffer (flymake--diag-buffer diag)
-              (flycheck-error-new-at-pos
-               (flymake--diag-beg diag)
-               (pcase (flymake--diag-type diag)
-                 ('eglot-note 'info)
-                 ('eglot-warning 'warning)
-                 ('eglot-error 'error)
-                 (_ (error "Unknown diagnostic type, %S" diag)))
-               (flymake--diag-text diag)
-               :end-pos (flymake--diag-end diag)
-               :checker 'eglot
-               :buffer (current-buffer)
-               :filename (buffer-file-name)))))
-        (setq +lsp--flycheck-eglot--current-errors
-              (mapcar #'flymake-diag->flycheck-err diags))
-        ;; Call Flycheck to update the diagnostics annotations
-        (flycheck-buffer-deferred)))
+  (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
+    (cl-labels
+        ((flymake-diag->flycheck-err
+          (diag)
+          (with-current-buffer (flymake--diag-buffer diag)
+            (flycheck-error-new-at-pos
+             (flymake--diag-beg diag)
+             (pcase (flymake--diag-type diag)
+               ('eglot-note 'info)
+               ('eglot-warning 'warning)
+               ('eglot-error 'error)
+               (_ (error "Unknown diagnostic type, %S" diag)))
+             (flymake--diag-text diag)
+             :end-pos (flymake--diag-end diag)
+             :checker 'eglot
+             :buffer (current-buffer)
+             :filename (buffer-file-name)))))
+      (setq +lsp--flycheck-eglot--current-errors
+            (mapcar #'flymake-diag->flycheck-err diags))
+      ;; Call Flycheck to update the diagnostics annotations
+      (flycheck-buffer-deferred)))
 
-    (defun +lsp--flycheck-eglot-available-p ()
-      (bound-and-true-p eglot--managed-mode))
+  (defun +lsp--flycheck-eglot-available-p ()
+    (bound-and-true-p eglot--managed-mode))
 
-    (flycheck-define-generic-checker 'eglot
-      "Report `eglot' diagnostics using `flycheck'."
-      :start #'+lsp--flycheck-eglot-init
-      :predicate #'+lsp--flycheck-eglot-available-p
-      :modes '(prog-mode text-mode))
+  (flycheck-define-generic-checker 'eglot
+    "Report `eglot' diagnostics using `flycheck'."
+    :start #'+lsp--flycheck-eglot-init
+    :predicate #'+lsp--flycheck-eglot-available-p
+    :modes '(prog-mode text-mode))
 
-    (push 'eglot flycheck-checkers)
+  (push 'eglot flycheck-checkers)
 
-    (defun +lsp-eglot-prefer-flycheck-h ()
-      (when eglot--managed-mode
-        (flymake-mode -1)
-        (when-let ((current-checker (flycheck-get-checker-for-buffer)))
-          (unless (equal current-checker 'eglot)
-            (flycheck-add-next-checker 'eglot current-checker)))
-        (flycheck-add-mode 'eglot major-mode)
-        (flycheck-mode 1)
-        ;; Call flycheck on initilization to make sure to display initial
-        ;; errors
-        (flycheck-buffer-deferred)))
+  (defun +lsp-eglot-prefer-flycheck-h ()
+    (when eglot--managed-mode
+      (flymake-mode -1)
+      (when-let ((current-checker (flycheck-get-checker-for-buffer)))
+        (unless (equal current-checker 'eglot)
+          (flycheck-add-next-checker 'eglot current-checker)))
+      (flycheck-add-mode 'eglot major-mode)
+      (flycheck-mode 1)
+      ;; Call flycheck on initilization to make sure to display initial
+      ;; errors
+      (flycheck-buffer-deferred)))
 
-    (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
+  (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
 
-    :config
-    ;; (with-eval-after-load
-    (when (and
-           (not (fboundp 'flymake--diag-buffer))
-           (fboundp 'flymake--diag-locus))
-      (defalias 'flymake--diag-buffer 'flymake--diag-locus))
-    ;; )
+  :config
+  ;; (with-eval-after-load
+  (when (and
+         (not (fboundp 'flymake--diag-buffer))
+         (fboundp 'flymake--diag-locus))
+    (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
+  ;; )
 
-    )
+    
 #+end_src
 ** Lua Mode
 #+begin_src emacs-lisp
-  (leaf lua-mode
-    :straight t
-    :hook (lua-mode-hook . lsp-deferred))
+(leaf lua-mode
+  :straight t
+  :hook (lua-mode-hook . lsp-deferred))
 #+end_src
 ** Rust Mode
 *** rustic
 #+begin_src emacs-lisp
-  (leaf rustic
-    :straight t
-    :custom
-    (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
-    (lsp-rust-analyzer-cargo-watch-command . "clippy")
-    (lsp-rust-analyzer-server-display-inlay-hints . t)
-    )
+(leaf rustic
+  :straight t
+  :custom
+  (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
+  (lsp-rust-analyzer-cargo-watch-command . "clippy")
+  (lsp-rust-analyzer-server-display-inlay-hints . t))
+    
 #+end_src
 
 ** Typescript Mode
 #+begin_src emacs-lisp
-  (leaf typescript-mode
-    :straight t
-    :after tree-sitter
-    :config
-    ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
-    ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
-    (define-derived-mode typescriptreact-mode typescript-mode
-      "TypeScript TSX")
+(leaf typescript-mode
+  :straight t
+  :after tree-sitter
+  :config
+  ;; we choose this instead of tsx-mode so that eglot can automatically figure out language for server
+  ;; see https://github.com/joaotavora/eglot/issues/624 and https://github.com/joaotavora/eglot#handling-quirky-servers
+  (define-derived-mode typescriptreact-mode typescript-mode
+    "TypeScript TSX")
 
-    ;; use our derived mode for tsx files
-    (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
-    ;; by default, typescript-mode is mapped to the treesitter typescript parser
-    ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
-    (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+  ;; use our derived mode for tsx files
+  (add-to-list 'auto-mode-alist '("\\.tsx?\\'" . typescriptreact-mode))
+  ;; by default, typescript-mode is mapped to the treesitter typescript parser
+  ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
+  (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+#+end_src
+* Multiple Major Modes
+** polymode
+#+begin_src emacs-lisp
+(leaf polymode
+  :straight t
+  :init
+  (leaf poly-org
+    :straight t))
 #+end_src
 * Runner/Debugger
 ** quickrun
 #+begin_src emacs-lisp
-  (leaf quickrun
-    :straight t
-    :commands
-    (quickrun quickrun-shell quickrun-with-arg quickrun-compile-only)
-    :custom
-    (quickrun-focus-p . nil)
-    :config
-    (quickrun-set-default "c++" "c++/g++"))
+(leaf quickrun
+  :straight t
+  :commands
+  (quickrun quickrun-shell quickrun-with-arg quickrun-compile-only)
+  :custom
+  (quickrun-focus-p . nil)
+  :config
+  (quickrun-set-default "c++" "c++/g++"))
 #+end_src
 
 * Boilerplate
@@ -3288,12 +3294,12 @@ fish-like history suggestion
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages '(hydra leaf-keywords leaf)))
-(custom-set-faces
+(custom-set-faces)
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:

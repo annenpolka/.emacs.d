@@ -57,8 +57,7 @@
 ;; leaf plugins
 (leaf leaf
   :config
-  (leaf leaf-convert :straight t)
-  )
+  (leaf leaf-convert :straight t))
 
 ;; set builtin configs via leaf
 (leaf
@@ -103,8 +102,7 @@
   (defalias 'yes-or-no-p 'y-or-n-p)
   (define-key key-translation-map [?\C-h] [?\C-?])
   (global-set-key (kbd "C-?") 'help-for-help)
-  (define-key input-decode-map [?\C-i] [C-i])
-  )
+  (define-key input-decode-map [?\C-i] [C-i]))
 
 (leaf
   cus-edit
@@ -132,8 +130,7 @@
   :config
   (setq gcmh-idle-delay 'auto  ; default is 15s
         gcmh-auto-idle-delay-factor 10
-        gcmh-high-cons-threshold (* 16 1024 1024))  ; 16mb
-  )
+        gcmh-high-cons-threshold (* 16 1024 1024)))  ; 16mb
 
 ;; explain macro by step
 (leaf
@@ -155,9 +152,7 @@
     (exec-path-from-shell-initialize)
     ;; add mason's executable to emacs's exec-path
     (let ((mason-path (expand-file-name "~/.local/share/nvim/mason/bin/")))
-      (setq exec-path (add-to-list 'exec-path mason-path)))
-    )
-  )
+      (setq exec-path (add-to-list 'exec-path mason-path)))))
 
 ;; WSL-specific setup
 (when (and (eq system-type 'gnu/linux)
@@ -190,8 +185,7 @@
   (defun on-input-method nil
     "activate multilingual input method."
     (interactive)
-    (activate-input-method default-input-method))
-  )
+    (activate-input-method default-input-method)))
 
 (set-face-attribute 'default nil :font "Iosevka Term-14")
 (set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
@@ -204,8 +198,7 @@
 (leaf all-the-icons
   :straight t
   :custom
-  (all-the-icons-scale-factor . 1.1)
-  )
+  (all-the-icons-scale-factor . 1.1))
 
 (leaf
   kind-icon
@@ -260,8 +253,7 @@
   (setq dashboard-footer-icon (all-the-icons-material "dashboard"
                                                       :height 1.0
                                                       :v-adjust -0.05
-                                                      :face 'font-lock-keyword-face))
-  )
+                                                      :face 'font-lock-keyword-face)))
 
 (leaf doom-modeline
   :straight t
@@ -286,8 +278,7 @@
     '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
   (doom-modeline-def-modeline 'org-src
     '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
-    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
-  )
+    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " "))) ; <-- added padding here
 
 (leaf centaur-tabs
   :straight t
@@ -307,8 +298,7 @@
   (centaur-tabs-cycle-scope . 'tabs)
   :bind
   ("C-<tab>" . centaur-tabs-forward)
-  ("C-<iso-lefttab>" . centaur-tabs-backward)
-  )
+  ("C-<iso-lefttab>" . centaur-tabs-backward))
 
 (leaf dirvish
   :straight t
@@ -489,8 +479,7 @@
   (persp-suppress-no-prefix-key-warning . t)
   :init
   (customize-set-variable 'persp-mode-prefix-key (kbd "C-c M-p")) ; HACK: kbd doesn't work on :custom
-  (persp-mode)
-  )
+  (persp-mode))
 
 (leaf persp-projectile
   :straight t)
@@ -517,12 +506,12 @@
       (when (not (equal project-name persp-name))
         ;; kill existing project's perspective before rename
         (when (gethash project-name (perspectives-hash))
-          (persp-kill project-name)
-          )
-        (persp-rename project-name)
+          (persp-kill project-name))
+
+        (persp-rename project-name))
         ;; ;; create perspective with last perspective name
         ;; (persp-new persp-name)
-        )
+
 
       ;; ;; ask persp-name interactively if it's "main"
       ;; (when (and (equal persp-name persp-initial-frame-name)
@@ -535,16 +524,16 @@
 
       ;; save as burly-bookmark, don't save "main" persp
       (unless (equal persp-name persp-initial-frame-name)
-        (burly-bookmark-windows project-name))
-      )
-    )
+        (burly-bookmark-windows project-name))))
+
+
 
   ;; initalize only if in "main" persp
   (defun burly-perspective-init-if-initial-frame (&rest _ignore)
     (when (equal persp-initial-frame-name (persp-current-name))
-      (burly-perspective-init-project-persp)
-      )
-    )
+      (burly-perspective-init-project-persp)))
+
+
   ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
   ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
 
@@ -558,9 +547,9 @@
       (burly-bookmark-windows (persp-current-name)))
     ;; save "main" perspective as project one
     (when (equal persp-initial-frame-name (persp-current-name))
-      (burly-perspective-init-project-persp)
-      )
-    )
+      (burly-perspective-init-project-persp)))
+
+
 
   ;; save perspective on change/save
   (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
@@ -572,10 +561,9 @@
   ;; create perspective with burly
   (defun burly-perspective--windows-set-before-advice (&rest _ignore)
     "Create or Switch perspective before setting burly windows."
-    (persp-switch burly-opened-bookmark-name)
-    )
-  (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice)
-  )
+    (persp-switch burly-opened-bookmark-name))
+
+  (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
 
 ;; my utility keymap
 (leaf kurumi-utility
@@ -587,8 +575,7 @@
              ("g r" . xref-find-references)
              ("c a" . lsp-execute-code-action)
              ("r n" . lsp-rename)
-             ("q" . flycheck-list-errors)
-             ))
+             ("q" . flycheck-list-errors)))
 
 (leaf
   which-key
@@ -618,8 +605,7 @@
   (hl-block-delay . 0.1)
   (hl-block-bracket . nil)
   (hl-block-multi-line . nil)
-  (hl-block-color-tint . "#060606")
-  )
+  (hl-block-color-tint . "#060606"))
 
 (leaf
   hl-todo
@@ -680,8 +666,7 @@
   :bind
   (("C-z" . winner-undo)
    ("C-S-z" . winner-redo))
-  :global-minor-mode winner-mode
-  )
+  :global-minor-mode winner-mode)
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
@@ -716,8 +701,7 @@
         (windmove-right)
       (progn
         (split-window-right)
-        (windmove-right))))
-  )
+        (windmove-right)))))
 
 (leaf meow
   :straight t
@@ -729,8 +713,8 @@
     :global-minor-mode t
     :custom
     (key-chord-two-keys-delay . 0.1)
-    (key-chord-one-keys-delay . 0.2)
-    )
+    (key-chord-one-keys-delay . 0.2))
+      
   ;; command functions
   (defun meow-save-line nil
     (interactive)
@@ -907,8 +891,8 @@
     ;; insert state keymap
     (meow-define-keys
         'insert
-      '("C-g" . meow-insert-exit)
-      )
+      '("C-g" . meow-insert-exit))
+        
     ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
     ;; remap universal-argument
@@ -923,17 +907,17 @@
                            (pair ("[") ("]"))
                            (pair ("(") (")"))
                            (pair ("{") ("}"))
-                           (pair ("<") (">"))
-                           )
+                           (pair ("<") (">")))
+                             
                          '(
                            (#'meow--bounds-of-string)
                            (pair ("[") ("]"))
                            (pair ("(") (")"))
                            (pair ("{") ("}"))
-                           (pair ("<") (">"))
-                           )
-                         )
-    )
+                           (pair ("<") (">")))))
+                             
+                           
+      
   :bind
   ;; readline style keymap for minibuffer
   (:minibuffer-local-map
@@ -944,8 +928,8 @@
                             (help-mode . normal)
                             (Man-mode . normal)
                             (vterm-mode . insert)
-                            (eshell-mode . insert)
-                            ))
+                            (eshell-mode . insert)))
+                              
   (meow--kbd-forward-char . "<right>")
   ;; (meow--kbd-forward-line . "<down>")
   ;; (meow--kbd-backward-line . "<up>")
@@ -980,8 +964,7 @@
   ;; Must set before enable `meow-global-mode`
   ;; (setq meow-use-cursor-position-hack t
   ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
-  (meow-global-mode 1)
-  )
+  (meow-global-mode 1))
 
 (leaf expand-region
     :straight t)
@@ -1030,16 +1013,15 @@
           (recent (point-marker)))
       (backward-forward-next-location)
       (when (and (equal recent (point-marker)) purge)
-        (my/backward-forward-next-location))))
-  )
+        (my/backward-forward-next-location)))))
 
 ;; undo
 (leaf undo-fu
   :straight t
   :bind
   ([remap undo] . undo-fu-only-undo)
-  ([remap redo] . undo-fu-only-redo)
-  )
+  ([remap redo] . undo-fu-only-redo))
+
 (leaf
   undo-fu-session
   :straight t
@@ -1057,9 +1039,8 @@
   :custom
   (avy-timeout-seconds . 0.3)
   (avy-orders-alist .
-    '((avy-goto-char-0 . avy-order-closest)
-      (avy-goto-word-0 . avy-order-closest)))
-  )
+                    '((avy-goto-char-0 . avy-order-closest)
+                      (avy-goto-word-0 . avy-order-closest))))
 
 (leaf dumb-jump
   :straight t
@@ -1110,16 +1091,14 @@
     :severity 1
     :overlay-category 'flycheck-warning-overlay
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-warning
-    )
+    :fringe-face 'flycheck-fringe-warning)
+
 
   (flycheck-define-error-level 'info
     :severity 0
     :overlay-category 'flycheck-info-overlay
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-info
-    )
-  )
+    :fringe-face 'flycheck-fringe-info))
 
 (leaf flyspell
   :blackout (flyspell-mode flyspell-prog-mode)
@@ -1162,27 +1141,25 @@
 (leaf flyspell-lazy
   :straight
   (flyspell-lazy
-  :type git
-  :host github
-  :repo "rolandwalker/flyspell-lazy")
+   :type git
+   :host github
+   :repo "rolandwalker/flyspell-lazy")
   :after flyspell
   :custom
   (flyspell-lazy-idle-seconds . 1)
   (flyspell-lazy-window-idle-seconds . 3)
   :config
-  (flyspell-lazy-mode)
-  )
+  (flyspell-lazy-mode))
 
 (leaf
   flyspell-correct
   :straight t
   :after flyspell
 
-  :bind (([remap ispell-word] . flyspell-correct-at-point)
+  :bind (([remap ispell-word] . flyspell-correct-at-point)))
          ;; (:evil-normal-state-map
          ;;  ("zg" . flyspell-correct-at-point)
          ;;  )
-         ))
 
 (leaf
   eldoc
@@ -1206,79 +1183,76 @@
   :custom
   (format-all-default-formatters .
                                  '(("Assembly" asmfmt)
-                                  ("ATS" atsfmt)
-                                  ("Bazel" buildifier)
-                                  ("BibTeX" emacs-bibtex)
-                                  ("C" clang-format)
-                                  ("C#" clang-format)
-                                  ("C++" clang-format)
-                                  ("Cabal Config" cabal-fmt)
-                                  ("Clojure" zprint)
-                                  ("CMake" cmake-format)
-                                  ("Crystal" crystal)
-                                  ("CSS" prettier)
-                                  ("Cuda" clang-format)
-                                  ("D" dfmt)
-                                  ("Dart" dart-format)
-                                  ("Dhall" dhall)
-                                  ("Dockerfile" dockfmt)
-                                  ("Elixir" mix-format)
-                                  ("Elm" elm-format)
-                                  ("Emacs Lisp" emacs-lisp)
-                                  ("Erlang" efmt)
-                                  ("F#" fantomas)
-                                  ("Fish" fish-indent)
-                                  ("Fortran Free Form" fprettify)
-                                  ("GLSL" clang-format)
-                                  ("Go" gofmt)
-                                  ("GraphQL" prettier)
-                                  ("Haskell" brittany)
-                                  ("HTML" html-tidy)
-                                  ("HTML+ERB" erb-format)
-                                  ("Java" clang-format)
-                                  ("JavaScript" prettier)
-                                  ("JSON" prettier)
-                                  ("JSON5" prettier)
-                                  ("Jsonnet" jsonnetfmt)
-                                  ("JSX" prettier)
-                                  ("Kotlin" ktlint)
-                                  ("LaTeX" latexindent)
-                                  ("Less" prettier)
-                                  ("Literate Haskell" brittany)
-                                  ("Lua" stylua)
-                                  ("Markdown" prettier)
-                                  ("Nix" nixpkgs-fmt)
-                                  ("Objective-C" clang-format)
-                                  ("OCaml" ocp-indent)
-                                  ("Perl" perltidy)
-                                  ("PHP" prettier)
-                                  ("Protocol Buffer" clang-format)
-                                  ("PureScript" purty)
-                                  ("Python" black)
-                                  ("R" styler)
-                                  ("Reason" bsrefmt)
-                                  ("ReScript" rescript)
-                                  ("Ruby" rufo)
-                                  ("Rust" rustfmt)
-                                  ("Scala" scalafmt)
-                                  ("SCSS" prettier)
-                                  ("Shell" shfmt)
-                                  ("Solidity" prettier)
-                                  ("SQL" sqlformat)
-                                  ("Svelte" prettier)
-                                  ("Swift" swiftformat)
-                                  ("Terraform" terraform-fmt)
-                                  ("TOML" prettier)
-                                  ("TSX" prettier)
-                                  ("TypeScript" prettier)
-                                  ("V" v-fmt)
-                                  ("Verilog" istyle-verilog)
-                                  ("Vue" prettier)
-                                  ("XML" html-tidy)
-                                  ("YAML" prettier)
-                                  )
-                                 )
-  )
+                                   ("ATS" atsfmt)
+                                   ("Bazel" buildifier)
+                                   ("BibTeX" emacs-bibtex)
+                                   ("C" clang-format)
+                                   ("C#" clang-format)
+                                   ("C++" clang-format)
+                                   ("Cabal Config" cabal-fmt)
+                                   ("Clojure" zprint)
+                                   ("CMake" cmake-format)
+                                   ("Crystal" crystal)
+                                   ("CSS" prettier)
+                                   ("Cuda" clang-format)
+                                   ("D" dfmt)
+                                   ("Dart" dart-format)
+                                   ("Dhall" dhall)
+                                   ("Dockerfile" dockfmt)
+                                   ("Elixir" mix-format)
+                                   ("Elm" elm-format)
+                                   ("Emacs Lisp" emacs-lisp)
+                                   ("Erlang" efmt)
+                                   ("F#" fantomas)
+                                   ("Fish" fish-indent)
+                                   ("Fortran Free Form" fprettify)
+                                   ("GLSL" clang-format)
+                                   ("Go" gofmt)
+                                   ("GraphQL" prettier)
+                                   ("Haskell" brittany)
+                                   ("HTML" html-tidy)
+                                   ("HTML+ERB" erb-format)
+                                   ("Java" clang-format)
+                                   ("JavaScript" prettier)
+                                   ("JSON" prettier)
+                                   ("JSON5" prettier)
+                                   ("Jsonnet" jsonnetfmt)
+                                   ("JSX" prettier)
+                                   ("Kotlin" ktlint)
+                                   ("LaTeX" latexindent)
+                                   ("Less" prettier)
+                                   ("Literate Haskell" brittany)
+                                   ("Lua" stylua)
+                                   ("Markdown" prettier)
+                                   ("Nix" nixpkgs-fmt)
+                                   ("Objective-C" clang-format)
+                                   ("OCaml" ocp-indent)
+                                   ("Perl" perltidy)
+                                   ("PHP" prettier)
+                                   ("Protocol Buffer" clang-format)
+                                   ("PureScript" purty)
+                                   ("Python" black)
+                                   ("R" styler)
+                                   ("Reason" bsrefmt)
+                                   ("ReScript" rescript)
+                                   ("Ruby" rufo)
+                                   ("Rust" rustfmt)
+                                   ("Scala" scalafmt)
+                                   ("SCSS" prettier)
+                                   ("Shell" shfmt)
+                                   ("Solidity" prettier)
+                                   ("SQL" sqlformat)
+                                   ("Svelte" prettier)
+                                   ("Swift" swiftformat)
+                                   ("Terraform" terraform-fmt)
+                                   ("TOML" prettier)
+                                   ("TSX" prettier)
+                                   ("TypeScript" prettier)
+                                   ("V" v-fmt)
+                                   ("Verilog" istyle-verilog)
+                                   ("Vue" prettier)
+                                   ("XML" html-tidy)
+                                   ("YAML" prettier))))
 
 ;; EditorConfig support
 (leaf editorconfig
@@ -1291,11 +1265,10 @@
   :straight t
   :hook
   (prog-mode-hook . dtrt-indent-mode)
-  :config
+  :config)
   ;; (add-hook 'prog-mode-hook #'(lambda ()
   ;;                               (dtrt-indent-mode)
   ;;                               (dtrt-indent-adapt)))
-  )
 
 (leaf company
   :straight t
@@ -1303,8 +1276,8 @@
   (([remap indent-for-tab-command] . company-indent-or-complete-common)
    ([remap c-indent-line-or-region] . company-indent-or-complete-common)
    (:company-active-map
-    ("C-w" . nil)
-    ))
+    ("C-w" . nil)))
+
   :global-minor-mode global-company-mode
   :custom
   (
@@ -1335,8 +1308,8 @@
                             company-gtags
                             company-etags
                             company-oddmuse
-                            company-bbdb
-                            )
+                            company-bbdb)
+
                            (company-keywords
                             company-yasnippet
                             ;; company-dabbrev
@@ -1346,15 +1319,15 @@
                             company-gtags
                             company-etags
                             company-oddmuse
-                            company-bbdb
-                            )
+                            company-bbdb)
+
                            company-files
                            company-dabbrev
                            company-same-mode-buffers
                            company-wordfreq
                            company-bbdb
-                           company-oddmuse
-                           ))
+                           company-oddmuse))
+
   ;; magit commit message completion with magit-diff
   (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
     (let ((name (buffer-name)))
@@ -1368,15 +1341,13 @@
     (setq-local company-dabbrev-ignore-buffers
                 #'my--company-dabbrev-ignore-except-magit-diff))
 
-  (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook)
-  )
+  (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook))
 
 (leaf company-box
   :straight t
   :require t
   :after company
-  :hook (company-mode-hook . company-box-mode)
-  )
+  :hook (company-mode-hook . company-box-mode))
 
 (leaf company-dwim
   :straight (company-dwim :type git :host github :repo "zk-phi/company-dwim")
@@ -1404,17 +1375,15 @@
                                       '(
                                         company-same-mode-buffers-matcher-flex
                                         company-same-mode-buffers-matcher-partial
-                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest
-                                        ))
+                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest))
+
   :config
-  (company-same-mode-buffers-initialize)
-  )
+  (company-same-mode-buffers-initialize))
 
 (leaf company-wordfreq
   :straight t
   :require t
-  :after company
-  )
+  :after company)
 
 ;; completion style
 (leaf
@@ -1455,8 +1424,7 @@
       (apply f args)))
 
   (advice-add 'company--transform-candidates :around 'j-company-transformers)
-  (advice-add 'company-capf :around 'j-company-capf)
-  )
+  (advice-add 'company-capf :around 'j-company-capf))
 
 (leaf
   yasnippet
@@ -1483,8 +1451,7 @@
           (apply (if vertico-mode
                      #'consult-completion-in-region
                    #'completion--in-region)
-                 args)))
-  )
+                 args))))
 
 (leaf consult
   :straight t
@@ -1510,8 +1477,8 @@
      consult-projectile--source-projectile-recentf
      consult--source-buffer
      consult--source-hidden-buffer
-     consult--source-recent-file
-     )))
+     consult--source-recent-file)))
+
   :config
   ;; don't set sources on top
   (consult-customize consult--source-buffer persp-consult-source :default nil)
@@ -1524,24 +1491,22 @@
    consult--source-bookmark consult--source-recent-file
    consult--source-project-recent-file
    :preview-key '(:debounce 0.3 any))
-  :bind
+  :bind)
   ;; ((:evil-normal-state-map
   ;;   ;; ("C-f" . consult-line)
   ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
   ;;   ("<leader>SPC" . 'consult-buffer)
   ;;   ))
-  )
 
 ;; flycheck integration
 (leaf consult-flycheck
   :straight t
   :after consult flycheck
   :bind
-  (
+  ())
    ;; (:evil-normal-state-map
    ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
    ;;       )
-   ))
 
 ;; dir extension
 (leaf
@@ -1552,11 +1517,11 @@
   (("C-x C-d" . consult-dir)
    (:vertico-map
     ("C-x C-d" . consult-dir)
-    ("C-x C-j" . consult-dir-jump-file))
+    ("C-x C-j" . consult-dir-jump-file)))
    ;; (:evil-normal-state-map
    ;;  ("C-S-r" . consult-dir)
    ;;  )
-   )
+
   :custom
   (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
 
@@ -1564,8 +1529,8 @@
   :straight (consult-projectile
              :type git
              :host gitlab
-             :repo "OlMon/consult-projectile"
-             )
+             :repo "OlMon/consult-projectile")
+
   :require t
   :custom
   ;; (consult-projectile-use-projectile-switch-project . t)
@@ -1575,9 +1540,7 @@
   (defun kurumi-consult-projectile--project-persp-action (dir)
     (persp-switch (projectile-project-name dir))
     (cd (projectile-project-root dir))
-    (consult-projectile--file dir)
-    )
-  )
+    (consult-projectile--file dir)))
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
@@ -1585,8 +1548,7 @@
   :config
   (setq consult-flyspell-select-function 'flyspell-correct-at-point
         consult-flyspell-set-point-after-word t
-        consult-flyspell-always-check-buffer t)
-  )
+        consult-flyspell-always-check-buffer t))
 
 ;;; embark
 (leaf embark
@@ -1595,8 +1557,8 @@
   :bind
   (("C-." . embark-act)         ;; pick some comfortable binding
    ("M-." . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-  )
+   ("C-h B" . embark-bindings))) ;; alternative for `describe-bindings'
+
 
 ;; consult integration
 (leaf embark-consult
@@ -1636,8 +1598,7 @@
     (interactive)
     (if (active-minibuffer-window)
         (select-window (active-minibuffer-window))
-      nil))
-  )
+      nil)))
 
 (leaf go-translate
   :straight t
@@ -1651,8 +1612,7 @@
                    (gts-bing-engine)
                    (gts-google-engine)
                    (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
-         :render (gts-buffer-render)))
-  )
+         :render (gts-buffer-render))))
 
 (leaf hyperbole
   :straight t
@@ -1661,8 +1621,7 @@
   (text-mode-hook . hyperbole-mode)
   (prog-mode-hook . hyperbole-mode)
   (conf-mode-hook . hyperbole-mode)
-  (yaml-mode-hook . hyperbole-mode)
-  )
+  (yaml-mode-hook . hyperbole-mode))
 
 (leaf tree-sitter
   :straight t
@@ -1684,11 +1643,10 @@
   (
    ;; ("C-@" . vterm-toggle)
    (:vterm-mode-map
-    ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))
-    ))
+    ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
+      
   :custom
-  (vterm-max-scrollback . 10000)
-  )
+  (vterm-max-scrollback . 10000))
 
 (leaf eshell
   :require t
@@ -1705,8 +1663,7 @@
               (progn
                 ;; avoid overriding c-n/c-p for meow compatibility
                 (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
-                (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input))))
-  )
+                (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input)))))
 
 (leaf eshell-toggle
   :straight t
@@ -1722,13 +1679,11 @@
 
 (leaf eshell-up
   :straight t
-  :require t
-  )
+  :require t)
 
 (leaf esh-autosuggest
   :straight t
-  :hook (eshell-mode-hook . esh-autosuggest-mode)
-  )
+  :hook (eshell-mode-hook . esh-autosuggest-mode))
 
 (leaf fish-completion
   :unless IS-WINDOWS
@@ -1743,13 +1698,11 @@
   ;;      advise it to fail silently.
   (defun +eshell--fallback-to-bash-a (&rest _)
     (unless (executable-find "fish") ""))
-  (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
-  )
+  (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc))
 
 (leaf eshell-syntax-highlighting
   :straight t
-  :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode)
-  )
+  :hook (eshell-mode-hook . eshell-syntax-highlighting-global-mode))
 
 (leaf eshell-did-you-mean
   :straight t
@@ -1760,24 +1713,21 @@
   ;;      work on first invocation, so we invoke it once manually by setting the
   ;;      last command and then calling the output filter.
   (setq eshell-last-command-name "catt")
-  (eshell-did-you-mean-output-filter "catt: command not found")
-  )
+  (eshell-did-you-mean-output-filter "catt: command not found"))
 
 (leaf eshell-prompt-extras
   :straight t
   :commands (epe-theme-lambda)
   :custom
   (eshell-highlight-prompt . nil)
-  (eshell-prompt-function . #'epe-theme-lambda)
-  )
+  (eshell-prompt-function . #'epe-theme-lambda))
 
 (leaf eshell-vterm
   :straight t
   ;; :after eshell
   :config
   (eshell-vterm-mode)
-  (defalias 'eshell/v 'eshell-exec-visual)
-  )
+  (defalias 'eshell/v 'eshell-exec-visual))
 
 (leaf friendly-shell
   :straight t)
@@ -1812,9 +1762,7 @@
                ("C-j" . org-next-visible-heading)
                ("C-k" . org-previous-visible-heading)
                ("C-S-j" . org-move-subtree-down)
-               ("C-S-k" . org-move-subtree-up))
-    )
-  )
+               ("C-S-k" . org-move-subtree-up))))
 
 (leaf org-auto-tangle
   :straight t
@@ -1910,8 +1858,7 @@
   :custom
   (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
-  (lsp-rust-analyzer-server-display-inlay-hints . t)
-  )
+  (lsp-rust-analyzer-server-display-inlay-hints . t))
 
 (leaf typescript-mode
   :straight t
@@ -1927,6 +1874,12 @@
   ;; by default, typescript-mode is mapped to the treesitter typescript parser
   ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+(leaf polymode
+  :straight t
+  :init
+  (leaf poly-org
+    :straight t))
 
 (leaf quickrun
   :straight t
@@ -1948,12 +1901,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages '(hydra leaf-keywords leaf)))
-(custom-set-faces
+(custom-set-faces)
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ 
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:
