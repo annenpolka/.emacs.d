@@ -3260,14 +3260,24 @@ TODO: setup lsp ui tools
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
 #+end_src
 * Multiple Major Modes
-** polymode
+** COMMENT polymode
+重い・org-edit-specialが使えないのでやめ。
 #+begin_src emacs-lisp
 (leaf polymode
   :straight t
   :init
   (leaf poly-org
-    :straight t))
+    :straight t
+    :defer-config
+    (when (featurep 'meow)
+      (bind-keys :map poly-org-mode-map
+                 ;; ("C-S-e" . org-edit-special)
+                 ("C-j" . org-next-visible-heading)
+                 ("C-k" . org-previous-visible-heading)
+                 ("C-S-j" . org-move-subtree-down)
+                 ("C-S-k" . org-move-subtree-up)))))
 #+end_src
+
 * Runner/Debugger
 ** quickrun
 #+begin_src emacs-lisp
@@ -3287,22 +3297,5 @@ TODO: setup lsp ui tools
 ;; │                       boilerplate                        │
 ;; ╰──────────────────────────────────────────────────────────╯
 (provide 'init)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages '(hydra leaf-keywords leaf)))
-(custom-set-faces)
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- 
-;; Local Variables:
-;; indent-tabs-mode: nil
-;; End:
-
 ;;; init.el ends here
 #+end_src
