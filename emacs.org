@@ -3291,6 +3291,12 @@ TODO: setup lsp ui tools
   (quickrun-set-default "c++" "c++/g++"))
 #+end_src
 
+* Docker Integration
+** docker
+#+begin_src emacs-lisp
+  (leaf docker
+    :straight t)
+#+end_src
 * Boilerplate
 #+begin_src emacs-lisp
 ;; ╭──────────────────────────────────────────────────────────╮
