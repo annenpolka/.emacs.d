@@ -2849,6 +2849,12 @@ projectile integration
     :defvar (marginalia-mode)
     :global-minor-mode marginalia-mode)
 #+end_src
+** COMMENT minibuffer-header
+#+begin_src emacs-lisp
+  (leaf minibuffer-header
+    :straight t
+    :global-minor-mode minibuffer-header-mode)
+#+end_src
 ** affe
 #+begin_src emacs-lisp
   ;; affe fuzzy-finder
@@ -3105,8 +3111,8 @@ fish-like history suggestion
   (setq parinfer-rust-library-directory
         (no-littering-expand-var-file-name "parinfer-rust/"))
 #+end_src
-*** Org Mode
-**** org-mode
+** Org Mode
+*** org-mode
 #+begin_src emacs-lisp
   ;; org mode things
   (leaf org
@@ -3130,7 +3136,7 @@ fish-like history suggestion
       
     
 #+end_src
-**** org-auto-tangle
+*** org-auto-tangle
 #+begin_src emacs-lisp
   (leaf org-auto-tangle
     :straight t
@@ -3140,7 +3146,7 @@ fish-like history suggestion
     :custom
     (org-auto-tangle-default . t))
 #+end_src
-**** org-bullets
+*** org-bullets
 #+begin_src emacs-lisp
 (leaf org-bullets
   :straight t
@@ -3149,7 +3155,7 @@ fish-like history suggestion
   :custom
   (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
-**** org-appear
+*** org-appear
 #+begin_src emacs-lisp
 (leaf
   org-appear
@@ -3167,6 +3173,14 @@ fish-like history suggestion
   (org-appear-autoentities . t)
   (org-appear-autokeywords . t)
   (org-appear-inside-latex . t))
+#+end_src
+*** org-sticky-header
+#+begin_src emacs-lisp
+  (leaf org-sticky-header
+    :straight t
+    :hook (org-mode-hook . org-sticky-header-mode)
+    :custom
+    (org-sticky-header-full-path . 'full))
 #+end_src
 *** LSP Mode
 **** lsp-mode

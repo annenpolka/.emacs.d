@@ -1836,6 +1836,12 @@
   (org-appear-autokeywords . t)
   (org-appear-inside-latex . t))
 
+(leaf org-sticky-header
+  :straight t
+  :hook (org-mode-hook . org-sticky-header-mode)
+  :custom
+  (org-sticky-header-full-path . 'full))
+
 ;;; lsp
 (leaf
   lsp-mode
