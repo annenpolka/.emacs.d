@@ -3007,17 +3007,23 @@ fish-like history suggestion
 **** friendly-shell
 #+begin_src emacs-lisp
   (leaf friendly-shell
-    :straight t)
+    :straight t
+    :commands
+    (friendly-shell))
 #+end_src
 **** friendly-shell-command
 #+begin_src emacs-lisp
   (leaf friendly-shell-command
-    :straight t)
+    :straight t
+    :commands
+    (friendly-shell-command friendly-shell-command-to-string friendly-shell-command-async))
 #+end_src
 **** friendly-remote-shell
 #+begin_src emacs-lisp
   (leaf friendly-remote-shell
-    :straight t)
+    :straight t
+    :commands
+    (friendly-remote-shell))
 #+end_src
 *** COMMENT dwim-shell-command
 #+begin_src emacs-lisp
