@@ -1077,13 +1077,15 @@ Diredをオーバーホールするファイラ。
 ** zoom
 TODO: set ignore major modes like dired
 #+begin_src emacs-lisp
-;; focus window
-(leaf
-  zoom
-  :straight t
-  :blackout t
-  :global-minor-mode zoom-mode
-  :custom (zoom-size . '(0.618 . 0.618)))
+  ;; focus window
+  (leaf
+    zoom
+    :straight t
+    :blackout t
+    :global-minor-mode zoom-mode
+    :custom
+    (zoom-size . '(0.618 . 0.618))
+    (zoom-ignored-major-modes . '(dirvish-mode)))
 #+end_src
 ** centered-cursor-mode
 #+begin_src emacs-lisp
@@ -2075,265 +2077,7 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
     (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 #+end_src
-** Syntax Check/Formatting
-*** flycheck
-
-非同期で文法などのチェックを行う。
-
-#+begin_src emacs-lisp
-  ;; flycheck syntax checking
-  (leaf
-    flycheck
-    :straight t
-    :require t
-    :global-minor-mode global-flycheck-mode
-    :init
-    (leaf flycheck-inline
-      :straight t
-      :hook (flycheck-mode-hook . flycheck-inline-mode))
-    :custom
-    (flycheck-display-errors-delay . 0.1)
-    :config
-    ;; tweak fringe icons
-    (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
-      (vector #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00111000
-              #b01111100
-              #b11111110
-              #b11111110
-              #b01111100
-              #b00111000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000
-              #b00000000))
-
-    (flycheck-define-error-level 'error
-      :severity 2
-      :overlay-category 'flycheck-error-overlay
-      :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-error)
-
-    (flycheck-define-error-level 'warning
-      :severity 1
-      :overlay-category 'flycheck-warning-overlay
-      :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-warning)
-      
-
-    (flycheck-define-error-level 'info
-      :severity 0
-      :overlay-category 'flycheck-info-overlay
-      :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-info))
-      
-    
-#+end_src
-*** flyspell (with flyspell-correct)
-**** flyspell
-aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
-#+begin_src emacs-lisp
-  (leaf flyspell
-    :blackout (flyspell-mode flyspell-prog-mode)
-    :hook
-    (text-mode-hook . flyspell-mode)
-    (prog-mode-hook . flyspell-prog-mode)
-    (conf-mode-hook . flyspell-prog-mode)
-    (yaml-mode-hook . flyspell-prog-mode)
-    :defvar
-    (ispell-extra-args
-     ispell-aspell-dict-dir
-     ispell-aspell-data-dir
-     ispell-program-name)
-    :defun (ispell-get-aspell-config-value)
-    :config
-    (pcase
-        (cond
-         ((executable-find "aspell")
-          'aspell)
-         ((executable-find "hunspell")
-          'hunspell)
-         ((executable-find "enchant-2")
-          'enchant))
-      (`aspell
-       (setq
-        ispell-program-name
-        "aspell"
-        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
-
-       (unless ispell-aspell-dict-dir
-         (setq ispell-aspell-dict-dir
-               (ispell-get-aspell-config-value "dict-dir")))
-       (unless ispell-aspell-data-dir
-         (setq ispell-aspell-data-dir
-               (ispell-get-aspell-config-value "data-dir"))))
-      (`hunspell (setq ispell-program-name "hunspell"))
-      (`enchant (setq ispell-program-name "enchant-2"))
-      (_ (system-packages-ensure "aspell"))))
-#+end_src
-**** flyspell-lazy
-#+begin_src emacs-lisp
-  (leaf flyspell-lazy
-    :straight
-    (flyspell-lazy
-     :type git
-     :host github
-     :repo "rolandwalker/flyspell-lazy")
-    :after flyspell
-    :custom
-    (flyspell-lazy-idle-seconds . 1)
-    (flyspell-lazy-window-idle-seconds . 3)
-    :config
-    (flyspell-lazy-mode))
-    
-#+end_src
-**** flyspell-correct
-#+begin_src emacs-lisp
-  (leaf
-    flyspell-correct
-    :straight t
-    :after flyspell
-
-    :bind (([remap ispell-word] . flyspell-correct-at-point)))
-           ;; (:evil-normal-state-map
-           ;;  ("zg" . flyspell-correct-at-point)
-           ;;  )
-           
-#+end_src
-*** eldoc
-#+begin_src emacs-lisp
-(leaf
-  eldoc
-  :doc "hovered element documentation"
-  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
-  :blackout t
-  :preface
-  (defun my:shutup-eldoc-message (f &optional string)
-    (unless (active-minibuffer-window) (funcall f string)))
-  :advice (:around eldoc-message my:shutup-eldoc-message))
-#+end_src
-
-*** format-all
-
-多数の言語のフォーマッターをそれぞれサポートしている。
-
-#+begin_src emacs-lisp
-  ;; formatter bindings
-(leaf
-  format-all
-  :straight t
-  :require t
-  :blackout t
-  :hook
-  (prog-mode-hook . format-all-mode)
-  (prog-mode-hook . format-all-ensure-formatter)
-  :custom
-  (format-all-default-formatters .
-                                 '(("Assembly" asmfmt)
-                                   ("ATS" atsfmt)
-                                   ("Bazel" buildifier)
-                                   ("BibTeX" emacs-bibtex)
-                                   ("C" clang-format)
-                                   ("C#" clang-format)
-                                   ("C++" clang-format)
-                                   ("Cabal Config" cabal-fmt)
-                                   ("Clojure" zprint)
-                                   ("CMake" cmake-format)
-                                   ("Crystal" crystal)
-                                   ("CSS" prettier)
-                                   ("Cuda" clang-format)
-                                   ("D" dfmt)
-                                   ("Dart" dart-format)
-                                   ("Dhall" dhall)
-                                   ("Dockerfile" dockfmt)
-                                   ("Elixir" mix-format)
-                                   ("Elm" elm-format)
-                                   ("Emacs Lisp" emacs-lisp)
-                                   ("Erlang" efmt)
-                                   ("F#" fantomas)
-                                   ("Fish" fish-indent)
-                                   ("Fortran Free Form" fprettify)
-                                   ("GLSL" clang-format)
-                                   ("Go" gofmt)
-                                   ("GraphQL" prettier)
-                                   ("Haskell" brittany)
-                                   ("HTML" html-tidy)
-                                   ("HTML+ERB" erb-format)
-                                   ("Java" clang-format)
-                                   ("JavaScript" prettier)
-                                   ("JSON" prettier)
-                                   ("JSON5" prettier)
-                                   ("Jsonnet" jsonnetfmt)
-                                   ("JSX" prettier)
-                                   ("Kotlin" ktlint)
-                                   ("LaTeX" latexindent)
-                                   ("Less" prettier)
-                                   ("Literate Haskell" brittany)
-                                   ("Lua" stylua)
-                                   ("Markdown" prettier)
-                                   ("Nix" nixpkgs-fmt)
-                                   ("Objective-C" clang-format)
-                                   ("OCaml" ocp-indent)
-                                   ("Perl" perltidy)
-                                   ("PHP" prettier)
-                                   ("Protocol Buffer" clang-format)
-                                   ("PureScript" purty)
-                                   ("Python" black)
-                                   ("R" styler)
-                                   ("Reason" bsrefmt)
-                                   ("ReScript" rescript)
-                                   ("Ruby" rufo)
-                                   ("Rust" rustfmt)
-                                   ("Scala" scalafmt)
-                                   ("SCSS" prettier)
-                                   ("Shell" shfmt)
-                                   ("Solidity" prettier)
-                                   ("SQL" sqlformat)
-                                   ("Svelte" prettier)
-                                   ("Swift" swiftformat)
-                                   ("Terraform" terraform-fmt)
-                                   ("TOML" prettier)
-                                   ("TSX" prettier)
-                                   ("TypeScript" prettier)
-                                   ("V" v-fmt)
-                                   ("Verilog" istyle-verilog)
-                                   ("Vue" prettier)
-                                   ("XML" html-tidy)
-                                   ("YAML" prettier))))
-                                    
-                                   
-    
-#+end_src
-
-*** editorconfig
-#+begin_src emacs-lisp
-  ;; EditorConfig support
-(leaf editorconfig
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode editorconfig-mode)
-#+end_src
-*** dtrt-indent
-vim-sleuth like automatic indent guessing/adjusting
-#+begin_src emacs-lisp
-(leaf dtrt-indent
-  :straight t
-  :hook
-  (prog-mode-hook . dtrt-indent-mode)
-  :config)
-  ;; (add-hook 'prog-mode-hook #'(lambda ()
-  ;;                               (dtrt-indent-mode)
-  ;;                               (dtrt-indent-adapt)))
-    
-#+end_src
-** Completion
+** Text Completion
 *** COMMENT corfu (with corfu-doc, cape)
 **** corfu
 #+begin_src emacs-lisp
@@ -2641,200 +2385,6 @@ vim-sleuth like automatic indent guessing/adjusting
     :require t
     :after yasnippet)
 #+end_src
-** Minibuffer
-*** vertico
-#+begin_src emacs-lisp
-  (leaf
-    vertico
-    :straight t
-    :global-minor-mode vertico-mode
-    :custom ((vertico-cycle . t))
-    :config
-    ;; Use `consult-completion-in-region' if Vertico is enabled.
-    ;; Otherwise use the default `completion--in-region' function.
-    (setq completion-in-region-function
-          (lambda (&rest args)
-            (apply (if vertico-mode
-                       #'consult-completion-in-region
-                     #'completion--in-region)
-                   args))))
-    
-#+end_src
-*** consult (Narrowing Functions)
-**** consult
-#+begin_src emacs-lisp
-  (leaf consult
-    :straight t
-    :defvar (consult-buffer-sources)
-    :setq
-    (
-     (completion-in-region-function
-      .
-      (lambda (&rest args)
-        (apply
-         (if vertico-mode
-             #'consult-completion-in-region
-           #'completion--in-region)
-         args)))
-     (consult-buffer-sources
-      .
-      '
-      (
-       consult-projectile--source-projectile-buffer
-       persp-consult-source
-       consult--source-bookmark
-       consult-projectile--source-projectile-project
-       consult-projectile--source-projectile-recentf
-       consult--source-buffer
-       consult--source-hidden-buffer
-       consult--source-recent-file)))
-       
-    :config
-    ;; don't set sources on top
-    (consult-customize consult--source-buffer persp-consult-source :default nil)
-    ;; hide outer-perspecitve sources
-    (consult-customize consult--source-buffer consult--source-recent-file :hidden t)
-    ;; preview delay
-    (consult-customize
-     consult-ripgrep consult-git-grep consult-grep
-     consult-bookmark consult-recent-file consult-xref
-     consult--source-bookmark consult--source-recent-file
-     consult--source-project-recent-file
-     :preview-key '(:debounce 0.3 any))
-    :bind)
-    ;; ((:evil-normal-state-map
-    ;;   ;; ("C-f" . consult-line)
-    ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-    ;;   ("<leader>SPC" . 'consult-buffer)
-    ;;   ))
-    
-#+end_src
-**** consult-flycheck
-#+begin_src emacs-lisp
-  ;; flycheck integration
-  (leaf consult-flycheck
-    :straight t
-    :after consult flycheck
-    :bind
-    ())
-     ;; (:evil-normal-state-map
-     ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-     ;;       )
-     
-#+end_src
-**** consult-dir
-#+begin_src emacs-lisp
-  ;; dir extension
-  (leaf
-    consult-dir
-    :straight t
-    :after consult
-    :bind
-    (("C-x C-d" . consult-dir)
-     (:vertico-map
-      ("C-x C-d" . consult-dir)
-      ("C-x C-j" . consult-dir-jump-file)))
-     ;; (:evil-normal-state-map
-     ;;  ("C-S-r" . consult-dir)
-     ;;  )
-     
-    :custom
-    (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
-#+end_src
-**** consult-projectile
-projectile integration
-#+begin_src emacs-lisp
-  (leaf consult-projectile
-    :straight (consult-projectile
-               :type git
-               :host gitlab
-               :repo "OlMon/consult-projectile")
-               
-    :require t
-    :custom
-    ;; (consult-projectile-use-projectile-switch-project . t)
-    (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
-    :config
-    ;; create persp and cd before consult-projectile
-    (defun kurumi-consult-projectile--project-persp-action (dir)
-      (persp-switch (projectile-project-name dir))
-      (cd (projectile-project-root dir))
-      (consult-projectile--file dir)))
-      
-    
-#+end_src
-**** consult-flyspell
-#+begin_src emacs-lisp
-  (leaf consult-flyspell
-    :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
-    :after (consult flyspell)
-    :config
-    (setq consult-flyspell-select-function 'flyspell-correct-at-point
-          consult-flyspell-set-point-after-word t
-          consult-flyspell-always-check-buffer t))
-    
-#+end_src
-*** embark
-#+begin_src emacs-lisp
-  ;;; embark
-  (leaf embark
-    :straight t
-    :doc "minibuffer actions"
-    :bind
-    (("C-." . embark-act)         ;; pick some comfortable binding
-     ("M-." . embark-dwim)        ;; good alternative: M-.
-     ("C-h B" . embark-bindings))) ;; alternative for `describe-bindings'
-    
-
-  ;; consult integration
-  (leaf embark-consult
-    :straight t
-    :after (embark consult))
-#+end_src
-*** marginalia (Show Command Description)
-#+begin_src emacs-lisp
-  ;; marginalia
-  (leaf
-    marginalia
-    :straight t
-    :defvar (marginalia-mode)
-    :global-minor-mode marginalia-mode)
-#+end_src
-*** affe
-#+begin_src emacs-lisp
-  ;; affe fuzzy-finder
-  (leaf
-    affe
-    :straight t
-    :commands (affe-grep affe-find)
-    :init
-    (leaf orderless :straight t :commands (orderless-pattern-compiler))
-    (defun affe-orderless-regexp-compiler (input _type _ignorecase)
-      (setq input (orderless-pattern-compiler input))
-      (cons input (lambda (str) (orderless--highlight input str))))
-    (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
-#+end_src
-*** savehist
-#+begin_src emacs-lisp
-(leaf
-  savehist
-  :straight t
-  :defvar (savehist-coding-system)
-  :init (savehist-mode)
-  :setq (savehist-coding-system . 'utf-8-emacs))
-#+end_src
-*** switch-to-minibuffer
-#+begin_src emacs-lisp
-(leaf switch-to-minibuffer
-  :init
-  (defun switch-to-minibuffer ()
-    "Switch to minibuffer window."
-    (interactive)
-    (if (active-minibuffer-window)
-        (select-window (active-minibuffer-window))
-      nil)))
-    
-#+end_src
 ** Translation
 *** COMMENT define-it
 #+begin_src emacs-lisp
@@ -2882,6 +2432,458 @@ projectile integration
     
 #+end_src
 
+* Syntax Check/Formatting
+** flycheck
+
+非同期で文法などのチェックを行う。
+
+#+begin_src emacs-lisp
+  ;; flycheck syntax checking
+  (leaf
+    flycheck
+    :straight t
+    :require t
+    :global-minor-mode global-flycheck-mode
+    :init
+    (leaf flycheck-inline
+      :straight t
+      :hook (flycheck-mode-hook . flycheck-inline-mode))
+    :custom
+    (flycheck-display-errors-delay . 0.1)
+    :config
+    ;; tweak fringe icons
+    (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
+      (vector #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00111000
+              #b01111100
+              #b11111110
+              #b11111110
+              #b01111100
+              #b00111000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000
+              #b00000000))
+
+    (flycheck-define-error-level 'error
+      :severity 2
+      :overlay-category 'flycheck-error-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-error)
+
+    (flycheck-define-error-level 'warning
+      :severity 1
+      :overlay-category 'flycheck-warning-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-warning)
+      
+
+    (flycheck-define-error-level 'info
+      :severity 0
+      :overlay-category 'flycheck-info-overlay
+      :fringe-bitmap 'flycheck-fringe-bitmap-ball
+      :fringe-face 'flycheck-fringe-info))
+      
+    
+#+end_src
+** flyspell (with flyspell-correct)
+*** flyspell
+aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
+#+begin_src emacs-lisp
+  (leaf flyspell
+    :blackout (flyspell-mode flyspell-prog-mode)
+    :hook
+    (text-mode-hook . flyspell-mode)
+    (prog-mode-hook . flyspell-prog-mode)
+    (conf-mode-hook . flyspell-prog-mode)
+    (yaml-mode-hook . flyspell-prog-mode)
+    :defvar
+    (ispell-extra-args
+     ispell-aspell-dict-dir
+     ispell-aspell-data-dir
+     ispell-program-name)
+    :defun (ispell-get-aspell-config-value)
+    :config
+    (pcase
+        (cond
+         ((executable-find "aspell")
+          'aspell)
+         ((executable-find "hunspell")
+          'hunspell)
+         ((executable-find "enchant-2")
+          'enchant))
+      (`aspell
+       (setq
+        ispell-program-name
+        "aspell"
+        ispell-extra-args '("--sug-mode=ultra" "--run-together"))
+
+       (unless ispell-aspell-dict-dir
+         (setq ispell-aspell-dict-dir
+               (ispell-get-aspell-config-value "dict-dir")))
+       (unless ispell-aspell-data-dir
+         (setq ispell-aspell-data-dir
+               (ispell-get-aspell-config-value "data-dir"))))
+      (`hunspell (setq ispell-program-name "hunspell"))
+      (`enchant (setq ispell-program-name "enchant-2"))
+      (_ (system-packages-ensure "aspell"))))
+#+end_src
+*** flyspell-lazy
+#+begin_src emacs-lisp
+  (leaf flyspell-lazy
+    :straight
+    (flyspell-lazy
+     :type git
+     :host github
+     :repo "rolandwalker/flyspell-lazy")
+    :after flyspell
+    :custom
+    (flyspell-lazy-idle-seconds . 1)
+    (flyspell-lazy-window-idle-seconds . 3)
+    :config
+    (flyspell-lazy-mode))
+    
+#+end_src
+*** flyspell-correct
+#+begin_src emacs-lisp
+  (leaf
+    flyspell-correct
+    :straight t
+    :after flyspell
+
+    :bind (([remap ispell-word] . flyspell-correct-at-point)))
+           ;; (:evil-normal-state-map
+           ;;  ("zg" . flyspell-correct-at-point)
+           ;;  )
+           
+#+end_src
+** eldoc
+#+begin_src emacs-lisp
+(leaf
+  eldoc
+  :doc "hovered element documentation"
+  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
+  :blackout t
+  :preface
+  (defun my:shutup-eldoc-message (f &optional string)
+    (unless (active-minibuffer-window) (funcall f string)))
+  :advice (:around eldoc-message my:shutup-eldoc-message))
+#+end_src
+
+** format-all
+
+多数の言語のフォーマッターをそれぞれサポートしている。
+
+#+begin_src emacs-lisp
+  ;; formatter bindings
+(leaf
+  format-all
+  :straight t
+  :require t
+  :blackout t
+  :hook
+  (prog-mode-hook . format-all-mode)
+  (prog-mode-hook . format-all-ensure-formatter)
+  :custom
+  (format-all-default-formatters .
+                                 '(("Assembly" asmfmt)
+                                   ("ATS" atsfmt)
+                                   ("Bazel" buildifier)
+                                   ("BibTeX" emacs-bibtex)
+                                   ("C" clang-format)
+                                   ("C#" clang-format)
+                                   ("C++" clang-format)
+                                   ("Cabal Config" cabal-fmt)
+                                   ("Clojure" zprint)
+                                   ("CMake" cmake-format)
+                                   ("Crystal" crystal)
+                                   ("CSS" prettier)
+                                   ("Cuda" clang-format)
+                                   ("D" dfmt)
+                                   ("Dart" dart-format)
+                                   ("Dhall" dhall)
+                                   ("Dockerfile" dockfmt)
+                                   ("Elixir" mix-format)
+                                   ("Elm" elm-format)
+                                   ("Emacs Lisp" emacs-lisp)
+                                   ("Erlang" efmt)
+                                   ("F#" fantomas)
+                                   ("Fish" fish-indent)
+                                   ("Fortran Free Form" fprettify)
+                                   ("GLSL" clang-format)
+                                   ("Go" gofmt)
+                                   ("GraphQL" prettier)
+                                   ("Haskell" brittany)
+                                   ("HTML" html-tidy)
+                                   ("HTML+ERB" erb-format)
+                                   ("Java" clang-format)
+                                   ("JavaScript" prettier)
+                                   ("JSON" prettier)
+                                   ("JSON5" prettier)
+                                   ("Jsonnet" jsonnetfmt)
+                                   ("JSX" prettier)
+                                   ("Kotlin" ktlint)
+                                   ("LaTeX" latexindent)
+                                   ("Less" prettier)
+                                   ("Literate Haskell" brittany)
+                                   ("Lua" stylua)
+                                   ("Markdown" prettier)
+                                   ("Nix" nixpkgs-fmt)
+                                   ("Objective-C" clang-format)
+                                   ("OCaml" ocp-indent)
+                                   ("Perl" perltidy)
+                                   ("PHP" prettier)
+                                   ("Protocol Buffer" clang-format)
+                                   ("PureScript" purty)
+                                   ("Python" black)
+                                   ("R" styler)
+                                   ("Reason" bsrefmt)
+                                   ("ReScript" rescript)
+                                   ("Ruby" rufo)
+                                   ("Rust" rustfmt)
+                                   ("Scala" scalafmt)
+                                   ("SCSS" prettier)
+                                   ("Shell" shfmt)
+                                   ("Solidity" prettier)
+                                   ("SQL" sqlformat)
+                                   ("Svelte" prettier)
+                                   ("Swift" swiftformat)
+                                   ("Terraform" terraform-fmt)
+                                   ("TOML" prettier)
+                                   ("TSX" prettier)
+                                   ("TypeScript" prettier)
+                                   ("V" v-fmt)
+                                   ("Verilog" istyle-verilog)
+                                   ("Vue" prettier)
+                                   ("XML" html-tidy)
+                                   ("YAML" prettier))))
+                                    
+                                   
+    
+#+end_src
+
+** editorconfig
+#+begin_src emacs-lisp
+  ;; EditorConfig support
+(leaf editorconfig
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode editorconfig-mode)
+#+end_src
+** dtrt-indent
+vim-sleuth like automatic indent guessing/adjusting
+#+begin_src emacs-lisp
+(leaf dtrt-indent
+  :straight t
+  :hook
+  (prog-mode-hook . dtrt-indent-mode)
+  :config)
+  ;; (add-hook 'prog-mode-hook #'(lambda ()
+  ;;                               (dtrt-indent-mode)
+  ;;                               (dtrt-indent-adapt)))
+    
+#+end_src
+* Minibuffer
+** vertico
+#+begin_src emacs-lisp
+  (leaf
+    vertico
+    :straight t
+    :global-minor-mode vertico-mode
+    :custom ((vertico-cycle . t))
+    :config
+    ;; Use `consult-completion-in-region' if Vertico is enabled.
+    ;; Otherwise use the default `completion--in-region' function.
+    (setq completion-in-region-function
+          (lambda (&rest args)
+            (apply (if vertico-mode
+                       #'consult-completion-in-region
+                     #'completion--in-region)
+                   args))))
+    
+#+end_src
+** consult (Narrowing Functions)
+*** consult
+#+begin_src emacs-lisp
+  (leaf consult
+    :straight t
+    :defvar (consult-buffer-sources)
+    :setq
+    (
+     (completion-in-region-function
+      .
+      (lambda (&rest args)
+        (apply
+         (if vertico-mode
+             #'consult-completion-in-region
+           #'completion--in-region)
+         args)))
+     (consult-buffer-sources
+      .
+      '
+      (
+       consult-projectile--source-projectile-buffer
+       persp-consult-source
+       consult--source-bookmark
+       consult-projectile--source-projectile-project
+       consult-projectile--source-projectile-recentf
+       consult--source-buffer
+       consult--source-hidden-buffer
+       consult--source-recent-file)))
+       
+    :config
+    ;; don't set sources on top
+    (consult-customize consult--source-buffer persp-consult-source :default nil)
+    ;; hide outer-perspecitve sources
+    (consult-customize consult--source-buffer consult--source-recent-file :hidden t)
+    ;; preview delay
+    (consult-customize
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-recent-file
+     consult--source-project-recent-file
+     :preview-key '(:debounce 0.3 any))
+    :bind)
+    ;; ((:evil-normal-state-map
+    ;;   ;; ("C-f" . consult-line)
+    ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+    ;;   ("<leader>SPC" . 'consult-buffer)
+    ;;   ))
+    
+#+end_src
+*** consult-flycheck
+#+begin_src emacs-lisp
+  ;; flycheck integration
+  (leaf consult-flycheck
+    :straight t
+    :after consult flycheck
+    :bind
+    ())
+     ;; (:evil-normal-state-map
+     ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
+     ;;       )
+     
+#+end_src
+*** consult-dir
+#+begin_src emacs-lisp
+  ;; dir extension
+  (leaf
+    consult-dir
+    :straight t
+    :after consult
+    :bind
+    (("C-x C-d" . consult-dir)
+     (:vertico-map
+      ("C-x C-d" . consult-dir)
+      ("C-x C-j" . consult-dir-jump-file)))
+     ;; (:evil-normal-state-map
+     ;;  ("C-S-r" . consult-dir)
+     ;;  )
+     
+    :custom
+    (consult-dir-project-list-function . #'consult-dir-projectile-dirs))
+#+end_src
+*** consult-projectile
+projectile integration
+#+begin_src emacs-lisp
+  (leaf consult-projectile
+    :straight (consult-projectile
+               :type git
+               :host gitlab
+               :repo "OlMon/consult-projectile")
+               
+    :require t
+    :custom
+    ;; (consult-projectile-use-projectile-switch-project . t)
+    (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
+    :config
+    ;; create persp and cd before consult-projectile
+    (defun kurumi-consult-projectile--project-persp-action (dir)
+      (persp-switch (projectile-project-name dir))
+      (cd (projectile-project-root dir))
+      (consult-projectile--file dir)))
+      
+    
+#+end_src
+*** consult-flyspell
+#+begin_src emacs-lisp
+  (leaf consult-flyspell
+    :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
+    :after (consult flyspell)
+    :config
+    (setq consult-flyspell-select-function 'flyspell-correct-at-point
+          consult-flyspell-set-point-after-word t
+          consult-flyspell-always-check-buffer t))
+    
+#+end_src
+** embark
+#+begin_src emacs-lisp
+  ;;; embark
+  (leaf embark
+    :straight t
+    :doc "minibuffer actions"
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("M-." . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings))) ;; alternative for `describe-bindings'
+    
+
+  ;; consult integration
+  (leaf embark-consult
+    :straight t
+    :after (embark consult))
+#+end_src
+** marginalia (Show Command Description)
+#+begin_src emacs-lisp
+  ;; marginalia
+  (leaf
+    marginalia
+    :straight t
+    :defvar (marginalia-mode)
+    :global-minor-mode marginalia-mode)
+#+end_src
+** affe
+#+begin_src emacs-lisp
+  ;; affe fuzzy-finder
+  (leaf
+    affe
+    :straight t
+    :commands (affe-grep affe-find)
+    :init
+    (leaf orderless :straight t :commands (orderless-pattern-compiler))
+    (defun affe-orderless-regexp-compiler (input _type _ignorecase)
+      (setq input (orderless-pattern-compiler input))
+      (cons input (lambda (str) (orderless--highlight input str))))
+    (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
+#+end_src
+** savehist
+#+begin_src emacs-lisp
+(leaf
+  savehist
+  :straight t
+  :defvar (savehist-coding-system)
+  :init (savehist-mode)
+  :setq (savehist-coding-system . 'utf-8-emacs))
+#+end_src
+** switch-to-minibuffer
+#+begin_src emacs-lisp
+(leaf switch-to-minibuffer
+  :init
+  (defun switch-to-minibuffer ()
+    "Switch to minibuffer window."
+    (interactive)
+    (if (active-minibuffer-window)
+        (select-window (active-minibuffer-window))
+      nil)))
+    
+#+end_src
 * Treesitter Configs
 *** treesitter
 #+begin_src emacs-lisp

@@ -658,7 +658,9 @@
   :straight t
   :blackout t
   :global-minor-mode zoom-mode
-  :custom (zoom-size . '(0.618 . 0.618)))
+  :custom
+  (zoom-size . '(0.618 . 0.618))
+  (zoom-ignored-major-modes . '(dirvish-mode)))
 
 (leaf centered-cursor-mode
   :straight t
@@ -1064,6 +1066,202 @@
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
 
+(leaf company
+  :straight t
+  :bind
+  (([remap indent-for-tab-command] . company-indent-or-complete-common)
+   ([remap c-indent-line-or-region] . company-indent-or-complete-common)
+   (:company-active-map
+    ("C-w" . nil)))
+
+  :global-minor-mode global-company-mode
+  :custom
+  (
+   (company-idle-delay . 0.1)
+   (company-minimum-prefix-length . 2)
+   (company-selection-wrap-around . t)
+   (company-tooltip-align-annotations . t)
+   (company-dabbrev-other-buffers . 'all)
+   (company-dabbrev-ignore-case . nil)
+   (company-dabbrev-downcase . nil)
+   (company-dabbrev-code-everywhere . t)     ;;  include comments and strings.
+   (company-require-match . 'never)
+   (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
+   (company-auto-complete . nil))
+  :config
+  (add-to-list 'company-frontends 'company-pseudo-tooltip-frontend t)
+  ;; (add-to-list 'company-frontends 'company-echo-metadata-frontend t)
+  (setq company-backends '(
+                           ;; get lsp completion first when available
+                           (company-capf
+                            :with
+                            company-keywords
+                            company-yasnippet
+                            ;; company-dabbrev
+                            company-dabbrev-code
+                            company-same-mode-buffers
+                            company-semantic
+                            company-gtags
+                            company-etags
+                            ;; company-wordfreq
+                            company-oddmuse
+                            company-bbdb)
+
+                           (company-keywords
+                            company-yasnippet
+                            ;; company-dabbrev
+                            company-dabbrev-code
+                            company-same-mode-buffers
+                            company-semantic
+                            company-gtags
+                            company-etags
+                            ;; company-wordfreq
+                            company-oddmuse
+                            company-bbdb)
+
+                           company-files
+                           company-dabbrev
+                           company-same-mode-buffers
+                           company-wordfreq
+                           company-bbdb
+                           company-oddmuse))
+
+  ;; magit commit message completion with magit-diff
+  (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
+    (let ((name (buffer-name)))
+      (and (string-match-p "\\`[ *]" name)
+           (not (string-match-p "\\*magit-diff:" name)))))
+
+  (defun my--git-commit-setup-hook ()
+    (setq-local fill-column 72)
+
+    (setq-local company-dabbrev-code-modes '(text-mode magit-diff-mode))
+    (setq-local company-dabbrev-ignore-buffers
+                #'my--company-dabbrev-ignore-except-magit-diff))
+
+  (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook))
+
+(leaf company-box
+  :straight t
+  :require t
+  :after company
+  :hook (company-mode-hook . company-box-mode))
+
+(leaf company-dwim
+  :straight (company-dwim :type git :host github :repo "zk-phi/company-dwim")
+  :require t
+  :after company
+  :bind (:company-active-map
+         ("TAB" . company-dwim)
+         ("<tab>" . company-dwim)
+         ("S-TAB" . company-dwim-select-previous)
+         ("<backtab>" . company-dwim-select-previous)
+         ("C-j" . company-complete-selection))
+  :config
+  (add-to-list 'company-frontends 'company-dwim-frontend t))
+
+(leaf company-anywhere
+  :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
+  :require t)
+
+(leaf company-same-mode-buffers
+  :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
+  :require t
+  :after company
+  :custom
+  (company-same-mode-buffers-matchers .
+                                      '(
+                                        company-same-mode-buffers-matcher-flex
+                                        company-same-mode-buffers-matcher-partial
+                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest))
+
+  :config
+  (company-same-mode-buffers-initialize))
+
+(leaf company-wordfreq
+  :straight t
+  :require t
+  :after company
+  :init
+  (setq company-wordfreq-path
+        (no-littering-expand-var-file-name "wordfreq-dicts/")))
+
+;; completion style
+(leaf
+  fussy
+  :straight t
+  :require t
+  :init
+  (leaf
+    fuz-bin
+    :straight
+    '
+    (fuz-bin
+     :repo "jcs-elpa/fuz-bin"
+     :fetcher github
+     :files (:defaults "bin"))
+    :require t
+    :defun (fuz-bin-load-dyn)
+    :config (fuz-bin-load-dyn))
+  :custom
+  ((completion-styles . '(fussy))
+   (completion-category-defaults . nil)
+   (compleiton-category-overrides . nil)
+   (fussy-filter-fn . 'fussy-filter-default)
+   (fussy-score-fn . 'fussy-fuz-bin-score)
+   (fussy-fuz-use-skim-p . t))
+  :config
+  ;; integrate with company
+  (defun j-company-capf (f &rest args)
+    "Manage `completion-styles'."
+    (let ((fussy-max-candidate-limit 5000)
+          (fussy-default-regex-fn 'fussy-pattern-first-letter)
+          (fussy-prefer-prefix nil))
+      (apply f args)))
+
+  (defun j-company-transformers (f &rest args)
+    "Manage `company-transformers'."
+    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+      (apply f args)))
+
+  (advice-add 'company--transform-candidates :around 'j-company-transformers)
+  (advice-add 'company-capf :around 'j-company-capf))
+
+(leaf
+  yasnippet
+  :straight t
+  :require t
+  :blackout t
+  :global-minor-mode yas-global-mode)
+
+(leaf yasnippet-snippets
+  :straight t
+  :require t
+  :after yasnippet)
+
+(leaf go-translate
+  :straight t
+  :require t
+  :config
+  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
+  (setq gts-default-translator
+        (gts-translator
+         :picker (gts-prompt-picker)
+         :engines (list
+                   (gts-bing-engine)
+                   (gts-google-engine)
+                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
+         :render (gts-buffer-render))))
+
+(leaf hyperbole
+  :straight t
+  :hook
+  ;; (window-setup-hook . hyperbole-mode)
+  (text-mode-hook . hyperbole-mode)
+  (prog-mode-hook . hyperbole-mode)
+  (conf-mode-hook . hyperbole-mode)
+  (yaml-mode-hook . hyperbole-mode))
+
 ;; flycheck syntax checking
 (leaf
   flycheck
@@ -1286,179 +1484,6 @@
   ;;                               (dtrt-indent-mode)
   ;;                               (dtrt-indent-adapt)))
 
-(leaf company
-  :straight t
-  :bind
-  (([remap indent-for-tab-command] . company-indent-or-complete-common)
-   ([remap c-indent-line-or-region] . company-indent-or-complete-common)
-   (:company-active-map
-    ("C-w" . nil)))
-
-  :global-minor-mode global-company-mode
-  :custom
-  (
-   (company-idle-delay . 0.1)
-   (company-minimum-prefix-length . 2)
-   (company-selection-wrap-around . t)
-   (company-tooltip-align-annotations . t)
-   (company-dabbrev-other-buffers . 'all)
-   (company-dabbrev-ignore-case . nil)
-   (company-dabbrev-downcase . nil)
-   (company-dabbrev-code-everywhere . t)     ;;  include comments and strings.
-   (company-require-match . 'never)
-   (company-transformers . '(delete-consecutive-dups company-sort-by-backend-importance))
-   (company-auto-complete . nil))
-  :config
-  (add-to-list 'company-frontends 'company-pseudo-tooltip-frontend t)
-  ;; (add-to-list 'company-frontends 'company-echo-metadata-frontend t)
-  (setq company-backends '(
-                           ;; get lsp completion first when available
-                           (company-capf
-                            :with
-                            company-keywords
-                            company-yasnippet
-                            ;; company-dabbrev
-                            company-dabbrev-code
-                            company-same-mode-buffers
-                            company-semantic
-                            company-gtags
-                            company-etags
-                            ;; company-wordfreq
-                            company-oddmuse
-                            company-bbdb)
-
-                           (company-keywords
-                            company-yasnippet
-                            ;; company-dabbrev
-                            company-dabbrev-code
-                            company-same-mode-buffers
-                            company-semantic
-                            company-gtags
-                            company-etags
-                            ;; company-wordfreq
-                            company-oddmuse
-                            company-bbdb)
-
-                           company-files
-                           company-dabbrev
-                           company-same-mode-buffers
-                           company-wordfreq
-                           company-bbdb
-                           company-oddmuse))
-
-  ;; magit commit message completion with magit-diff
-  (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
-    (let ((name (buffer-name)))
-      (and (string-match-p "\\`[ *]" name)
-           (not (string-match-p "\\*magit-diff:" name)))))
-
-  (defun my--git-commit-setup-hook ()
-    (setq-local fill-column 72)
-
-    (setq-local company-dabbrev-code-modes '(text-mode magit-diff-mode))
-    (setq-local company-dabbrev-ignore-buffers
-                #'my--company-dabbrev-ignore-except-magit-diff))
-
-  (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook))
-
-(leaf company-box
-  :straight t
-  :require t
-  :after company
-  :hook (company-mode-hook . company-box-mode))
-
-(leaf company-dwim
-  :straight (company-dwim :type git :host github :repo "zk-phi/company-dwim")
-  :require t
-  :after company
-  :bind (:company-active-map
-         ("TAB" . company-dwim)
-         ("<tab>" . company-dwim)
-         ("S-TAB" . company-dwim-select-previous)
-         ("<backtab>" . company-dwim-select-previous)
-         ("C-j" . company-complete-selection))
-  :config
-  (add-to-list 'company-frontends 'company-dwim-frontend t))
-
-(leaf company-anywhere
-  :straight (company-anywhere :type git :host github :repo "zk-phi/company-anywhere")
-  :require t)
-
-(leaf company-same-mode-buffers
-  :straight (company-same-mode-buffers :type git :host github :repo "zk-phi/company-same-mode-buffers")
-  :require t
-  :after company
-  :custom
-  (company-same-mode-buffers-matchers .
-                                      '(
-                                        company-same-mode-buffers-matcher-flex
-                                        company-same-mode-buffers-matcher-partial
-                                        company-same-mode-buffers-matcher-exact-first-letter-flex-rest))
-
-  :config
-  (company-same-mode-buffers-initialize))
-
-(leaf company-wordfreq
-  :straight t
-  :require t
-  :after company
-  :init
-  (setq company-wordfreq-path
-        (no-littering-expand-var-file-name "wordfreq-dicts/")))
-
-;; completion style
-(leaf
-  fussy
-  :straight t
-  :require t
-  :init
-  (leaf
-    fuz-bin
-    :straight
-    '
-    (fuz-bin
-     :repo "jcs-elpa/fuz-bin"
-     :fetcher github
-     :files (:defaults "bin"))
-    :require t
-    :defun (fuz-bin-load-dyn)
-    :config (fuz-bin-load-dyn))
-  :custom
-  ((completion-styles . '(fussy))
-   (completion-category-defaults . nil)
-   (compleiton-category-overrides . nil)
-   (fussy-filter-fn . 'fussy-filter-default)
-   (fussy-score-fn . 'fussy-fuz-bin-score)
-   (fussy-fuz-use-skim-p . t))
-  :config
-  ;; integrate with company
-  (defun j-company-capf (f &rest args)
-    "Manage `completion-styles'."
-    (let ((fussy-max-candidate-limit 5000)
-          (fussy-default-regex-fn 'fussy-pattern-first-letter)
-          (fussy-prefer-prefix nil))
-      (apply f args)))
-
-  (defun j-company-transformers (f &rest args)
-    "Manage `company-transformers'."
-    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args)))
-
-  (advice-add 'company--transform-candidates :around 'j-company-transformers)
-  (advice-add 'company-capf :around 'j-company-capf))
-
-(leaf
-  yasnippet
-  :straight t
-  :require t
-  :blackout t
-  :global-minor-mode yas-global-mode)
-
-(leaf yasnippet-snippets
-  :straight t
-  :require t
-  :after yasnippet)
-
 (leaf
   vertico
   :straight t
@@ -1621,29 +1646,6 @@
         (select-window (active-minibuffer-window))
       nil)))
 
-(leaf go-translate
-  :straight t
-  :require t
-  :config
-  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
-  (setq gts-default-translator
-        (gts-translator
-         :picker (gts-prompt-picker)
-         :engines (list
-                   (gts-bing-engine)
-                   (gts-google-engine)
-                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
-         :render (gts-buffer-render))))
-
-(leaf hyperbole
-  :straight t
-  :hook
-  ;; (window-setup-hook . hyperbole-mode)
-  (text-mode-hook . hyperbole-mode)
-  (prog-mode-hook . hyperbole-mode)
-  (conf-mode-hook . hyperbole-mode)
-  (yaml-mode-hook . hyperbole-mode))
-
 (leaf tree-sitter
   :straight t
   :global-minor-mode global-tree-sitter-mode
@@ -1769,14 +1771,6 @@
   :straight t
   :commands
   (friendly-remote-shell))
-
-(leaf dwim-shell-command
-  :straight t
-  :require t
-  :bind (([remap shell-command] . dwim-shell-command)
-         ([remap dired-do-async-shell-command] . dwim-shell-command)
-         ([remap dired-do-shell-command] . dwim-shell-command)
-         ([remap dired-smart-shell-command] . dwim-shell-command)))
 
 (leaf shelldon
   :straight t)
