@@ -630,7 +630,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :bind
     ("C-<tab>" . centaur-tabs-forward)
     ("C-<iso-lefttab>" . centaur-tabs-backward))
-    
 #+end_src
 ** COMMENT tabspaces
 #+begin_src emacs-lisp
@@ -982,7 +981,6 @@ Diredをオーバーホールするファイラ。
                ("q" . flycheck-list-errors)))
                
 #+end_src
-** TODO kurumi-shell-commandset
 * Interface Enhancement/Eyecandies
 ** which-key
 #+begin_src emacs-lisp
@@ -1589,269 +1587,268 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
 *** meow
 **** meow
 #+begin_src emacs-lisp
-(leaf meow
-  :straight t
-  :require t
-  :init
-  ;; key-chord dependency
-  (leaf key-chord
+  (leaf meow
     :straight t
-    :global-minor-mode t
-    :custom
-    (key-chord-two-keys-delay . 0.1)
-    (key-chord-one-keys-delay . 0.2))
-      
-  ;; command functions
-  (defun meow-save-line nil
-    (interactive)
-    (meow-line 1)
-    (call-interactively #'meow-save))
-  (defun meow-insert-at-first-non-whitespace nil
-    (interactive)
-    (back-to-indentation)
-    (meow-insert))
-  (defun meow-insert-at-end-of-line nil
-    (interactive)
-    (move-end-of-line 1)
-    (meow-insert))
-  (defun meow-find-backward nil
-    (interactive)
-    (let ((current-prefix-arg -1))
-      (call-interactively 'meow-find)))
-  (defun meow-search-backward nil
-    (interactive)
-    (let ((current-prefix-arg -1))
-      (call-interactively 'meow-search)))
-  (defun meow-close-window-or-buffer ()
-    (interactive)
-    (if (> (seq-length (window-list (selected-frame))) 1)
-        (delete-window)
-      (kill-this-buffer)))
+    :require t
+    :init
+    ;; key-chord dependency
+    (leaf key-chord
+      :straight t
+      :global-minor-mode t
+      :custom
+      (key-chord-two-keys-delay . 0.1)
+      (key-chord-one-keys-delay . 0.2))
 
-  ;; setup keymap
-  (defun meow-setup nil
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("C-u" . ccm-scroll-down)
-     '("C-d" . ccm-scroll-up)
-     '("C-o" . my/backward-forward-previous-location)
-     '("<C-i>" . my/backward-forward-next-location)
-     '("C-w" . kill-this-buffer)
-     '("/" . consult-line)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     '("C-u" . "H-C-u")
-     '("C-d" . "H-C-d")
-     '("C-o" . "H-C-o")
-     '("<C-i>" . "H-C-i")
-     '("C-w" . "H-C-w")
-     '("/" . "H-/")
-     ;; move-or-create-window prefix
-     '("w j" . move-or-create-window-below)
-     '("w k" . move-or-create-window-above)
-     '("w h" . move-or-create-window-left)
-     '("w l" . move-or-create-window-right)
-     ;; version control operations
-     '("v" . my-git-actions/body)
-     ;; spell correction
-     '("z g" . flyspell-correct-at-point)
-     ;; lsp-command-map
-     '("l" . "s-l")
-     ;; perspective
-     '("p" . "C-c M-p")
-     ;; help
-     '("K" . helpful-at-point)
-     ;; consult search operations
-     '("SPC" . consult-buffer)
-     '("s p" . consult-ripgrep)
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '("=" . meow-query-replace)
-     '("+" . meow-stellar-replace-regexp)
-     '(";" . meow-reverse)
-     '("," . meow-inner-of-thing)
-     '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-insert-at-end-of-line)
-     '("o" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     ;; '("D" . meow-backward-delete)
-     '("D" . kill-line)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("F" . avy-goto-char-timer)
-     '("g" . meow-cancel-selection)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-insert-at-first-non-whitespace)
-     '("O" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("N" . meow-search-backward)
-     '("(" . meow-block)
-     '(")" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     ;; '("r" . embrace-commander)
-     ;; '("R" . meow-swap-grab)
-     '("R" . repeat)
-     '("s" . meow-kill)
-     '("S" . embrace-commander)
-     '("t" . meow-till)
-     '("u" . meow-undo)
-     '("U" . undo-redo)
-     '("C-r" . undo-redo)
-     '("v" . meow-visit)
-     '("V" . er/expand-region)
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . meow-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("\"" . consult-yank-pop)
-     '("/" . consult-line)
-     '("C-u" . ccm-scroll-down)
-     '("C-d" . ccm-scroll-up)
-     '("C-o" . my/backward-forward-previous-location)
-     '("<C-i>" . my/backward-forward-next-location)
-     ;; '("C-o" . gumshoe-persp-backtrack-back)
-     ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
-     '("C-f" . consult-line)
-     ;; '("C-p" . affe-find)
-     ;; '("C-e" . find-file)
-     '("C-t" . burly-perspective-init-project-persp)
-     '("C-s" . save-buffer)
-     '("C-w" . kill-this-buffer)
-     ;; '("TAB" . origami-toggle-node)
-     ;; '("<tab>" . origami-toggle-node)
-     (cons "S-SPC" kurumi-utility-map)
-     '("C-s" . save-buffer)
-     '("<escape>" . ignore))
-    ;; insert state keymap
-    (meow-define-keys
-        'insert
-      '("C-g" . meow-insert-exit))
-        
-    ;; readline-style keymap in global map
-    (bind-key "C-w" 'backward-kill-word)
-    ;; remap universal-argument
-    (bind-key "C-M-u" 'universal-argument)
-    ;; key-chord shortcuts
-    (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
-    (key-chord-define meow-normal-state-keymap "gd" 'xref-find-definitions)
-    ;; anyblock thing object
-    (meow-thing-register 'anyblock
-                         '(
-                           (#'meow--inner-of-string)
-                           (pair ("[") ("]"))
-                           (pair ("(") (")"))
-                           (pair ("{") ("}"))
-                           (pair ("<") (">")))
-                             
-                         '(
-                           (#'meow--bounds-of-string)
-                           (pair ("[") ("]"))
-                           (pair ("(") (")"))
-                           (pair ("{") ("}"))
-                           (pair ("<") (">")))))
-                             
-                           
-      
-  :bind
-  ;; readline style keymap for minibuffer
-  (:minibuffer-local-map
-   ("C-w" . backward-kill-word))
-  :custom
-  (meow-use-clipboard . t)
-  (meow-mode-state-list . '((helpful-mode . normal)
-                            (help-mode . normal)
-                            (Man-mode . normal)
-                            (vterm-mode . insert)
-                            (eshell-mode . insert)))
-                              
-  (meow--kbd-forward-char . "<right>")
-  ;; (meow--kbd-forward-line . "<down>")
-  ;; (meow--kbd-backward-line . "<up>")
-  (meow--kbd-delete-char . "<deletechar>")
-  (meow--kbd-kill-region . "S-<delete>")
-  (meow-selection-command-fallback .
-                                   '((meow-reverse . back-to-indentation)
-                                     (meow-change . meow-change-char)
-                                     (meow-save . meow-save-line)
-                                     (meow-kill . meow-kill-whole-line)
-                                     (meow-pop-selection . meow-pop-grab)
-                                     (meow-beacon-change . meow-beacon-change-char)
-                                     (meow-cancel . keyboard-quit)
-                                     (meow-delete . meow-C-d)))
-  (meow-char-thing-table .
-                         '((?r . round)
-                           (?\( . round)
-                           (?b . anyblock) ;; `b' for bracket
-                           (?c . curly)
-                           (?s . string)
-                           (?e . symbol)
-                           (?w . window)
-                           (?B . buffer)
-                           (?p . paragraph)
-                           (?\[ . square)
-                           (?l . line)
-                           (?d . defun)
-                           (?. . sentence)))
-  :defer-config
-  (meow-setup)
-  ;; vim-way cursor
-  ;; Must set before enable `meow-global-mode`
-  ;; (setq meow-use-cursor-position-hack t
-  ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
-  (meow-global-mode 1))
-    
+    ;; command functions
+    (defun meow-save-line nil
+      (interactive)
+      (meow-line 1)
+      (call-interactively #'meow-save))
+    (defun meow-insert-at-first-non-whitespace nil
+      (interactive)
+      (back-to-indentation)
+      (meow-insert))
+    (defun meow-insert-at-end-of-line nil
+      (interactive)
+      (move-end-of-line 1)
+      (meow-insert))
+    (defun meow-find-backward nil
+      (interactive)
+      (let ((current-prefix-arg -1))
+        (call-interactively 'meow-find)))
+    (defun meow-search-backward nil
+      (interactive)
+      (let ((current-prefix-arg -1))
+        (call-interactively 'meow-search)))
+    (defun meow-close-window-or-buffer ()
+      (interactive)
+      (if (> (seq-length (window-list (selected-frame))) 1)
+          (delete-window)
+        (kill-this-buffer)))
+
+    ;; setup keymap
+    (defun meow-setup nil
+      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("C-u" . ccm-scroll-down)
+       '("C-d" . ccm-scroll-up)
+       '("C-o" . my/backward-forward-previous-location)
+       '("<C-i>" . my/backward-forward-next-location)
+       '("C-w" . kill-this-buffer)
+       '("/" . consult-line)
+       '("<escape>" . ignore))
+      (meow-leader-define-key
+       ;; SPC j/k will run the original command in MOTION state.
+       '("j" . "H-j")
+       '("k" . "H-k")
+       '("C-u" . "H-C-u")
+       '("C-d" . "H-C-d")
+       '("C-o" . "H-C-o")
+       '("<C-i>" . "H-C-i")
+       '("C-w" . "H-C-w")
+       '("/" . "H-/")
+       ;; move-or-create-window prefix
+       '("w j" . move-or-create-window-below)
+       '("w k" . move-or-create-window-above)
+       '("w h" . move-or-create-window-left)
+       '("w l" . move-or-create-window-right)
+       ;; version control operations
+       '("v" . my-git-actions/body)
+       ;; spell correction
+       '("z g" . flyspell-correct-at-point)
+       ;; lsp-command-map
+       '("l" . "s-l")
+       ;; perspective
+       '("p" . "C-c M-p")
+       ;; help
+       '("K" . helpful-at-point)
+       ;; consult search operations
+       '("SPC" . consult-buffer)
+       '("s p" . consult-ripgrep)
+       ;; Use SPC (0-9) for digit arguments.
+       '("1" . meow-digit-argument)
+       '("2" . meow-digit-argument)
+       '("3" . meow-digit-argument)
+       '("4" . meow-digit-argument)
+       '("5" . meow-digit-argument)
+       '("6" . meow-digit-argument)
+       '("7" . meow-digit-argument)
+       '("8" . meow-digit-argument)
+       '("9" . meow-digit-argument)
+       '("0" . meow-digit-argument)
+       '("/" . meow-keypad-describe-key)
+       '("?" . meow-cheatsheet))
+      (meow-normal-define-key
+       '("0" . meow-expand-0)
+       '("9" . meow-expand-9)
+       '("8" . meow-expand-8)
+       '("7" . meow-expand-7)
+       '("6" . meow-expand-6)
+       '("5" . meow-expand-5)
+       '("4" . meow-expand-4)
+       '("3" . meow-expand-3)
+       '("2" . meow-expand-2)
+       '("1" . meow-expand-1)
+       '("-" . negative-argument)
+       '("=" . meow-query-replace)
+       '("+" . meow-stellar-replace-regexp)
+       '(";" . meow-reverse)
+       '("," . meow-inner-of-thing)
+       '("." . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("A" . meow-insert-at-end-of-line)
+       '("o" . meow-open-below)
+       '("b" . meow-back-word)
+       '("B" . meow-back-symbol)
+       '("c" . meow-change)
+       '("d" . meow-delete)
+       ;; '("D" . meow-backward-delete)
+       '("D" . kill-line)
+       '("e" . meow-next-word)
+       '("E" . meow-next-symbol)
+       '("f" . meow-find)
+       '("F" . avy-goto-char-timer)
+       '("g" . meow-cancel-selection)
+       '("G" . meow-grab)
+       '("h" . meow-left)
+       '("H" . meow-left-expand)
+       '("i" . meow-insert)
+       '("I" . meow-insert-at-first-non-whitespace)
+       '("O" . meow-open-above)
+       '("j" . meow-next)
+       '("J" . meow-next-expand)
+       '("k" . meow-prev)
+       '("K" . meow-prev-expand)
+       '("l" . meow-right)
+       '("L" . meow-right-expand)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("N" . meow-search-backward)
+       '("(" . meow-block)
+       '(")" . meow-to-block)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("Q" . meow-goto-line)
+       '("r" . meow-replace)
+       ;; '("r" . embrace-commander)
+       ;; '("R" . meow-swap-grab)
+       '("R" . repeat)
+       '("s" . meow-kill)
+       '("S" . embrace-commander)
+       '("t" . meow-till)
+       '("u" . meow-undo)
+       '("U" . undo-redo)
+       '("C-r" . undo-redo)
+       '("v" . meow-visit)
+       '("V" . er/expand-region)
+       '("w" . meow-mark-word)
+       '("W" . meow-mark-symbol)
+       '("x" . meow-line)
+       '("X" . meow-goto-line)
+       '("y" . meow-save)
+       '("Y" . meow-sync-grab)
+       '("z" . meow-pop-selection)
+       '("'" . repeat)
+       '("\"" . consult-yank-pop)
+       '("/" . consult-line)
+       '("C-u" . ccm-scroll-down)
+       '("C-d" . ccm-scroll-up)
+       '("C-o" . my/backward-forward-previous-location)
+       '("<C-i>" . my/backward-forward-next-location)
+       ;; '("C-o" . gumshoe-persp-backtrack-back)
+       ;; '("<C-i>" . gumshoe-persp-backtrack-forward)
+       '("C-f" . consult-line)
+       ;; '("C-p" . affe-find)
+       ;; '("C-e" . find-file)
+       '("C-t" . burly-perspective-init-project-persp)
+       '("C-s" . save-buffer)
+       '("C-w" . kill-this-buffer)
+       ;; '("TAB" . origami-toggle-node)
+       ;; '("<tab>" . origami-toggle-node)
+       (cons "S-SPC" kurumi-utility-map)
+       '("C-s" . save-buffer)
+       '("<escape>" . ignore))
+      ;; insert state keymap
+      (meow-define-keys
+          'insert
+        '("C-g" . meow-insert-exit))
+
+      ;; readline-style keymap in global map
+      (bind-key "C-w" 'backward-kill-word)
+      ;; remap universal-argument
+      (bind-key "C-M-u" 'universal-argument)
+      ;; key-chord shortcuts
+      (key-chord-define meow-insert-state-keymap "jk" 'meow-insert-exit)
+      (key-chord-define meow-normal-state-keymap "gd" 'xref-find-definitions)
+      ;; anyblock thing object
+      (meow-thing-register 'anyblock
+                           '(
+                             (#'meow--inner-of-string)
+                             (pair ("[") ("]"))
+                             (pair ("(") (")"))
+                             (pair ("{") ("}"))
+                             (pair ("<") (">")))
+
+                           '(
+                             (#'meow--bounds-of-string)
+                             (pair ("[") ("]"))
+                             (pair ("(") (")"))
+                             (pair ("{") ("}"))
+                             (pair ("<") (">")))))
+
+
+
+    :bind
+    ;; readline style keymap for minibuffer
+    (:minibuffer-local-map
+     ("C-w" . backward-kill-word))
+    :custom
+    (meow-use-clipboard . t)
+    (meow-mode-state-list . '((helpful-mode . normal)
+                              (help-mode . normal)
+                              (Man-mode . normal)
+                              (vterm-mode . insert)
+                              (eshell-mode . insert)))
+
+    (meow--kbd-forward-char . "<right>")
+    ;; (meow--kbd-forward-line . "<down>")
+    ;; (meow--kbd-backward-line . "<up>")
+    (meow--kbd-delete-char . "<deletechar>")
+    (meow--kbd-kill-region . "S-<delete>")
+    (meow-selection-command-fallback .
+                                     '((meow-reverse . back-to-indentation)
+                                       (meow-change . meow-change-char)
+                                       (meow-save . meow-save-line)
+                                       (meow-kill . meow-kill-whole-line)
+                                       (meow-pop-selection . meow-pop-grab)
+                                       (meow-beacon-change . meow-beacon-change-char)
+                                       (meow-cancel . keyboard-quit)
+                                       (meow-delete . meow-C-d)))
+    (meow-char-thing-table .
+                           '((?r . round)
+                             (?\( . round)
+                             (?b . anyblock) ;; `b' for bracket
+                             (?c . curly)
+                             (?s . string)
+                             (?e . symbol)
+                             (?w . window)
+                             (?B . buffer)
+                             (?p . paragraph)
+                             (?\[ . square)
+                             (?l . line)
+                             (?d . defun)
+                             (?. . sentence)))
+    :defer-config
+    (meow-setup)
+    ;; vim-way cursor
+    ;; Must set before enable `meow-global-mode`
+    ;; (setq meow-use-cursor-position-hack t
+    ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
+    (meow-global-mode 1))
 #+end_src
 *** expand-region
 #+begin_src emacs-lisp
@@ -1872,19 +1869,41 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
 (leaf embrace
   :straight t)
 #+end_src
+*** COMMENT hungry-delete
+#+begin_src emacs-lisp
+  (leaf hungry-delete
+    :straight t
+    :global-minor-mode (global-hungry-delete-mode)
+    :custom
+    (hungry-delete-join-reluctantly . t)
+    (hungry-delete-except-modes '(help-mode
+                                  helpful-mode
+                                  minibuffer-inactive-mode
+                                  calc-mode
+                                  ;; avoid conflict with parinfer-rust
+                                  lisp-mode
+                                  emacs-lisp-mode
+                                  lisp-data-mode))
+
+
+
+    ;; surpress parinfer warning dialog
+    (parinfer-rust-troublesome-modes . nil))
+#+end_src
 *** smart-hungry-delete
 #+begin_src emacs-lisp
-(leaf smart-hungry-delete
-  :straight t
-  :bind
-  (("<deletechar>" . 'smart-hungry-delete-backward-char)
-   ("<delete>" . 'smart-hungry-delete-backward-char)
-   ("C-d" . 'smart-hungry-delete-forward-char)
-   ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
-   ([remap delete-backward-char] . smart-hungry-delete-backward-char)
-   ([remap delete-char] . smart-hungry-delete-forward-char))
-  :init
-  (smart-hungry-delete-add-default-hooks))
+  (leaf smart-hungry-delete
+    :straight t
+    :bind
+    (;; ("<deletechar>" . 'smart-hungry-delete-backward-char)
+     ;; ("<backspace>" . 'smart-hungry-delete-backward-char)
+     ;; ("<delete>" . 'smart-hungry-delete-backward-char)
+     ;; ("C-d" . 'smart-hungry-delete-forward-char)
+     ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
+     ([remap delete-backward-char] . smart-hungry-delete-backward-char)
+     ([remap delete-char] . smart-hungry-delete-forward-char))
+    :init
+    (smart-hungry-delete-add-default-hooks))
 #+end_src
 *** backward-forward
 #+begin_src emacs-lisp
@@ -2432,7 +2451,7 @@ vim-sleuth like automatic indent guessing/adjusting
      ([remap c-indent-line-or-region] . company-indent-or-complete-common)
      (:company-active-map
       ("C-w" . nil)))
-      
+
     :global-minor-mode global-company-mode
     :custom
     (
@@ -2462,9 +2481,10 @@ vim-sleuth like automatic indent guessing/adjusting
                               company-semantic
                               company-gtags
                               company-etags
+                              ;; company-wordfreq
                               company-oddmuse
                               company-bbdb)
-                              
+
                              (company-keywords
                               company-yasnippet
                               ;; company-dabbrev
@@ -2473,16 +2493,17 @@ vim-sleuth like automatic indent guessing/adjusting
                               company-semantic
                               company-gtags
                               company-etags
+                              ;; company-wordfreq
                               company-oddmuse
                               company-bbdb)
-                              
+
                              company-files
                              company-dabbrev
                              company-same-mode-buffers
                              company-wordfreq
                              company-bbdb
                              company-oddmuse))
-                             
+
     ;; magit commit message completion with magit-diff
     (defun my--company-dabbrev-ignore-except-magit-diff (buffer)
       (let ((name (buffer-name)))
@@ -2497,7 +2518,6 @@ vim-sleuth like automatic indent guessing/adjusting
                   #'my--company-dabbrev-ignore-except-magit-diff))
 
     (add-hook 'git-commit-setup-hook #'my--git-commit-setup-hook))
-    
 #+end_src
 **** company-box
 #+begin_src emacs-lisp
@@ -2601,6 +2621,7 @@ vim-sleuth like automatic indent guessing/adjusting
     
 #+end_src
 *** yasnippet
+**** yasnippet
 #+begin_src emacs-lisp
   (leaf
     yasnippet
@@ -2876,21 +2897,20 @@ projectile integration
 ** Terminal
 *** vterm
 #+begin_src emacs-lisp
-(leaf vterm
-  :straight t
-  :ensure-system-package cmake libtool (libtool . libtool-bin)
-  :init
-  (leaf vterm-toggle
-    :straight t)
-  :bind
-  (
-   ;; ("C-@" . vterm-toggle)
-   (:vterm-mode-map
-    ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
-      
-  :custom
-  (vterm-max-scrollback . 10000))
-    
+  (leaf vterm
+    :straight t
+    :ensure-system-package cmake libtool (libtool . libtool-bin)
+    :init
+    (leaf vterm-toggle
+      :straight t)
+    :bind
+    (
+     ;; ("C-@" . vterm-toggle)
+     (:vterm-mode-map
+      ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
+
+    :custom
+    (vterm-max-scrollback . 10000))
 #+end_src
 *** eshell
 **** eshell
@@ -3035,6 +3055,11 @@ fish-like history suggestion
            ([remap dired-do-shell-command] . dwim-shell-command)
            ([remap dired-smart-shell-command] . dwim-shell-command)))
     
+#+end_src
+*** shelldon
+#+begin_src emacs-lisp
+  (leaf shelldon
+    :straight t)
 #+end_src
 * Languages/Modes Specific Settings
 ** Multiple Major Modes

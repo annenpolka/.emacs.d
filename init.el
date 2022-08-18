@@ -725,7 +725,7 @@
     :custom
     (key-chord-two-keys-delay . 0.1)
     (key-chord-one-keys-delay . 0.2))
-      
+
   ;; command functions
   (defun meow-save-line nil
     (interactive)
@@ -903,7 +903,7 @@
     (meow-define-keys
         'insert
       '("C-g" . meow-insert-exit))
-        
+
     ;; readline-style keymap in global map
     (bind-key "C-w" 'backward-kill-word)
     ;; remap universal-argument
@@ -919,16 +919,16 @@
                            (pair ("(") (")"))
                            (pair ("{") ("}"))
                            (pair ("<") (">")))
-                             
+
                          '(
                            (#'meow--bounds-of-string)
                            (pair ("[") ("]"))
                            (pair ("(") (")"))
                            (pair ("{") ("}"))
                            (pair ("<") (">")))))
-                             
-                           
-      
+
+
+
   :bind
   ;; readline style keymap for minibuffer
   (:minibuffer-local-map
@@ -940,7 +940,7 @@
                             (Man-mode . normal)
                             (vterm-mode . insert)
                             (eshell-mode . insert)))
-                              
+
   (meow--kbd-forward-char . "<right>")
   ;; (meow--kbd-forward-line . "<down>")
   ;; (meow--kbd-backward-line . "<up>")
@@ -993,9 +993,10 @@
 (leaf smart-hungry-delete
   :straight t
   :bind
-  (("<deletechar>" . 'smart-hungry-delete-backward-char)
-   ("<delete>" . 'smart-hungry-delete-backward-char)
-   ("C-d" . 'smart-hungry-delete-forward-char)
+  (;; ("<deletechar>" . 'smart-hungry-delete-backward-char)
+   ;; ("<backspace>" . 'smart-hungry-delete-backward-char)
+   ;; ("<delete>" . 'smart-hungry-delete-backward-char)
+   ;; ("C-d" . 'smart-hungry-delete-forward-char)
    ([remap backward-delete-char-untabify] . smart-hungry-delete-backward-char)
    ([remap delete-backward-char] . smart-hungry-delete-backward-char)
    ([remap delete-char] . smart-hungry-delete-forward-char))
@@ -1318,8 +1319,8 @@
                             company-semantic
                             company-gtags
                             company-etags
+                            ;; company-wordfreq
                             company-oddmuse
-                           company-wordfreq
                             company-bbdb)
 
                            (company-keywords
@@ -1330,6 +1331,7 @@
                             company-semantic
                             company-gtags
                             company-etags
+                            ;; company-wordfreq
                             company-oddmuse
                             company-bbdb)
 
@@ -1659,7 +1661,7 @@
    ;; ("C-@" . vterm-toggle)
    (:vterm-mode-map
     ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
-      
+
   :custom
   (vterm-max-scrollback . 10000))
 
@@ -1745,12 +1747,21 @@
   (defalias 'eshell/v 'eshell-exec-visual))
 
 (leaf friendly-shell
-  :straight t)
+  :straight t
+  :commands
+  (friendly-shell))
 
 (leaf friendly-shell-command
-  :straight t)
+  :straight t
+  :commands
+  (friendly-shell-command friendly-shell-command-to-string friendly-shell-command-async))
 
 (leaf friendly-remote-shell
+  :straight t
+  :commands
+  (friendly-remote-shell))
+
+(leaf shelldon
   :straight t)
 
 (leaf parinfer-rust-mode
@@ -1904,6 +1915,42 @@
 
 (leaf docker
   :straight t)
+
+(leaf cpbooster
+  :ensure-system-package
+  (cpbooster . "npm install cpbooster -g")
+  :init
+  (defun name-of-the-file ()
+    "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
+    (interactive)
+    (buffer-file-name (window-buffer (minibuffer-selected-window))))
+
+  (defun cpb-clone nil
+    "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
+    (interactive)
+    (friendly-shell-command-async
+     (mapconcat #'shell-quote-argument
+                (list "cpbooster" "clone")
+                " ")
+     :output-buffer "*cpb clone*"))
+
+  (defun cpb-test nil
+    "Test current cpp-task with cpbooster."
+    (interactive)
+    (friendly-shell-command-async
+     (mapconcat #'shell-quote-argument
+                (list "cpbooster" "test" (name-of-the-file))
+                " ")
+     :output-buffer "*cpb test*"))
+
+  (defun cpb-submit nil
+    "Submit current cpp-task with cpbooster."
+    (interactive)
+    (friendly-shell-command-async
+     (mapconcat #'shell-quote-argument
+                (list "cpbooster" "submit" (name-of-the-file))
+                " ")
+     :output-buffer "*cpb submit*")))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
