@@ -312,7 +312,11 @@
   ("C-<iso-lefttab>" . centaur-tabs-backward))
 
 (leaf dirvish
-  :straight t
+  :straight
+  (dirvish
+   :type git
+   :host github
+   :repo "alexluigit/dirvish")
   :custom
   ;; Go back home? Just press `bh'
   (dirvish-bookmark-entries
@@ -1698,6 +1702,11 @@
   :straight t
   :require t)
 
+(leaf eshell-z
+  :straight t
+  :after eshell
+  :require t)
+
 (leaf esh-autosuggest
   :straight t
   :hook (eshell-mode-hook . esh-autosuggest-mode))
@@ -1760,6 +1769,14 @@
   :straight t
   :commands
   (friendly-remote-shell))
+
+(leaf dwim-shell-command
+  :straight t
+  :require t
+  :bind (([remap shell-command] . dwim-shell-command)
+         ([remap dired-do-async-shell-command] . dwim-shell-command)
+         ([remap dired-do-shell-command] . dwim-shell-command)
+         ([remap dired-smart-shell-command] . dwim-shell-command)))
 
 (leaf shelldon
   :straight t)
