@@ -3310,11 +3310,48 @@ TODO: setup lsp ui tools
 #+end_src
 
 * External Tools/Services Integration
-** Docker Integration
-*** docker
+** Docker
 #+begin_src emacs-lisp
   (leaf docker
     :straight t)
+#+end_src
+** cpbooster
+#+begin_src emacs-lisp
+  (leaf cpbooster
+    :ensure-system-package
+    (cpbooster . "npm install cpbooster -g")
+    :init
+    (defun name-of-the-file ()
+      "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
+      (interactive)
+      (buffer-file-name (window-buffer (minibuffer-selected-window))))
+
+    (defun cpb-clone nil
+      "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
+      (interactive)
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "clone")
+                  " ")
+       :output-buffer "*cpb clone*"))
+
+    (defun cpb-test nil
+      "Test current cpp-task with cpbooster."
+      (interactive)
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "test" (name-of-the-file))
+                  " ")
+       :output-buffer "*cpb test*"))
+
+    (defun cpb-submit nil
+      "Submit current cpp-task with cpbooster."
+      (interactive)
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "submit" (name-of-the-file))
+                  " ")
+       :output-buffer "*cpb submit*")))
 #+end_src
 * Boilerplate
 #+begin_src emacs-lisp
