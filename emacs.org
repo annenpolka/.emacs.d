@@ -3016,8 +3016,27 @@ fish-like history suggestion
     
 #+end_src
 * Languages/Modes Specific Settings
-** Emacs Lisp Mode
-*** parinfer-rust-mode
+** Multiple Major Modes
+*** COMMENT polymode
+重い・org-edit-specialが使えないのでやめ。
+#+begin_src emacs-lisp
+(leaf polymode
+  :straight t
+  :init
+  (leaf poly-org
+    :straight t
+    :defer-config
+    (when (featurep 'meow)
+      (bind-keys :map poly-org-mode-map
+                 ;; ("C-S-e" . org-edit-special)
+                 ("C-j" . org-next-visible-heading)
+                 ("C-k" . org-previous-visible-heading)
+                 ("C-S-j" . org-move-subtree-down)
+                 ("C-S-k" . org-move-subtree-up)))))
+#+end_src
+** Programming Languages
+*** Emacs Lisp Mode
+**** parinfer-rust-mode
 #+begin_src emacs-lisp
   (leaf parinfer-rust-mode
     :straight t
@@ -3025,8 +3044,8 @@ fish-like history suggestion
     :custom
     (parinfer-rust-auto-download . t))
 #+end_src
-** Org Mode
-*** org-mode
+*** Org Mode
+**** org-mode
 #+begin_src emacs-lisp
   ;; org mode things
   (leaf org
@@ -3050,7 +3069,7 @@ fish-like history suggestion
       
     
 #+end_src
-*** org-auto-tangle
+**** org-auto-tangle
 #+begin_src emacs-lisp
   (leaf org-auto-tangle
     :straight t
@@ -3060,7 +3079,7 @@ fish-like history suggestion
     :custom
     (org-auto-tangle-default . t))
 #+end_src
-*** org-bullets
+**** org-bullets
 #+begin_src emacs-lisp
 (leaf org-bullets
   :straight t
@@ -3069,7 +3088,7 @@ fish-like history suggestion
   :custom
   (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
 #+end_src
-*** org-appear
+**** org-appear
 #+begin_src emacs-lisp
 (leaf
   org-appear
@@ -3088,9 +3107,9 @@ fish-like history suggestion
   (org-appear-autokeywords . t)
   (org-appear-inside-latex . t))
 #+end_src
-** LSP Mode
-*** lsp-mode
+*** LSP Mode
 **** lsp-mode
+***** lsp-mode
 #+begin_src emacs-lisp
   ;;; lsp
 (leaf
@@ -3114,7 +3133,7 @@ fish-like history suggestion
   (lsp-completion-provider . :capf)
   (lsp-keymap-prefix . "s-l"))
 #+end_src
-**** lsp-ui
+***** lsp-ui
 TODO: setup lsp ui tools
 #+begin_src emacs-lisp
 (leaf lsp-ui
@@ -3148,7 +3167,7 @@ TODO: setup lsp ui tools
 
   :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
-*** COMMENT eglot
+**** COMMENT eglot
 #+begin_src emacs-lisp
 (leaf eglot
   :straight t
@@ -3224,14 +3243,14 @@ TODO: setup lsp ui tools
 
     
 #+end_src
-** Lua Mode
+*** Lua Mode
 #+begin_src emacs-lisp
 (leaf lua-mode
   :straight t
   :hook (lua-mode-hook . lsp-deferred))
 #+end_src
-** Rust Mode
-*** rustic
+*** Rust Mode
+**** rustic
 #+begin_src emacs-lisp
 (leaf rustic
   :straight t
@@ -3242,7 +3261,7 @@ TODO: setup lsp ui tools
     
 #+end_src
 
-** Typescript Mode
+*** Typescript Mode
 #+begin_src emacs-lisp
 (leaf typescript-mode
   :straight t
@@ -3259,25 +3278,6 @@ TODO: setup lsp ui tools
   ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
 #+end_src
-* Multiple Major Modes
-** COMMENT polymode
-重い・org-edit-specialが使えないのでやめ。
-#+begin_src emacs-lisp
-(leaf polymode
-  :straight t
-  :init
-  (leaf poly-org
-    :straight t
-    :defer-config
-    (when (featurep 'meow)
-      (bind-keys :map poly-org-mode-map
-                 ;; ("C-S-e" . org-edit-special)
-                 ("C-j" . org-next-visible-heading)
-                 ("C-k" . org-previous-visible-heading)
-                 ("C-S-j" . org-move-subtree-down)
-                 ("C-S-k" . org-move-subtree-up)))))
-#+end_src
-
 * Runner/Debugger
 ** quickrun
 #+begin_src emacs-lisp
@@ -3291,8 +3291,9 @@ TODO: setup lsp ui tools
   (quickrun-set-default "c++" "c++/g++"))
 #+end_src
 
-* Docker Integration
-** docker
+* External Tools/Services Integration
+** Docker Integration
+*** docker
 #+begin_src emacs-lisp
   (leaf docker
     :straight t)
