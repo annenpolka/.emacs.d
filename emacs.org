@@ -668,7 +668,11 @@ Diredをオーバーホールするファイラ。
 
 #+begin_src emacs-lisp
   (leaf dirvish
-    :straight t
+    :straight
+    (dirvish
+     :type git
+     :host github
+     :repo "alexluigit/dirvish")
     :custom
     ;; Go back home? Just press `bh'
     (dirvish-bookmark-entries
@@ -3029,7 +3033,7 @@ fish-like history suggestion
     
 #+end_src
 ** Shell Command
-*** TODO friendly-shell
+*** friendly-shell
 **** friendly-shell
 #+begin_src emacs-lisp
   (leaf friendly-shell
