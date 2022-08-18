@@ -2954,7 +2954,13 @@ projectile integration
   :require t)
     
 #+end_src
-
+**** eshell-z
+#+begin_src emacs-lisp
+  (leaf eshell-z
+    :straight t
+    :after eshell
+    :require t)
+#+end_src
 **** esh-autosuggest
 fish-like history suggestion
 #+begin_src emacs-lisp
