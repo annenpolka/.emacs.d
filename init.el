@@ -136,7 +136,6 @@
   :straight t
   :require t
   :init
-
   (setq no-littering-etc-directory
         (expand-file-name "config/" user-emacs-directory))
   (setq no-littering-var-directory
@@ -1320,6 +1319,7 @@
                             company-gtags
                             company-etags
                             company-oddmuse
+                           company-wordfreq
                             company-bbdb)
 
                            (company-keywords
@@ -1395,7 +1395,10 @@
 (leaf company-wordfreq
   :straight t
   :require t
-  :after company)
+  :after company
+  :init
+  (setq company-wordfreq-path
+        (no-littering-expand-var-file-name "wordfreq-dicts/")))
 
 ;; completion style
 (leaf
@@ -1754,7 +1757,10 @@
   :straight t
   :hook (emacs-lisp-mode-hook . parinfer-rust-mode)
   :custom
-  (parinfer-rust-auto-download . t))
+  (parinfer-rust-auto-download . t)
+  :init)
+(setq parinfer-rust-library-directory
+      (no-littering-expand-var-file-name "parinfer-rust/"))
 
 ;; org mode things
 (leaf org
