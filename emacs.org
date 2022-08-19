@@ -209,11 +209,13 @@ My configuration managed by leaf.el + straight.el
 #+end_src
 * Package Manager Setup
 package-archivesのURL設定と、straight.elとleaf.elのインストールを行う。
-** bootstrap
+** bootstrap (with straight, leaf-keywords)
 #+begin_src emacs-lisp
   (setq straight-repository-branch "develop"
         ;; don't check on find-at-startup
-        straight-check-for-modifications '(check-on-save find-when-checking))
+        straight-check-for-modifications '(check-on-save find-when-checking)
+        ;; shallow clone repos
+        straight-vc-git-default-clone-depth 1)
 
   ;; setup straight.el
   (defvar bootstrap-version)
@@ -762,9 +764,7 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** magit (Git Frontend)
 #+begin_src emacs-lisp
-  (leaf
-    magit
-    :doc "great git client"
+  (leaf magit
     :straight t
     :bind
     (:magit-status-mode-map
@@ -2418,16 +2418,16 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
          :render (gts-buffer-render))))
     
 #+end_src
-** Hyperbole
+** COMMENT Hyperbole
 #+begin_src emacs-lisp
-(leaf hyperbole
-  :straight t
-  :hook
-  ;; (window-setup-hook . hyperbole-mode)
-  (text-mode-hook . hyperbole-mode)
-  (prog-mode-hook . hyperbole-mode)
-  (conf-mode-hook . hyperbole-mode)
-  (yaml-mode-hook . hyperbole-mode))
+  (leaf hyperbole
+    :straight t
+    :hook
+    ;; (window-setup-hook . hyperbole-mode)
+    (org-mode-hook . hyperbole-mode)
+    (prog-mode-hook . hyperbole-mode)
+    (conf-mode-hook . hyperbole-mode)
+    (yaml-mode-hook . hyperbole-mode))
     
 #+end_src
 
@@ -2576,97 +2576,98 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 #+end_src
 
 ** format-all
-
-多数の言語のフォーマッターをそれぞれサポートしている。
-
+apheleiaに移行中、そちらが対応していないときにhookもしくは手動でformat-all-bufferする。
 #+begin_src emacs-lisp
   ;; formatter bindings
-(leaf
-  format-all
-  :straight t
-  :require t
-  :blackout t
-  :hook
-  (prog-mode-hook . format-all-mode)
-  (prog-mode-hook . format-all-ensure-formatter)
-  :custom
-  (format-all-default-formatters .
-                                 '(("Assembly" asmfmt)
-                                   ("ATS" atsfmt)
-                                   ("Bazel" buildifier)
-                                   ("BibTeX" emacs-bibtex)
-                                   ("C" clang-format)
-                                   ("C#" clang-format)
-                                   ("C++" clang-format)
-                                   ("Cabal Config" cabal-fmt)
-                                   ("Clojure" zprint)
-                                   ("CMake" cmake-format)
-                                   ("Crystal" crystal)
-                                   ("CSS" prettier)
-                                   ("Cuda" clang-format)
-                                   ("D" dfmt)
-                                   ("Dart" dart-format)
-                                   ("Dhall" dhall)
-                                   ("Dockerfile" dockfmt)
-                                   ("Elixir" mix-format)
-                                   ("Elm" elm-format)
-                                   ("Emacs Lisp" emacs-lisp)
-                                   ("Erlang" efmt)
-                                   ("F#" fantomas)
-                                   ("Fish" fish-indent)
-                                   ("Fortran Free Form" fprettify)
-                                   ("GLSL" clang-format)
-                                   ("Go" gofmt)
-                                   ("GraphQL" prettier)
-                                   ("Haskell" brittany)
-                                   ("HTML" html-tidy)
-                                   ("HTML+ERB" erb-format)
-                                   ("Java" clang-format)
-                                   ("JavaScript" prettier)
-                                   ("JSON" prettier)
-                                   ("JSON5" prettier)
-                                   ("Jsonnet" jsonnetfmt)
-                                   ("JSX" prettier)
-                                   ("Kotlin" ktlint)
-                                   ("LaTeX" latexindent)
-                                   ("Less" prettier)
-                                   ("Literate Haskell" brittany)
-                                   ("Lua" stylua)
-                                   ("Markdown" prettier)
-                                   ("Nix" nixpkgs-fmt)
-                                   ("Objective-C" clang-format)
-                                   ("OCaml" ocp-indent)
-                                   ("Perl" perltidy)
-                                   ("PHP" prettier)
-                                   ("Protocol Buffer" clang-format)
-                                   ("PureScript" purty)
-                                   ("Python" black)
-                                   ("R" styler)
-                                   ("Reason" bsrefmt)
-                                   ("ReScript" rescript)
-                                   ("Ruby" rufo)
-                                   ("Rust" rustfmt)
-                                   ("Scala" scalafmt)
-                                   ("SCSS" prettier)
-                                   ("Shell" shfmt)
-                                   ("Solidity" prettier)
-                                   ("SQL" sqlformat)
-                                   ("Svelte" prettier)
-                                   ("Swift" swiftformat)
-                                   ("Terraform" terraform-fmt)
-                                   ("TOML" prettier)
-                                   ("TSX" prettier)
-                                   ("TypeScript" prettier)
-                                   ("V" v-fmt)
-                                   ("Verilog" istyle-verilog)
-                                   ("Vue" prettier)
-                                   ("XML" html-tidy)
-                                   ("YAML" prettier))))
-                                    
-                                   
-    
+  (leaf format-all
+    :straight t
+    :blackout t
+    :hook
+    ;; (prog-mode-hook . format-all-mode)
+    ;; (prog-mode-hook . format-all-ensure-formatter)
+    (emacs-lisp-mode-hook . format-all-mode)
+    (emacs-lisp-mode-hook . format-all-ensure-formatter)
+    :custom
+    (format-all-default-formatters .
+                                   '(("Assembly" asmfmt)
+                                     ("ATS" atsfmt)
+                                     ("Bazel" buildifier)
+                                     ("BibTeX" emacs-bibtex)
+                                     ("C" clang-format)
+                                     ("C#" clang-format)
+                                     ("C++" clang-format)
+                                     ("Cabal Config" cabal-fmt)
+                                     ("Clojure" zprint)
+                                     ("CMake" cmake-format)
+                                     ("Crystal" crystal)
+                                     ("CSS" prettier)
+                                     ("Cuda" clang-format)
+                                     ("D" dfmt)
+                                     ("Dart" dart-format)
+                                     ("Dhall" dhall)
+                                     ("Dockerfile" dockfmt)
+                                     ("Elixir" mix-format)
+                                     ("Elm" elm-format)
+                                     ("Emacs Lisp" emacs-lisp)
+                                     ("Erlang" efmt)
+                                     ("F#" fantomas)
+                                     ("Fish" fish-indent)
+                                     ("Fortran Free Form" fprettify)
+                                     ("GLSL" clang-format)
+                                     ("Go" gofmt)
+                                     ("GraphQL" prettier)
+                                     ("Haskell" brittany)
+                                     ("HTML" html-tidy)
+                                     ("HTML+ERB" erb-format)
+                                     ("Java" clang-format)
+                                     ("JavaScript" prettier)
+                                     ("JSON" prettier)
+
+                                     ("Jsonnet" jsonnetfmt)
+                                     ("JSX" prettier)
+                                     ("Kotlin" ktlint)
+                                     ("LaTeX" latexindent)
+                                     ("Less" prettier)
+                                     ("Literate Haskell" brittany)
+                                     ("Lua" stylua)
+                                     ("Markdown" prettier)
+                                     ("Nix" nixpkgs-fmt)
+                                     ("Objective-C" clang-format)
+                                     ("OCaml" ocp-indent)
+                                     ("Perl" perltidy)
+                                     ("PHP" prettier)
+                                     ("Protocol Buffer" clang-format)
+                                     ("PureScript" purty)
+                                     ("Python" black)
+                                     ("R" styler)
+                                     ("Reason" bsrefmt)
+                                     ("ReScript" rescript)
+                                     ("Ruby" rufo)
+                                     ("Rust" rustfmt)
+                                     ("Scala" scalafmt)
+                                     ("SCSS" prettier)
+                                     ("Shell" shfmt)
+                                     ("Solidity" prettier)
+                                     ("SQL" sqlformat)
+                                     ("Svelte" prettier)
+                                     ("Swift" swiftformat)
+                                     ("Terraform" terraform-fmt)
+                                     ("TOML" prettier)
+                                     ("TSX" prettier)
+                                     ("TypeScript" prettier)
+                                     ("V" v-fmt)
+                                     ("Verilog" istyle-verilog)
+                                     ("Vue" prettier)
+                                     ("XML" html-tidy)
+                                     ("YAML" prettier))))
 #+end_src
 
+** apheleia
+#+begin_src emacs-lisp
+  (leaf apheleia
+    :straight t
+    :global-minor-mode apheleia-global-mode)
+#+end_src
 ** editorconfig
 #+begin_src emacs-lisp
   ;; EditorConfig support
@@ -3295,10 +3296,11 @@ TODO: setup lsp ui tools
     :init
     :hook (python-mode-hook . (lambda ()
                                 (require 'lsp-pyright)
-                                (direnv-update-directory-environment)
-                                (lsp))))  ; or lsp-deferred
+                                (direnv-update-directory-environment) ; use direnv for venv
+                                (lsp-deferred))))  ; or lsp-deferred
 #+end_src
 **** COMMENT pipenv.el
+2022/08/19時点ではdirenvで済ませている
 #+begin_src emacs-lisp
   (leaf pipenv
     :hook (python-mode-hook . pipenv-mode)
