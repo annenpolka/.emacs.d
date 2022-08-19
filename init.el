@@ -1784,63 +1784,10 @@
 (setq parinfer-rust-library-directory
       (no-littering-expand-var-file-name "parinfer-rust/"))
 
-;; org mode things
-(leaf org
-  :straight (org :type built-in)
-  :require org-tempo
-  :custom
-  (org-catch-invisible-edits . 'smart)
-  (org-src-window-setup . 'split-window-right)
-  :defer-config
-  (defun disable-flycheck-in-org-src-block ()
-    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block)
-  ;; keymap for meow modal
-  (when (featurep 'meow)
-    (bind-keys :map org-mode-map
-               ("C-S-e" . org-edit-special)
-               ("C-j" . org-next-visible-heading)
-               ("C-k" . org-previous-visible-heading)
-               ("C-S-j" . org-move-subtree-down)
-               ("C-S-k" . org-move-subtree-up))))
-
-(leaf org-auto-tangle
+(leaf suggest
   :straight t
-  :after org
-  :hook
-  (org-mode-hook . org-auto-tangle-mode)
-  :custom
-  (org-auto-tangle-default . t))
-
-(leaf org-bullets
-  :straight t
-  :after org
-  :hook (org-mode-hook . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
-
-(leaf
-  org-appear
-  :straight
-  (org-appear
-   :type git
-   :host github
-   :repo "awth13/org-appear")
-  :after org
-  :hook
-  (org-mode-hook . org-appear-mode)
-  :custom
-  (org-appear-autolinks . t)
-  (org-appear-autosubmarkers . t)
-  (org-appear-autoentities . t)
-  (org-appear-autokeywords . t)
-  (org-appear-inside-latex . t))
-
-(leaf org-sticky-header
-  :straight t
-  :hook (org-mode-hook . org-sticky-header-mode)
-  :custom
-  (org-sticky-header-full-path . 'full))
+  :commands
+  (suggest suggest-update))
 
 ;;; lsp
 (leaf
@@ -1899,13 +1846,6 @@
   :straight t
   :hook (lua-mode-hook . lsp-deferred))
 
-(leaf rustic
-  :straight t
-  :custom
-  (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
-  (lsp-rust-analyzer-cargo-watch-command . "clippy")
-  (lsp-rust-analyzer-server-display-inlay-hints . t))
-
 (leaf typescript-mode
   :straight t
   :after tree-sitter
@@ -1920,6 +1860,71 @@
   ;; by default, typescript-mode is mapped to the treesitter typescript parser
   ;; use our derived mode to map both .tsx AND .ts -> typescriptreact-mode -> treesitter tsx
   (add-to-list 'tree-sitter-major-mode-language-alist '(typescriptreact-mode . tsx)))
+
+(leaf rustic
+  :straight t
+  :custom
+  (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
+  (lsp-rust-analyzer-cargo-watch-command . "clippy")
+  (lsp-rust-analyzer-server-display-inlay-hints . t))
+
+;; org mode things
+(leaf org
+  :straight (org :type built-in)
+  :require org-tempo
+  :custom
+  (org-catch-invisible-edits . 'smart)
+  (org-src-window-setup . 'split-window-right)
+  :defer-config
+  (defun disable-flycheck-in-org-src-block ()
+    (setq-local flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  (add-hook 'org-src-mode-hook 'disable-flycheck-in-org-src-block)
+  ;; keymap for meow modal
+  (when (featurep 'meow)
+    (bind-keys :map org-mode-map
+               ("C-S-e" . org-edit-special)
+               ("C-j" . org-next-visible-heading)
+               ("C-k" . org-previous-visible-heading)
+               ("C-S-j" . org-move-subtree-down)
+               ("C-S-k" . org-move-subtree-up))))
+
+(leaf org-auto-tangle
+  :straight t
+  :after org
+  :hook
+  (org-mode-hook . org-auto-tangle-mode)
+  :custom
+  (org-auto-tangle-default . t))
+
+(leaf org-bullets
+  :straight t
+  :after org
+  :hook (org-mode-hook . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list . '("◉" "○" "●" "○" "●" "○" "●")))
+
+(leaf
+  org-appear
+  :straight
+  (org-appear
+   :type git
+   :host github
+   :repo "awth13/org-appear")
+  :after org
+  :hook
+  (org-mode-hook . org-appear-mode)
+  :custom
+  (org-appear-autolinks . t)
+  (org-appear-autosubmarkers . t)
+  (org-appear-autoentities . t)
+  (org-appear-autokeywords . t)
+  (org-appear-inside-latex . t))
+
+(leaf org-sticky-header
+  :straight t
+  :hook (org-mode-hook . org-sticky-header-mode)
+  :custom
+  (org-sticky-header-full-path . 'full))
 
 (leaf quickrun
   :straight t
@@ -1937,7 +1942,7 @@
   :ensure-system-package
   (cpbooster . "npm install cpbooster -g")
   :init
-  (defun name-of-the-file ()
+  (defun name-of-the-file nil
     "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
     (interactive)
     (buffer-file-name (window-buffer (minibuffer-selected-window))))
@@ -1951,23 +1956,25 @@
                 " ")
      :output-buffer "*cpb clone*"))
 
-  (defun cpb-test nil
+  (defun cpb-test (&optional cpb-file-name)
     "Test current cpp-task with cpbooster."
     (interactive)
-    (friendly-shell-command-async
-     (mapconcat #'shell-quote-argument
-                (list "cpbooster" "test" (name-of-the-file))
-                " ")
-     :output-buffer "*cpb test*"))
+    (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "test" (expand-file-name cpb-file-name))
+                  " ")
+       :output-buffer "*cpb test*")))
 
-  (defun cpb-submit nil
+  (defun cpb-submit (&optional cpb-file-name)
     "Submit current cpp-task with cpbooster."
     (interactive)
-    (friendly-shell-command-async
-     (mapconcat #'shell-quote-argument
-                (list "cpbooster" "submit" (name-of-the-file))
-                " ")
-     :output-buffer "*cpb submit*")))
+    (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "submit" (expand-file-name cpb-file-name))
+                  " ")
+       :output-buffer "*cpb submit*"))))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
