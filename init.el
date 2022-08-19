@@ -23,7 +23,9 @@
 
 (setq straight-repository-branch "develop"
       ;; don't check on find-at-startup
-      straight-check-for-modifications '(check-on-save find-when-checking))
+      straight-check-for-modifications '(check-on-save find-when-checking)
+      ;; shallow clone repos
+      straight-vc-git-default-clone-depth 1)
 
 ;; setup straight.el
 (defvar bootstrap-version)
@@ -174,9 +176,8 @@
       (setq exec-path (add-to-list 'exec-path mason-path)))))
 
 ;; WSL-specific setup
-(when (and (eq system-type 'gnu/linux)
-           (getenv "WSLENV"))
-
+(defconst IS-WSL (and (eq system-type 'gnu/linux) (getenv "WSLENV")))
+(when IS-WSL
   ;; Teach Emacs how to open links in your default Windows browser
   (let ((cmd-exe "/mnt/c/Windows/System32/cmd.exe")
         (cmd-args '("/c" "start")))
@@ -185,6 +186,21 @@
             browse-url-generic-args     cmd-args
             browse-url-browser-function 'browse-url-generic
             search-web-default-browser 'browse-url-generic))))
+
+;; my utility keymap
+(leaf kurumi-utility
+  :init
+  (defvar kurumi-utility-map)
+  (setq kurumi-utility-map (make-sparse-keymap))
+  :config
+  (bind-keys :map kurumi-utility-map
+             ("g d" . xref-find-definitions)
+             ("g r" . xref-find-references)
+             ("c a" . lsp-execute-code-action)
+             ("r n" . lsp-rename)
+             ("q" . flycheck-list-errors)
+             ("d o" . devdocs-browser-open)
+             ("d i" . devdocs-install-doc)))
 
 ;; mozc ime
 (leaf
@@ -349,7 +365,7 @@
   ;; (dirvish-all-the-icons-height 0.8)
   ;; In case you want the details at startup like `dired'
   ;; (dirvish-hide-details nil)
-  :config
+  :init
   ;; Place this line under :init to ensure the overriding at startup, see #22
   (dirvish-override-dired-mode)
   ;; (dirvish-peek-mode)
@@ -366,7 +382,7 @@
   ;; (evil-make-overriding-map dired-mode-map)
   :hook
   ;; show file preview in minibuffer browsing
-  ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
+  ;; HACK: enabling dirvish-peek-mode in :init somehow won't show preview correctly
   (emacs-startup-hook . dirvish-peek-mode)
   :bind
   (
@@ -398,9 +414,7 @@
 (leaf git-modes
   :straight t)
 
-(leaf
-  magit
-  :doc "great git client"
+(leaf magit
   :straight t
   :bind
   (:magit-status-mode-map
@@ -587,18 +601,6 @@
     (persp-switch burly-opened-bookmark-name))
 
   (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
-
-;; my utility keymap
-(leaf kurumi-utility
-  :config
-  (defvar kurumi-utility-map)
-  (setq kurumi-utility-map (make-sparse-keymap))
-  (bind-keys :map kurumi-utility-map
-             ("g d" . xref-find-definitions)
-             ("g r" . xref-find-references)
-             ("c a" . lsp-execute-code-action)
-             ("r n" . lsp-rename)
-             ("q" . flycheck-list-errors)))
 
 (leaf
   which-key
@@ -791,8 +793,8 @@
      '("v" . my-git-actions/body)
      ;; spell correction
      '("z g" . flyspell-correct-at-point)
-     ;; lsp-command-map
-     '("l" . "s-l")
+     ;; ;; lsp-command-map
+     ;; '("l" . "s-l")
      ;; perspective
      '("p" . "C-c M-p")
      ;; help
@@ -941,9 +943,11 @@
    ("C-w" . backward-kill-word))
   :custom
   (meow-use-clipboard . t)
+  (meow-keypad-self-insert-undefined . nil)
   (meow-mode-state-list . '((helpful-mode . normal)
                             (help-mode . normal)
                             (Man-mode . normal)
+                            (eww-mode . normal)
                             (vterm-mode . insert)
                             (eshell-mode . insert)))
 
@@ -1253,15 +1257,6 @@
                    (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
          :render (gts-buffer-render))))
 
-(leaf hyperbole
-  :straight t
-  :hook
-  ;; (window-setup-hook . hyperbole-mode)
-  (text-mode-hook . hyperbole-mode)
-  (prog-mode-hook . hyperbole-mode)
-  (conf-mode-hook . hyperbole-mode)
-  (yaml-mode-hook . hyperbole-mode))
-
 ;; flycheck syntax checking
 (leaf
   flycheck
@@ -1386,14 +1381,14 @@
   :advice (:around eldoc-message my:shutup-eldoc-message))
 
 ;; formatter bindings
-(leaf
-  format-all
+(leaf format-all
   :straight t
-  :require t
   :blackout t
   :hook
-  (prog-mode-hook . format-all-mode)
-  (prog-mode-hook . format-all-ensure-formatter)
+  ;; (prog-mode-hook . format-all-mode)
+  ;; (prog-mode-hook . format-all-ensure-formatter)
+  (emacs-lisp-mode-hook . format-all-mode)
+  (emacs-lisp-mode-hook . format-all-ensure-formatter)
   :custom
   (format-all-default-formatters .
                                  '(("Assembly" asmfmt)
@@ -1429,7 +1424,7 @@
                                    ("Java" clang-format)
                                    ("JavaScript" prettier)
                                    ("JSON" prettier)
-                                   ("JSON5" prettier)
+
                                    ("Jsonnet" jsonnetfmt)
                                    ("JSX" prettier)
                                    ("Kotlin" ktlint)
@@ -1467,6 +1462,10 @@
                                    ("Vue" prettier)
                                    ("XML" html-tidy)
                                    ("YAML" prettier))))
+
+(leaf apheleia
+  :straight t
+  :global-minor-mode apheleia-global-mode)
 
 ;; EditorConfig support
 (leaf editorconfig
@@ -1873,8 +1872,8 @@
   :init
   :hook (python-mode-hook . (lambda ()
                               (require 'lsp-pyright)
-                              (direnv-update-directory-environment)
-                              (lsp))))  ; or lsp-deferred
+                              (direnv-update-directory-environment) ; use direnv for venv
+                              (lsp-deferred))))  ; or lsp-deferred
 
 ;; org mode things
 (leaf org
@@ -1988,6 +1987,16 @@
                   (list "cpbooster" "submit" (expand-file-name cpb-file-name))
                   " ")
        :output-buffer "*cpb submit*"))))
+
+(leaf w3m
+  :straight t)
+
+(leaf devdocs-browser
+  :straight t
+  :bind
+  ((:eww-mode-map
+    ("C-c h" . eww-back-url)
+    ("C-c l" . eww-forward-url))))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
