@@ -710,7 +710,7 @@ Diredをオーバーホールするファイラ。
     ;; (dirvish-all-the-icons-height 0.8)
     ;; In case you want the details at startup like `dired'
     ;; (dirvish-hide-details nil)
-    :config
+    :init
     ;; Place this line under :init to ensure the overriding at startup, see #22
     (dirvish-override-dired-mode)
     ;; (dirvish-peek-mode)
@@ -727,7 +727,7 @@ Diredをオーバーホールするファイラ。
     ;; (evil-make-overriding-map dired-mode-map)
     :hook
     ;; show file preview in minibuffer browsing
-    ;; HACK: enabling dirvish-peek-mode in :config somehow won't show preview correctly
+    ;; HACK: enabling dirvish-peek-mode in :init somehow won't show preview correctly
     (emacs-startup-hook . dirvish-peek-mode)
     :bind
     (
