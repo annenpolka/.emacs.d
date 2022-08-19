@@ -143,6 +143,14 @@
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
+;; enhanced help
+(leaf helpful
+  :straight t
+  :bind
+  ("C-h f" . helpful-callable)
+  ("C-h k" . helpful-key)
+  ("C-h v" . helpful-variable))
+
 ;; explain macro by step
 (leaf
   macrostep
@@ -670,14 +678,6 @@
   :config
   ;; exclude on vterm
   (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
-
-;; enhanced help
-(leaf helpful
-  :straight t
-  :bind
-  ("C-h f" . helpful-callable)
-  ("C-h k" . helpful-key)
-  ("C-h v" . helpful-variable))
 
 (leaf winner-mode
   :bind
@@ -1868,6 +1868,14 @@
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
   (lsp-rust-analyzer-server-display-inlay-hints . t))
 
+(leaf lsp-pyright
+  :straight t
+  :init
+  :hook (python-mode-hook . (lambda ()
+                              (require 'lsp-pyright)
+                              (direnv-update-directory-environment)
+                              (lsp))))  ; or lsp-deferred
+
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
@@ -1931,12 +1939,17 @@
   :commands
   (quickrun quickrun-shell quickrun-with-arg quickrun-compile-only)
   :custom
-  (quickrun-focus-p . nil)
+  (quickrun-focus-p . t)
   :config
   (quickrun-set-default "c++" "c++/g++"))
 
 (leaf docker
   :straight t)
+
+(leaf direnv
+  :straight t
+  :ensure-system-package (direnv)
+  :global-minor-mode direnv-mode)
 
 (leaf cpbooster
   :ensure-system-package
