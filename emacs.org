@@ -595,24 +595,18 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :custom
     (doom-modeline-minor-modes . nil)
     (doom-modeline-major-mode-icon . t)
-    (doom-modeline-bar-width . 6)
-    (doom-modeline-height . 15)
-    (doom-modeline-modal-icon . nil)
+    (doom-modeline-bar-width . 3)
+    (doom-modeline-height . 10)
+    (doom-modeline-modal-icon . t)
     (doom-modeline-icon . t)
     :defer-config
-    (custom-set-faces
-     '(mode-line ((t (:family "Hack" :height 0.9))))
-     ;; '(mode-line-active ((t (:family "Hack" :height 0.9 :weight light))))
-     '(mode-line-inactive ((t (:family "Hack" :height 0.9)))))
-
     ;; Define your custom doom-modeline
     (doom-modeline-def-modeline 'main
-      '(bar matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs " ")) ; <-- added padding here
+      '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; <-- added padding here
     (doom-modeline-def-modeline 'org-src
-      '(bar matches buffer-info-simple buffer-position parrot selection-info checker)
-      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs " "))) ; <-- added padding here
-    
+      '(bar modals matches buffer-info-simple buffer-position parrot selection-info checker)
+      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; <-- added padding here
 #+end_src
 ** COMMENT moody
 #+begin_src emacs-lisp
