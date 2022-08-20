@@ -359,26 +359,28 @@
     :right (omit yank index)))
   (dirvish-attributes
    .
-   '(subtree-state all-the-icons collapse file-size vc-state))
+   '(subtree-state all-the-icons collapse file-size vc-state git-msg))
   ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
   ;; Maybe the icons are too big to your eyes
-  ;; (dirvish-all-the-icons-height 0.8)
+  (dirvish-all-the-icons-height . 0.8)
   ;; In case you want the details at startup like `dired'
-  ;; (dirvish-hide-details nil)
+  ;; (dirvish-hide-details . nil)
+  ;; Dired options are respected except a few exceptions,
+  ;; see *In relation to Dired* section above
+  (dired-recursive-deletes . 'always)
+  (delete-by-moving-to-trash . t)
+  (dired-dwim-target . t)
+  ;; Make sure to use the long name of flags when exists
+  ;; eg. use "--almost-all" instead of "-A"
+  ;; Otherwise some commands won't work properly
+  (dired-listing-switches .
+                          "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  ;; (dirvish-fd-switches . "") ;; "--hidden"
+
   :init
   ;; Place this line under :init to ensure the overriding at startup, see #22
   (dirvish-override-dired-mode)
   ;; (dirvish-peek-mode)
-  ;; Dired options are respected except a few exceptions,
-  ;; see *In relation to Dired* section above
-  (setq dired-recursive-deletes 'always)
-  (setq delete-by-moving-to-trash t)
-  (setq dired-dwim-target t)
-  ;; Make sure to use the long name of flags when exists
-  ;; eg. use "--almost-all" instead of "-A"
-  ;; Otherwise some commands won't work properly
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   ;; (evil-make-overriding-map dired-mode-map)
   :hook
   ;; show file preview in minibuffer browsing
@@ -406,6 +408,7 @@
     ("y" . dirvish-yank)
     ("/" . dirvish-fd)
     ("C-f" . dirvish-fd)
+    ("C-S-f" . dirvish-fd-switches-menu)
     ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
     ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
     ([remap dired-summary] . dirvish-dispatch)
@@ -620,18 +623,23 @@
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
   :custom (display-line-numbers-width . 3))
 
-(leaf hl-line :global-minor-mode global-hl-line-mode)
+(leaf solaire-mode
+  :straight t
+  :global-minor-mode solaire-global-mode)
+
+(leaf hl-line
+  :global-minor-mode global-hl-line-mode)
 
 (leaf hl-block-mode
   :doc "blockman thing"
   :straight t
   :hook
-  (prog-mode-hook . global-hl-block-mode)
+  (prog-mode-hook . hl-block-mode)
   :custom
   (hl-block-delay . 0.1)
-  (hl-block-bracket . nil)
+  (hl-block-bracket . nil) ;; use all brackets characters
   (hl-block-multi-line . nil)
-  (hl-block-color-tint . "#060606"))
+  (hl-block-color-tint . "#080808"))
 
 (leaf
   hl-todo
@@ -651,8 +659,7 @@
    (highlight-indent-guides-auto-enabled . t)
    (highlight-indent-guides-responsive . t)))
 
-(leaf
-  rainbow-delimiters
+(leaf rainbow-delimiters
   :straight t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 
@@ -785,11 +792,16 @@
      '("<C-i>" . "H-C-i")
      '("C-w" . "H-C-w")
      '("/" . "H-/")
+     ;; restart emacs
+     '("r e" . restart-emacs)
+     '("r n" . restart-emacs-start-new-emacs)
      ;; move-or-create-window prefix
      '("w j" . move-or-create-window-below)
      '("w k" . move-or-create-window-above)
      '("w h" . move-or-create-window-left)
      '("w l" . move-or-create-window-right)
+     ;; origami-mode code folding
+     '("f" . "s-f")
      ;; version control operations
      '("v" . my-git-actions/body)
      ;; spell correction
@@ -1052,11 +1064,22 @@
   :global-minor-mode global-undo-fu-session-mode)
 
 ;; Code folding
-(leaf
-  origami
+(leaf origami
   :straight t
+  :init
+  ;; lsp integration
+  (leaf lsp-origami
+    :straight t
+    :hook
+    (lsp-after-open-hook . #'lsp-origami-try-enable))
   ;; :after evil
-  :global-minor-mode global-origami-mode)
+  :global-minor-mode global-origami-mode
+  :bind
+  (:origami-mode-map
+   (("S-f j" . origami-show-node)
+    ("S-f k" . origami-close-node)
+    ("S-f n" . origami-forward-node)
+    ("S-f p" . origami-previous-node))))
 
 (leaf avy
   :straight t
