@@ -1019,6 +1019,12 @@ Diredをオーバーホールするファイラ。
   :hook ((prog-mode-hook text-mode-hook) . display-line-numbers-mode)
   :custom (display-line-numbers-width . 3))
 #+end_src
+** solaire-mode
+#+begin_src emacs-lisp
+  (leaf solaire-mode
+    :straight t
+    :global-minor-mode solaire-global-mode)
+#+end_src
 ** hl-line
 #+begin_src emacs-lisp
 (leaf hl-line :global-minor-mode global-hl-line-mode)
