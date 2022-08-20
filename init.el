@@ -405,6 +405,7 @@
     ("f" . dirvish-file-info-menu)
     ("y" . dirvish-yank)
     ("/" . dirvish-fd)
+    ("C-f" . dirvish-fd)
     ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
     ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
     ([remap dired-summary] . dirvish-dispatch)
@@ -794,7 +795,7 @@
      ;; spell correction
      '("z g" . flyspell-correct-at-point)
      ;; ;; lsp-command-map
-     ;; '("l" . "s-l")
+     '("l" . "s-l")
      ;; perspective
      '("p" . "C-c M-p")
      ;; help
@@ -974,6 +975,7 @@
                            (?e . symbol)
                            (?w . window)
                            (?B . buffer)
+                           (?g . buffer)
                            (?p . paragraph)
                            (?\[ . square)
                            (?l . line)
