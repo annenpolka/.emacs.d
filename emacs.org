@@ -190,7 +190,7 @@ My configuration managed by leaf.el + straight.el
   ;; More performant rapid scrolling over unfontified regions. May cause brief
   ;; spells of inaccurate syntax highlighting right after scrolling, which should
   ;; quickly self-correct.
-  (setq fast-but-imprecise-scrolling nil)
+  (setq fast-but-imprecise-scrolling t)
 
   ;; Increase how much is read from processes in a single chunk (default is 4kb).
   ;; This is further increased elsewhere, where needed (like our LSP module).
