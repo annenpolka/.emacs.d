@@ -770,6 +770,7 @@ Diredをオーバーホールするファイラ。
       ("y" . dirvish-yank)
       ("/" . dirvish-fd)
       ("C-f" . dirvish-fd)
+      ("C-S-f" . dirvish-fd-switches-menu)
       ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
       ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
       ([remap dired-summary] . dirvish-dispatch)
@@ -1022,6 +1023,10 @@ Diredをオーバーホールするファイラ。
   :custom (display-line-numbers-width . 3))
 #+end_src
 ** solaire-mode
+`solaire-mode' is inspired by editors who visually distinguish code-editing
+windows from sidebars, popups, terminals, ecetera. It changes the background
+of file-visiting buffers (and certain aspects of the UI) to make them easier
+to distinguish from other, not-so-important buffers.
 #+begin_src emacs-lisp
   (leaf solaire-mode
     :straight t
@@ -1029,21 +1034,21 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** hl-line
 #+begin_src emacs-lisp
-(leaf hl-line :global-minor-mode global-hl-line-mode)
+  (leaf hl-line
+    :global-minor-mode global-hl-line-mode)
 #+end_src
 ** hl-block-mode
 #+begin_src emacs-lisp
-(leaf hl-block-mode
-  :doc "blockman thing"
-  :straight t
-  :hook
-  (prog-mode-hook . global-hl-block-mode)
-  :custom
-  (hl-block-delay . 0.1)
-  (hl-block-bracket . nil)
-  (hl-block-multi-line . nil)
-  (hl-block-color-tint . "#060606"))
-    
+  (leaf hl-block-mode
+    :doc "blockman thing"
+    :straight t
+    :hook
+    (prog-mode-hook . hl-block-mode)
+    :custom
+    (hl-block-delay . 0.1)
+    (hl-block-bracket . nil) ;; use all brackets characters
+    (hl-block-multi-line . nil)
+    (hl-block-color-tint . "#080808"))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -1080,12 +1085,13 @@ Diredをオーバーホールするファイラ。
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
-  (leaf
-    rainbow-delimiters
+  (leaf rainbow-delimiters
     :straight t
     :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
 #+end_src
 ** rainbow-mode
+This minor mode sets background color to strings that match color
+names, e.g. #0000ff is displayed in white with a blue background.
 #+begin_src emacs-lisp
   (leaf rainbow-mode
     :straight t
@@ -2560,7 +2566,6 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
     (flyspell-lazy-window-idle-seconds . 3)
     :config
     (flyspell-lazy-mode))
-    
 #+end_src
 *** flyspell-correct
 #+begin_src emacs-lisp
