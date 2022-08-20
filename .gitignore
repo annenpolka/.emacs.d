@@ -83,5 +83,4 @@ undo-fu-session
 /.cache/
 /emojis/
 /parinfer-rust/
-/config/
 /data/
