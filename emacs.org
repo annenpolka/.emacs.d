@@ -721,26 +721,28 @@ Diredをオーバーホールするファイラ。
       :right (omit yank index)))
     (dirvish-attributes
      .
-     '(subtree-state all-the-icons collapse file-size vc-state))
+     '(subtree-state all-the-icons collapse file-size vc-state git-msg))
     ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
     ;; Maybe the icons are too big to your eyes
-    ;; (dirvish-all-the-icons-height 0.8)
+    (dirvish-all-the-icons-height . 0.8)
     ;; In case you want the details at startup like `dired'
-    ;; (dirvish-hide-details nil)
+    ;; (dirvish-hide-details . nil)
+    ;; Dired options are respected except a few exceptions,
+    ;; see *In relation to Dired* section above
+    (dired-recursive-deletes . 'always)
+    (delete-by-moving-to-trash . t)
+    (dired-dwim-target . t)
+    ;; Make sure to use the long name of flags when exists
+    ;; eg. use "--almost-all" instead of "-A"
+    ;; Otherwise some commands won't work properly
+    (dired-listing-switches .
+                            "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+    ;; (dirvish-fd-switches . "") ;; "--hidden"
+
     :init
     ;; Place this line under :init to ensure the overriding at startup, see #22
     (dirvish-override-dired-mode)
     ;; (dirvish-peek-mode)
-    ;; Dired options are respected except a few exceptions,
-    ;; see *In relation to Dired* section above
-    (setq dired-recursive-deletes 'always)
-    (setq delete-by-moving-to-trash t)
-    (setq dired-dwim-target t)
-    ;; Make sure to use the long name of flags when exists
-    ;; eg. use "--almost-all" instead of "-A"
-    ;; Otherwise some commands won't work properly
-    (setq dired-listing-switches
-          "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
     ;; (evil-make-overriding-map dired-mode-map)
     :hook
     ;; show file preview in minibuffer browsing
