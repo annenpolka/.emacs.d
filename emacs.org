@@ -3341,6 +3341,11 @@ TODO: setup lsp ui tools
   (leaf yaml-mode
     :straight t)
 #+end_src
+*** JSON mode
+#+begin_src emacs-lisp
+  (leaf json-mode
+    :straight t)
+#+end_src
 ** Org Mode
 *** org-mode
 #+begin_src emacs-lisp
