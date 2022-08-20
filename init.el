@@ -1076,10 +1076,10 @@
   :global-minor-mode global-origami-mode
   :bind
   (:origami-mode-map
-   (("S-f j" . origami-show-node)
-    ("S-f k" . origami-close-node)
-    ("S-f n" . origami-forward-node)
-    ("S-f p" . origami-previous-node))))
+   (("s-f j" . origami-show-node)
+    ("s-f k" . origami-close-node)
+    ("s-f n" . origami-forward-fold)
+    ("s-f p" . origami-previous-fold))))
 
 (leaf avy
   :straight t
