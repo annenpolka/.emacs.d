@@ -203,8 +203,7 @@
              ("d i" . devdocs-install-doc)))
 
 ;; mozc ime
-(leaf
-  mozc
+(leaf mozc
   ;; :depends emacs-mozc
   :straight t
   :bind* (("<zenkaku-hankaku>" . toggle-input-method)
@@ -305,10 +304,11 @@
   ;; Define your custom doom-modeline
   (doom-modeline-def-modeline 'main
     '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-    '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; <-- added padding here
-  (doom-modeline-def-modeline 'org-src
-    '(bar modals matches buffer-info-simple buffer-position parrot selection-info checker)
-    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; <-- added padding here
+    '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
+  (doom-modeline))
+-def-modeline 'org-src
+'(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+'(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs) ; " " <-- can add padding here
 
 (leaf centaur-tabs
   :straight t

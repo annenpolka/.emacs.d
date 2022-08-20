@@ -460,8 +460,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 ** mozc
 #+begin_src emacs-lisp
   ;; mozc ime
-  (leaf
-    mozc
+  (leaf mozc
     ;; :depends emacs-mozc
     :straight t
     :bind* (("<zenkaku-hankaku>" . toggle-input-method)
@@ -478,7 +477,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
       "activate multilingual input method."
       (interactive)
       (activate-input-method default-input-method)))
-    
 #+end_src
 * Fonts/Icons
 ** Font Config
@@ -603,10 +601,11 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     ;; Define your custom doom-modeline
     (doom-modeline-def-modeline 'main
       '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; <-- added padding here
-    (doom-modeline-def-modeline 'org-src
-      '(bar modals matches buffer-info-simple buffer-position parrot selection-info checker)
-      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; <-- added padding here
+      '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
+    (doom-modeline))
+  -def-modeline 'org-src
+  '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+  '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs) ; " " <-- can add padding here
 #+end_src
 ** COMMENT moody
 #+begin_src emacs-lisp
