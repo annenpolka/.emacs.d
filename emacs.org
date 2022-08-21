@@ -3489,6 +3489,11 @@ TODO: setup lsp ui tools
   (leaf w3m
     :straight t)
 #+end_src
+** npm
+#+begin_src emacs-lisp
+  (leaf npm
+    :straight t)
+#+end_src
 * Devdocs Browsing
 ** COMMENT dash-docs
 *** dash-docs
