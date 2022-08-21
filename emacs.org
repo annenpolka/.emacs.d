@@ -454,7 +454,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
                ("r n" . lsp-rename)
                ("q" . flycheck-list-errors)
                ("d o" . devdocs-browser-open)
-               ("d i" . devdocs-install-doc)))
+               ("d i" . devdocs-browser-open-in)))
 #+end_src
 * Input Method
 ** mozc
@@ -602,10 +602,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (doom-modeline-def-modeline 'main
       '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
       '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
-    (doom-modeline))
-  -def-modeline 'org-src
-  '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-  '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs) ; " " <-- can add padding here
+    (doom-modeline-def-modeline 'org-src
+      '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+      '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; " " <-- can add padding here
 #+end_src
 ** COMMENT moody
 #+begin_src emacs-lisp
@@ -3493,6 +3492,13 @@ TODO: setup lsp ui tools
 #+begin_src emacs-lisp
   (leaf npm
     :straight t)
+#+end_src
+** Todoist
+#+begin_src emacs-lisp
+  (leaf todoist
+    :straight t
+    :init
+    (setq todoist-token (getenv "TODOIST_TOKEN")))
 #+end_src
 * Devdocs Browsing
 ** COMMENT dash-docs

@@ -80,8 +80,8 @@
    (user-login-name . "annenpolka")
    (backup-directory-alist . '((".*" . "~/.backup")))
    (create-lockfiles . nil)
-   (debug-on-error . nil)
-   (init-file-debug . nil)
+   (debug-on-error . t)
+   (init-file-debug . t)
    (frame-resize-pixelwise . t)
    (enable-recursive-minibuffers . t)
    (history-length . 1000)
@@ -200,7 +200,7 @@
              ("r n" . lsp-rename)
              ("q" . flycheck-list-errors)
              ("d o" . devdocs-browser-open)
-             ("d i" . devdocs-install-doc)))
+             ("d i" . devdocs-browser-open-in)))
 
 ;; mozc ime
 (leaf mozc
@@ -305,10 +305,9 @@
   (doom-modeline-def-modeline 'main
     '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
     '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
-  (doom-modeline))
--def-modeline 'org-src
-'(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-'(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs) ; " " <-- can add padding here
+  (doom-modeline-def-modeline 'org-src
+    '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
+    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; " " <-- can add padding here
 
 (leaf centaur-tabs
   :straight t
@@ -1895,6 +1894,12 @@
                               (direnv-update-directory-environment) ; use direnv for venv
                               (lsp-deferred))))  ; or lsp-deferred
 
+(leaf yaml-mode
+  :straight t)
+
+(leaf json-mode
+  :straight t)
+
 ;; org mode things
 (leaf org
   :straight (org :type built-in)
@@ -2011,12 +2016,27 @@
 (leaf w3m
   :straight t)
 
+(leaf npm
+  :straight t)
+
+(leaf todoist
+  :straight t
+  :init
+  (setq todoist-token (getenv "TODOIST_TOKEN")))
+
 (leaf devdocs-browser
   :straight t
   :bind
   ((:eww-mode-map
     ("C-c h" . eww-back-url)
-    ("C-c l" . eww-forward-url))))
+    ("C-c l" . eww-forward-url)))
+  :config
+  (add-to-list 'devdocs-browser-major-mode-docs-alist
+               '(lisp-interaction-mode "elisp")))
+
+(leaf gif-screencast
+  :straight t
+  :ensure-system-package (scrot convert gifsicle))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
