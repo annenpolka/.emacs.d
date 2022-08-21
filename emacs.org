@@ -3520,7 +3520,17 @@ TODO: setup lsp ui tools
     :bind
     ((:eww-mode-map
       ("C-c h" . eww-back-url)
-      ("C-c l" . eww-forward-url))))
+      ("C-c l" . eww-forward-url)))
+    :config
+    (add-to-list 'devdocs-browser-major-mode-docs-alist
+                 '(lisp-interaction-mode "elisp")))
+#+end_src
+* Screencasting
+** gif-screencast
+#+begin_src emacs-lisp
+(leaf gif-screencast
+  :straight t
+  :ensure-system-package (scrot convert gifsicle))
 #+end_src
 * Boilerplate
 #+begin_src emacs-lisp
