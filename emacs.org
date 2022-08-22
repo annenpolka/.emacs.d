@@ -3504,7 +3504,22 @@ TODO: setup lsp ui tools
   (leaf npm
     :straight t)
 #+end_src
-** COMMENT Todoist
+** open-in-editor
+#+begin_src emacs-lisp
+  (leaf open-in-editor
+    :config
+    (defun open-in-vscode nil
+      "Open current file in VSCode keeping cursor position."
+      (interactive)
+      (friendly-shell-command-async
+       (format "code -r %s -g %s:%d:%d"
+               (projectile-project-root default-directory)
+               (buffer-file-name)
+               (line-number-at-pos)
+               (current-column))
+       :kill-buffer t)))
+#+end_src
+** COMMENT todoist
 #+begin_src emacs-lisp
   (leaf todoist
     :straight t
