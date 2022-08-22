@@ -770,6 +770,11 @@ Diredをオーバーホールするファイラ。
       ([remap dired-do-copy] . dirvish-yank-menu)
       ([remap mode-line-other-buffer] . dirvish-history-last))))
 #+end_src
+** zoxide
+#+begin_src emacs-lisp
+  (leaf zoxide
+    :straight t)
+#+end_src
 * Git/Version Management
 ** git-modes
 #+begin_src emacs-lisp
