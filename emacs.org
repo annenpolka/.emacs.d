@@ -932,10 +932,10 @@ Diredをオーバーホールするファイラ。
             (persp-name (persp-current-name)))
 
         ;; override project-name if it's "-" (saved with *scratch*)
-        (when (equal project-name "-")
+        (when (string= project-name "-")
           (setq project-name persp-name))
         ;; rename perspective when current persp is not project's name
-        (when (not (equal project-name persp-name))
+        (when (not (string= project-name persp-name))
           ;; kill existing project's perspective before rename
           (when (gethash project-name (perspectives-hash))
             (persp-kill project-name))
@@ -946,7 +946,7 @@ Diredをオーバーホールするファイラ。
 
 
         ;; ;; ask persp-name interactively if it's "main"
-        ;; (when (and (equal persp-name persp-initial-frame-name)
+        ;; (when (and (string= persp-name persp-initial-frame-name)
         ;;            ;; NOTE: shouldn't ask when going from *dashboard* to any burly bookmark
         ;;            ;; FIXME: buffer-name doesn't work in this case
         ;;            (string-match "\*dashboard\*" (buffer-name)))
@@ -955,14 +955,14 @@ Diredをオーバーホールするファイラ。
         ;;   )
 
         ;; save as burly-bookmark, don't save "main" persp
-        (unless (equal persp-name persp-initial-frame-name)
+        (unless (string= persp-name persp-initial-frame-name)
           (burly-bookmark-windows project-name))))
 
 
 
     ;; initalize only if in "main" persp
     (defun burly-perspective-init-if-initial-frame (&rest _ignore)
-      (when (equal persp-initial-frame-name (persp-current-name))
+      (when (string= persp-initial-frame-name (persp-current-name))
         (burly-perspective-init-project-persp)))
 
 
@@ -975,10 +975,10 @@ Diredをオーバーホールするファイラ。
       "Save burly windows bookmark with current perspective name."
       (interactive)
       ;; save non-"main" perspective
-      (when (not (equal persp-initial-frame-name (persp-current-name)))
+      (when (not (string= persp-initial-frame-name (persp-current-name)))
         (burly-bookmark-windows (persp-current-name)))
       ;; save "main" perspective as project one
-      (when (equal persp-initial-frame-name (persp-current-name))
+      (when (string= persp-initial-frame-name (persp-current-name))
         (burly-perspective-init-project-persp)))
 
 
