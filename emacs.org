@@ -561,8 +561,10 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 #+begin_src emacs-lisp
   (leaf dashboard
     :straight t
-    :hook (after-init-hook . dashboard-setup-startup-hook)
+    :require t
+    ;; :hook (after-init-hook . dashboard-setup-startup-hook)
     :custom
+    (initial-buffer-choice . (lambda () (get-buffer-create "*dashboard*")))
     (dashboard-banner-logo-title . "Kurumi Emacs")
     (dashboard-startup-banner . 'logo)
     (dashboard-footer-messages .
@@ -582,7 +584,6 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
                                                         :height 1.0
                                                         :v-adjust -0.05
                                                         :face 'font-lock-keyword-face)))
-    
 #+end_src
 * Modeline
 ** doom-modeline
