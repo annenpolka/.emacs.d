@@ -2957,23 +2957,24 @@ projectile integration
 *** eshell
 **** eshell
 #+begin_src emacs-lisp
-(leaf eshell
-  :require t
-  :custom
-  (eshell-cmpl-ignore-case . t)
-  (eshell-hist-ignoredups . t)
-  (eshell-scroll-to-bottom-on-input . 'all)
-  (eshell-scroll-to-bottom-on-output . 'all)
-  (eshell-kill-processes-on-exit . t)
-  :defer-config
-  ;; HACK: can't map directly to eshell-mode-map
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (progn
-                ;; avoid overriding c-n/c-p for meow compatibility
-                (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
-                (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input)))))
-    
+  (leaf eshell
+    :require t
+    :custom
+    (eshell-cmpl-ignore-case . t)
+    (eshell-hist-ignoredups . t)
+    (eshell-scroll-to-bottom-on-input . 'all)
+    (eshell-scroll-to-bottom-on-output . 'all)
+    (eshell-kill-processes-on-exit . t)
+    :defer-config
+    ;; HACK: Since can't set directly to eshell variables, use hook
+    (add-hook 'eshell-mode-hook
+              (lambda ()
+                (progn
+                  (add-to-list 'eshell-visual-commands "nvim")
+                  (add-to-list 'eshell-visual-commands "vifm")
+                  ;; avoid overriding c-n/c-p for meow compatibility
+                  (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
+                  (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input)))))
 #+end_src
 **** eshell-toggle
 #+begin_src emacs-lisp
