@@ -1596,17 +1596,20 @@
              :type git
              :host gitlab
              :repo "OlMon/consult-projectile")
+  :require t
   :custom
   ;; (consult-projectile-use-projectile-switch-project . t)
   (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
   :config
   ;; create persp and cd before consult-projectile
- (consult-customize
+  (consult-customize
    consult-projectile--source-projectile-file
    :preview-key '(:debounce 0.3 any))
+  (defun kurumi-consult-projectile--project-persp-action (dir)
     (persp-switch (projectile-project-name dir))
     (cd (projectile-project-root dir))
     ;; HACK: dirvish's preview duplicates consult's one by, so disable it temporarily
+    (dirvish-peek-mode -1)
     (consult-projectile--file dir)
     (dirvish-peek-mode 1)))
 
