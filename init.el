@@ -243,7 +243,6 @@
 
 (leaf kind-icon
   :straight t
-  :after corfu
   :custom
   (kind-icon-default-face . 'corfu-default) ; to compute blended backgrounds correctly
   :defer-config
@@ -1271,13 +1270,11 @@
 (leaf
   yasnippet
   :straight t
-  :require t
   :blackout t
   :global-minor-mode yas-global-mode)
 
 (leaf yasnippet-snippets
   :straight t
-  :require t
   :after yasnippet)
 
 (leaf go-translate
