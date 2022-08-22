@@ -410,6 +410,9 @@
     ([remap dired-do-copy] . dirvish-yank-menu)
     ([remap mode-line-other-buffer] . dirvish-history-last))))
 
+(leaf zoxide
+  :straight t)
+
 (leaf git-modes
   :straight t)
 
@@ -545,8 +548,8 @@
           (persp-kill project-name))
 
         (persp-rename project-name))
-        ;; ;; create perspective with last perspective name
-        ;; (persp-new persp-name)
+      ;; ;; create perspective with last perspective name
+      ;; (persp-new persp-name)
 
 
       ;; ;; ask persp-name interactively if it's "main"
@@ -592,6 +595,7 @@
   ;; (add-hook 'auto-save-hook 'burly-bookmark-perspective-windows)
   (add-hook 'before-save-hook 'burly-bookmark-perspective-windows)
   ;; (add-hook 'window-configuration-change-hook 'burly-bookmark-perspective-windows)
+  (advice-add 'delete-frame :before 'burly-bookmark-perspective-windows)
   (advice-add 'save-buffers-kill-emacs :before 'burly-bookmark-perspective-windows)
 
   ;; create perspective with burly
@@ -1705,10 +1709,12 @@
   (eshell-scroll-to-bottom-on-output . 'all)
   (eshell-kill-processes-on-exit . t)
   :defer-config
-  ;; HACK: can't map directly to eshell-mode-map
+  ;; HACK: Since can't set directly to eshell variables, use hook
   (add-hook 'eshell-mode-hook
             (lambda ()
               (progn
+                (add-to-list 'eshell-visual-commands "nvim")
+                (add-to-list 'eshell-visual-commands "vifm")
                 ;; avoid overriding c-n/c-p for meow compatibility
                 (define-key eshell-mode-map "\C-k" 'eshell-previous-matching-input-from-input)
                 (define-key eshell-mode-map "\C-j" 'eshell-next-matching-input-from-input)))))

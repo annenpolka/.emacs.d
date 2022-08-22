@@ -939,11 +939,11 @@ Diredをオーバーホールするファイラ。
           ;; kill existing project's perspective before rename
           (when (gethash project-name (perspectives-hash))
             (persp-kill project-name))
-            
+
           (persp-rename project-name))
-          ;; ;; create perspective with last perspective name
-          ;; (persp-new persp-name)
-          
+        ;; ;; create perspective with last perspective name
+        ;; (persp-new persp-name)
+
 
         ;; ;; ask persp-name interactively if it's "main"
         ;; (when (and (equal persp-name persp-initial-frame-name)
@@ -953,19 +953,19 @@ Diredをオーバーホールするファイラ。
         ;;   (call-interactively 'persp-rename)
         ;;   (setq project-name persp-name)
         ;;   )
-        
+
         ;; save as burly-bookmark, don't save "main" persp
         (unless (equal persp-name persp-initial-frame-name)
           (burly-bookmark-windows project-name))))
-        
-      
+
+
 
     ;; initalize only if in "main" persp
     (defun burly-perspective-init-if-initial-frame (&rest _ignore)
       (when (equal persp-initial-frame-name (persp-current-name))
         (burly-perspective-init-project-persp)))
-        
-      
+
+
     ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
     ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
 
@@ -980,23 +980,23 @@ Diredをオーバーホールするファイラ。
       ;; save "main" perspective as project one
       (when (equal persp-initial-frame-name (persp-current-name))
         (burly-perspective-init-project-persp)))
-        
-      
+
+
 
     ;; save perspective on change/save
     (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
     ;; (add-hook 'auto-save-hook 'burly-bookmark-perspective-windows)
     (add-hook 'before-save-hook 'burly-bookmark-perspective-windows)
     ;; (add-hook 'window-configuration-change-hook 'burly-bookmark-perspective-windows)
+    (advice-add 'delete-frame :before 'burly-bookmark-perspective-windows)
     (advice-add 'save-buffers-kill-emacs :before 'burly-bookmark-perspective-windows)
 
     ;; create perspective with burly
     (defun burly-perspective--windows-set-before-advice (&rest _ignore)
       "Create or Switch perspective before setting burly windows."
       (persp-switch burly-opened-bookmark-name))
-      
+
     (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
-    
 #+end_src
 * Interface Enhancement/Eyecandies
 ** which-key
