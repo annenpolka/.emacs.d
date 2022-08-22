@@ -3323,7 +3323,15 @@ TODO: setup lsp ui tools
   (rustic-default-clippy-arguments . "--benches --tests --all-targets --all-features")
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
   (lsp-rust-analyzer-server-display-inlay-hints . t))
-    
+
+#+end_src
+*** Go Mode
+**** go-mode
+#+begin_src emacs-lisp
+  (leaf go-mode
+    :straight t
+    :hook
+    (go-mode-hook . lsp-deferred))
 #+end_src
 *** Python Mode
 **** lsp-pyright
