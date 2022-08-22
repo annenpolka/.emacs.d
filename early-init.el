@@ -104,13 +104,14 @@
 
 ;; Premature redisplays can substantially affect startup times and produce
 ;; ugly flashes of unstyled Emacs.
-(setq-default inhibit-redisplay t
-              inhibit-message t)
-(add-hook 'window-setup-hook
-          (lambda ()
-            (setq-default inhibit-redisplay nil
-                          inhibit-message nil)
-            (redisplay)))
+;; NOTE: this makes difficult to understand emacs's behaviour
+;; (setq-default inhibit-redisplay t
+;;               inhibit-message t)
+;; (add-hook 'window-setup-hook
+;;           (lambda ()
+;;             (setq-default inhibit-redisplay nil
+;;                           inhibit-message nil)
+;;             (redisplay)))
 
 ;; Shave seconds off startup time by starting the scratch buffer in
 ;; `fundamental-mode', rather than, say, `org-mode' or `text-mode', which pull
@@ -154,7 +155,7 @@
 (setq read-process-output-max (* 64 1024))  ; 64kb
 
 ;; Emacs "updates" its ui more often than it needs to, so slow it down slightly
-(setq idle-update-delay 1.0)  ; default is 0.5
+(setq idle-update-delay 0.5)  ; default is 0.5
 
 ;; Font compacting can be terribly expensive, especially for rendering icon
 ;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac

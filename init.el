@@ -80,8 +80,8 @@
    (user-login-name . "annenpolka")
    (backup-directory-alist . '((".*" . "~/.backup")))
    (create-lockfiles . nil)
-   (debug-on-error . t)
-   (init-file-debug . t)
+   (debug-on-error . nil)
+   (init-file-debug . nil)
    (frame-resize-pixelwise . t)
    (enable-recursive-minibuffers . t)
    (history-length . 1000)
@@ -120,7 +120,8 @@
   :doc "keep scratch buffer state across sessions"
   :straight t
   :defun (persistent-scratch-setup-default)
-  :config (persistent-scratch-setup-default))
+  :config
+  (persistent-scratch-setup-default))
 
 (leaf gcmh
   :straight t
@@ -1552,15 +1553,16 @@
   (consult-customize
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
+   consult-projectile
    consult--source-bookmark consult--source-recent-file
    consult--source-project-recent-file
    :preview-key '(:debounce 0.3 any))
   :bind)
-  ;; ((:evil-normal-state-map
-  ;;   ;; ("C-f" . consult-line)
-  ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
-  ;;   ("<leader>SPC" . 'consult-buffer)
-  ;;   ))
+;; ((:evil-normal-state-map
+;;   ;; ("C-f" . consult-line)
+;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
+;;   ("<leader>SPC" . 'consult-buffer)
+;;   ))
 
 ;; flycheck integration
 (leaf consult-flycheck
@@ -1594,17 +1596,19 @@
              :type git
              :host gitlab
              :repo "OlMon/consult-projectile")
-
-  :require t
   :custom
   ;; (consult-projectile-use-projectile-switch-project . t)
   (consult-projectile-source-projectile-project-action . 'kurumi-consult-projectile--project-persp-action) ;; hook my custom action
   :config
   ;; create persp and cd before consult-projectile
-  (defun kurumi-consult-projectile--project-persp-action (dir)
+ (consult-customize
+   consult-projectile--source-projectile-file
+   :preview-key '(:debounce 0.3 any))
     (persp-switch (projectile-project-name dir))
     (cd (projectile-project-root dir))
-    (consult-projectile--file dir)))
+    ;; HACK: dirvish's preview duplicates consult's one by, so disable it temporarily
+    (consult-projectile--file dir)
+    (dirvish-peek-mode 1)))
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
@@ -2018,11 +2022,6 @@
 
 (leaf npm
   :straight t)
-
-(leaf todoist
-  :straight t
-  :init
-  (setq todoist-token (getenv "TODOIST_TOKEN")))
 
 (leaf devdocs-browser
   :straight t
