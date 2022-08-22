@@ -222,26 +222,31 @@
     (interactive)
     (activate-input-method default-input-method)))
 
-(set-face-attribute 'default nil :font "Iosevka Term-14")
-(set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
-(set-face-attribute 'variable-pitch nil :family "MigMix 1M" :height 1.0)
-
-;; Japanese font
-(set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M"))
+(leaf font-config
+  :init
+  (defun set-font-faces nil
+    (set-face-attribute 'default nil :font "Iosevka Term-14")
+    (set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
+    (set-face-attribute 'variable-pitch nil :family "MigMix 1M" :height 1.0)
+    ;; Japanese font
+    (set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M")))
+  (set-font-faces)
+  :hook
+  ;; hook for daemon mode
+  (server-after-make-frame-hook . set-font-faces))
 
 ;; icons dependency
 (leaf all-the-icons
   :straight t
   :custom
-  (all-the-icons-scale-factor . 1.1))
+  (all-the-icons-scale-factor . 1.0))
 
-(leaf
-  kind-icon
+(leaf kind-icon
   :straight t
   :after corfu
   :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
+  (kind-icon-default-face . 'corfu-default) ; to compute blended backgrounds correctly
+  :defer-config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (leaf emojify
@@ -268,8 +273,10 @@
 
 (leaf dashboard
   :straight t
-  :hook (after-init-hook . dashboard-setup-startup-hook)
+  :require t
+  ;; :hook (after-init-hook . dashboard-setup-startup-hook)
   :custom
+  (initial-buffer-choice . (lambda () (get-buffer-create "*dashboard*")))
   (dashboard-banner-logo-title . "Kurumi Emacs")
   (dashboard-startup-banner . 'logo)
   (dashboard-footer-messages .
@@ -293,22 +300,26 @@
 (leaf doom-modeline
   :straight t
   :hook
-  (window-setup-hook . doom-modeline-mode)
+  (after-init-hook . doom-modeline-mode)
+  (server-after-make-frame-hook . fix-modeline-faces)
   :custom
   (doom-modeline-minor-modes . nil)
   (doom-modeline-major-mode-icon . t)
   (doom-modeline-bar-width . 3)
-  (doom-modeline-height . 10)
+  (doom-modeline-height . 1)
   (doom-modeline-modal-icon . t)
   (doom-modeline-icon . t)
   :defer-config
-  ;; Define your custom doom-modeline
   (doom-modeline-def-modeline 'main
     '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
     '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
   (doom-modeline-def-modeline 'org-src
     '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; " " <-- can add padding here
+    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
+  ;; HACK: fix modeline right side cut off
+  (defun fix-modeline-faces nil
+    (set-face-attribute 'mode-line nil :height 1.0)
+    (set-face-attribute 'mode-line-inactive nil :height 1.0)))
 
 (leaf centaur-tabs
   :straight t
@@ -549,6 +560,7 @@
 
         (persp-rename project-name))
       ;; ;; create perspective with last perspective name
+
       ;; (persp-new persp-name)
 
 
@@ -580,10 +592,11 @@
   ;; save current windows with perspective name
   (defun burly-bookmark-perspective-windows (&rest _ignore)
     "Save burly windows bookmark with current perspective name."
-    (interactive)
-    ;; save non-"main" perspective
-    (when (not (string= persp-initial-frame-name (persp-current-name)))
-      (burly-bookmark-windows (persp-current-name)))
+    (interactive))
+  ;; save non-"main" perspective
+
+  (when (not (string= persp-initial-frame-name (persp-current-name)))
+    (burly-bookmark-windows (persp-current-name))
     ;; save "main" perspective as project one
     (when (string= persp-initial-frame-name (persp-current-name))
       (burly-perspective-init-project-persp)))
@@ -601,8 +614,8 @@
   ;; create perspective with burly
   (defun burly-perspective--windows-set-before-advice (&rest _ignore)
     "Create or Switch perspective before setting burly windows."
+    (persp-new burly-opened-bookmark-name)
     (persp-switch burly-opened-bookmark-name))
-
   (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
 
 (leaf
@@ -1070,7 +1083,7 @@
   (leaf lsp-origami
     :straight t
     :hook
-    (lsp-after-open-hook . #'lsp-origami-try-enable))
+    (lsp-after-initialize-hook . #'lsp-origami-try-enable))
   ;; :after evil
   :global-minor-mode global-origami-mode
   :bind
@@ -1899,6 +1912,11 @@
   (lsp-rust-analyzer-cargo-watch-command . "clippy")
   (lsp-rust-analyzer-server-display-inlay-hints . t))
 
+(leaf go-mode
+  :straight t
+  :hook
+  (go-mode-hook . lsp-deferred))
+
 (leaf lsp-pyright
   :straight t
   :init
@@ -2031,6 +2049,19 @@
 
 (leaf npm
   :straight t)
+
+(leaf open-in-editor
+  :config
+  (defun open-in-vscode nil
+    "Open current file in VSCode keeping cursor position."
+    (interactive)
+    (friendly-shell-command-async
+     (format "code -r %s -g %s:%d:%d"
+             (projectile-project-root default-directory)
+             (buffer-file-name)
+             (line-number-at-pos)
+             (current-column))
+     :kill-buffer t)))
 
 (leaf devdocs-browser
   :straight t
