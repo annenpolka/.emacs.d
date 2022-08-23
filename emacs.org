@@ -1027,8 +1027,6 @@ Diredをオーバーホールするファイラ。
         (unless (string= persp-name persp-initial-frame-name)
           (burly-bookmark-windows project-name))))
 
-
-
     ;; initalize only if in "main" persp
     (defun burly-perspective-init-if-initial-frame (&rest _ignore)
       (when (string= persp-initial-frame-name (persp-current-name))
@@ -1038,20 +1036,16 @@ Diredをオーバーホールするファイラ。
     ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
     ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
 
-
     ;; save current windows with perspective name
     (defun burly-bookmark-perspective-windows (&rest _ignore)
       "Save burly windows bookmark with current perspective name."
-      (interactive))
-    ;; save non-"main" perspective
-
-    (when (not (string= persp-initial-frame-name (persp-current-name)))
-      (burly-bookmark-windows (persp-current-name))
-      ;; save "main" perspective as project one
-      (when (string= persp-initial-frame-name (persp-current-name))
-        (burly-perspective-init-project-persp)))
-
-
+      (interactive)
+      ;; save non-"main" perspective
+      (when (not (string= persp-initial-frame-name (persp-current-name)))
+        (burly-bookmark-windows (persp-current-name))
+        ;; save "main" perspective as project one
+        (when (string= persp-initial-frame-name (persp-current-name))
+          (burly-perspective-init-project-persp))))
 
     ;; save perspective on change/save
     (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
@@ -1915,6 +1909,7 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     ;; (meow--kbd-backward-line . "<up>")
     (meow--kbd-delete-char . "<deletechar>")
     (meow--kbd-kill-region . "S-<delete>")
+    (meow--kbd-kill-line . "<deleteline>")
     (meow-selection-command-fallback .
                                      '((meow-reverse . back-to-indentation)
                                        (meow-change . meow-change-char)
