@@ -222,27 +222,79 @@
     (interactive)
     (activate-input-method default-input-method)))
 
-(leaf font-config
+(leaf fontaine
+  :straight t
+  :require t
   :init
-  (defun set-font-faces nil
-    (set-face-attribute 'default nil :font "Iosevka Term-14")
-    (set-face-attribute 'fixed-pitch nil :family "Iosevka Term" :height 1.0)
-    (set-face-attribute 'variable-pitch nil :family "MigMix 1M" :height 1.0)
-    ;; Japanese font
-    (set-fontset-font t 'japanese-jisx0208 (font-spec :family "Migmix 1M")))
-  (set-font-faces)
-  :hook
-  ;; hook for daemon mode
-  (server-after-make-frame-hook . set-font-faces))
+  ;; Iosevka Comfy is my highly customised build of Iosevka with
+  ;; monospaced and duospaced (quasi-proportional) variants as well as
+  ;; support or no support for ligatures:
+  ;; <https://git.sr.ht/~protesilaos/iosevka-comfy>.
+  ;;
+  ;; Iosevka Comfy            == monospaced, supports ligatures
+  ;; Iosevka Comfy Fixed      == monospaced, no ligatures
+  ;; Iosevka Comfy Duo        == quasi-proportional, supports ligatures
+  ;; Iosevka Comfy Wide       == like Iosevka Comfy, but wider
+  ;; Iosevka Comfy Wide Fixed == like Iosevka Comfy Fixed, but wider
+  (setq fontaine-presets
+        '((tiny
+           :default-height 70)
+          (small
+           :default-height 90)
+          (regular
+           :default-height 120)
+          (medium
+           :default-height 130)
+          (large
+           :default-weight semilight
+           :default-height 140
+           :bold-weight extrabold)
+          (presentation
+           :default-weight semilight
+           :default-height 170
+           :bold-weight extrabold)
+          (jumbo
+           :default-weight semilight
+           :default-height 220
+           :bold-weight extrabold)
+          (t ; shared fallback properties
+           ;; I keep all properties for didactic purposes, but most can be
+           ;; omitted.  See the fontaine manual for the technicalities:
+           ;; <https://protesilaos.com/emacs/fontaine>.
+           :default-family "Iosevka Term"
+           :default-weight regular
+           :default-height 120
+           :fixed-pitch-family nil ; falls back to :default-family
+           :fixed-pitch-weight nil ; falls back to :default-weight
+           :fixed-pitch-height 1.0
+           :fixed-pitch-serif-family nil ; falls back to :default-family
+           :fixed-pitch-serif-weight nil ; falls back to :default-weight
+           :fixed-pitch-serif-height 1.0
+           :variable-pitch-family "MigMix 1M"
+           :variable-pitch-weight nil
+           :variable-pitch-height 1.0
+           :bold-family nil ; use whatever the underlying face has
+           :bold-weight bold
+           :italic-family nil
+           :italic-slant italic
+           :line-spacing nil)))
+  ;; Recover last preset or fall back to desired style from
+  ;; `fontaine-presets'.
+  (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+
+  ;; The other side of `fontaine-restore-latest-preset'.
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
 
 ;; icons dependency
 (leaf all-the-icons
   :straight t
+  :require t
   :custom
   (all-the-icons-scale-factor . 1.0))
 
 (leaf kind-icon
   :straight t
+  :after corfu
   :custom
   (kind-icon-default-face . 'corfu-default) ; to compute blended backgrounds correctly
   :defer-config
@@ -300,7 +352,7 @@
   :straight t
   :hook
   (after-init-hook . doom-modeline-mode)
-  (server-after-make-frame-hook . fix-modeline-faces)
+  ;; (server-after-make-frame-hook . fix-modeline-faces) ; hook for daemon
   :custom
   (doom-modeline-minor-modes . nil)
   (doom-modeline-major-mode-icon . t)
@@ -314,11 +366,7 @@
     '(misc-info minor-modes input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
   (doom-modeline-def-modeline 'org-src
     '(bar modals matches buffer-info remote-host buffer-position parrot selection-info lsp checker)
-    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs)) ; " " <-- can add padding here
-  ;; HACK: fix modeline right side cut off
-  (defun fix-modeline-faces nil
-    (set-face-attribute 'mode-line nil :height 1.0)
-    (set-face-attribute 'mode-line-inactive nil :height 1.0)))
+    '(misc-info minor-modes lsp input-method buffer-encoding major-mode process vcs))) ; " " <-- can add padding here
 
 (leaf centaur-tabs
   :straight t
@@ -995,6 +1043,7 @@
                            (?b . anyblock) ;; `b' for bracket
                            (?c . curly)
                            (?s . string)
+                           (?\" . string)
                            (?e . symbol)
                            (?w . window)
                            (?B . buffer)
@@ -1227,10 +1276,8 @@
         (no-littering-expand-var-file-name "wordfreq-dicts/")))
 
 ;; completion style
-(leaf
-  fussy
+(leaf fussy
   :straight t
-  :require t
   :init
   (leaf
     fuz-bin

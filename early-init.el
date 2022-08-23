@@ -142,8 +142,8 @@
 
 ;; Reduce rendering/line scan work for Emacs by not rendering cursors or regions
 ;; in non-focused windows.
-(setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
+;; (setq-default cursor-in-non-selected-windows nil)
+;; (setq highlight-nonselected-windows nil)
 
 ;; More performant rapid scrolling over unfontified regions. May cause brief
 ;; spells of inaccurate syntax highlighting right after scrolling, which should
