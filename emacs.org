@@ -557,7 +557,9 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     (set-japanese-font-face)
     :hook
     ;; hook for daemon mode
-    (server-after-make-frame-hook . set-japanese-font-face))
+    (server-after-make-frame-hook . set-japanese-font-face)
+    :bind
+    ("C-c F" . fontaine-set-preset))
 #+end_src
 ** all-the-icons
 #+begin_src emacs-lisp
