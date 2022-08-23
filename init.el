@@ -281,7 +281,9 @@
   (set-japanese-font-face)
   :hook
   ;; hook for daemon mode
-  (server-after-make-frame-hook . set-japanese-font-face))
+  (server-after-make-frame-hook . set-japanese-font-face)
+  :bind
+  ("C-c F" . fontaine-set-preset))
 
 ;; icons dependency
 (leaf all-the-icons
@@ -721,6 +723,12 @@
   (prog-mode-hook . rainbow-mode)
   (org-mode-hook . rainbow-mode))
 
+(leaf winner-mode
+  :bind
+  (("C-z" . winner-undo)
+   ("C-S-z" . winner-redo))
+  :global-minor-mode winner-mode)
+
 ;; focus window
 (leaf
   zoom
@@ -739,12 +747,6 @@
   :config
   ;; exclude on vterm
   (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
-
-(leaf winner-mode
-  :bind
-  (("C-z" . winner-undo)
-   ("C-S-z" . winner-redo))
-  :global-minor-mode winner-mode)
 
 (leaf move-or-create-window
   :doc "focus.nvim in emacs"
@@ -851,7 +853,7 @@
      '("w k" . move-or-create-window-above)
      '("w h" . move-or-create-window-left)
      '("w l" . move-or-create-window-right)
-     ;; origami-mode code folding
+     ;; code folding map
      '("f" . "s-f")
      ;; version control operations
      '("v" . my-git-actions/body)
