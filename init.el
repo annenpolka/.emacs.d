@@ -226,16 +226,6 @@
   :straight t
   :require t
   :init
-  ;; Iosevka Comfy is my highly customised build of Iosevka with
-  ;; monospaced and duospaced (quasi-proportional) variants as well as
-  ;; support or no support for ligatures:
-  ;; <https://git.sr.ht/~protesilaos/iosevka-comfy>.
-  ;;
-  ;; Iosevka Comfy            == monospaced, supports ligatures
-  ;; Iosevka Comfy Fixed      == monospaced, no ligatures
-  ;; Iosevka Comfy Duo        == quasi-proportional, supports ligatures
-  ;; Iosevka Comfy Wide       == like Iosevka Comfy, but wider
-  ;; Iosevka Comfy Wide Fixed == like Iosevka Comfy Fixed, but wider
   (setq fontaine-presets
         '((tiny
            :default-height 70)
@@ -270,7 +260,7 @@
            :fixed-pitch-serif-family nil ; falls back to :default-family
            :fixed-pitch-serif-weight nil ; falls back to :default-weight
            :fixed-pitch-serif-height 1.0
-           :variable-pitch-family "MigMix 1M"
+           :variable-pitch-family "Migu 1P"
            :variable-pitch-weight nil
            :variable-pitch-height 1.0
            :bold-family nil ; use whatever the underlying face has
@@ -283,7 +273,15 @@
   (fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
 
   ;; The other side of `fontaine-restore-latest-preset'.
-  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset))
+  (add-hook 'kill-emacs-hook #'fontaine-store-latest-preset)
+
+  ;; set japanese font manually
+  (defun set-japanese-font-face nil
+    (set-fontset-font t 'japanese-jisx0208 (font-spec :family "migu 1P")))
+  (set-japanese-font-face)
+  :hook
+  ;; hook for daemon mode
+  (server-after-make-frame-hook . set-japanese-font-face))
 
 ;; icons dependency
 (leaf all-the-icons
@@ -624,8 +622,6 @@
       (unless (string= persp-name persp-initial-frame-name)
         (burly-bookmark-windows project-name))))
 
-
-
   ;; initalize only if in "main" persp
   (defun burly-perspective-init-if-initial-frame (&rest _ignore)
     (when (string= persp-initial-frame-name (persp-current-name))
@@ -635,20 +631,16 @@
   ;; (add-hook 'find-file-hooks 'burly-perspective-init-if-initial-frame)
   ;; (advice-add 'find-file-noselect :after 'burly-perspective-init-if-initial-frame)
 
-
   ;; save current windows with perspective name
   (defun burly-bookmark-perspective-windows (&rest _ignore)
     "Save burly windows bookmark with current perspective name."
-    (interactive))
-  ;; save non-"main" perspective
-
-  (when (not (string= persp-initial-frame-name (persp-current-name)))
-    (burly-bookmark-windows (persp-current-name))
-    ;; save "main" perspective as project one
-    (when (string= persp-initial-frame-name (persp-current-name))
-      (burly-perspective-init-project-persp)))
-
-
+    (interactive)
+    ;; save non-"main" perspective
+    (when (not (string= persp-initial-frame-name (persp-current-name)))
+      (burly-bookmark-windows (persp-current-name))
+      ;; save "main" perspective as project one
+      (when (string= persp-initial-frame-name (persp-current-name))
+        (burly-perspective-init-project-persp))))
 
   ;; save perspective on change/save
   (add-hook 'persp-before-switch-hook 'burly-bookmark-perspective-windows)
@@ -1028,6 +1020,7 @@
   ;; (meow--kbd-backward-line . "<up>")
   (meow--kbd-delete-char . "<deletechar>")
   (meow--kbd-kill-region . "S-<delete>")
+  (meow--kbd-kill-line . "<deleteline>")
   (meow-selection-command-fallback .
                                    '((meow-reverse . back-to-indentation)
                                      (meow-change . meow-change-char)
@@ -1123,23 +1116,24 @@
   :straight t
   :global-minor-mode global-undo-fu-session-mode)
 
-;; Code folding
-(leaf origami
-  :straight t
+(leaf ts-fold
+  :straight (ts-fold
+             :type git
+             :host github
+             :repo "jcs-elpa/ts-fold")
   :init
-  ;; lsp integration
-  (leaf lsp-origami
-    :straight t
+  (leaf ts-fold-indicators
+    :straight (ts-fold-indicators
+               :type git
+               :host github
+               :repo "jcs-elpa/ts-fold")
     :hook
-    (lsp-after-initialize-hook . #'lsp-origami-try-enable))
-  ;; :after evil
-  :global-minor-mode global-origami-mode
+    (tree-sitter-after-on-hook . ts-fold-indicators-mode)
+    :custom
+    (ts-fold-indicators-fringe . 'right-fringe))
   :bind
-  (:origami-mode-map
-   (("s-f j" . origami-show-node)
-    ("s-f k" . origami-close-node)
-    ("s-f n" . origami-forward-fold)
-    ("s-f p" . origami-previous-fold))))
+  (("s-f j" . ts-fold-open)
+   ("s-f k" . ts-fold-close)))
 
 (leaf avy
   :straight t
