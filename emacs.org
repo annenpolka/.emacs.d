@@ -701,7 +701,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
     :require t
     :global-minor-mode minions-mode)
 #+end_src
-** nyan-mode
+** COMMENT nyan-mode
 #+begin_src emacs-lisp
   (leaf nyan-mode
     :straight t
