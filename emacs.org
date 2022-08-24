@@ -536,7 +536,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
              :fixed-pitch-serif-family nil ; falls back to :default-family
              :fixed-pitch-serif-weight nil ; falls back to :default-weight
              :fixed-pitch-serif-height 1.0
-             :variable-pitch-family "Migu 1P"
+             :variable-pitch-family "Iosevka"
              :variable-pitch-weight nil
              :variable-pitch-height 1.0
              :bold-family nil ; use whatever the underlying face has
