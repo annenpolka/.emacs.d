@@ -730,8 +730,7 @@
   :global-minor-mode winner-mode)
 
 ;; focus window
-(leaf
-  zoom
+(leaf zoom
   :straight t
   :blackout t
   :global-minor-mode zoom-mode
@@ -1321,20 +1320,6 @@
 (leaf yasnippet-snippets
   :straight t
   :after yasnippet)
-
-(leaf go-translate
-  :straight t
-  :require t
-  :config
-  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
-  (setq gts-default-translator
-        (gts-translator
-         :picker (gts-prompt-picker)
-         :engines (list
-                   (gts-bing-engine)
-                   (gts-google-engine)
-                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
-         :render (gts-buffer-render))))
 
 ;; flycheck syntax checking
 (leaf flycheck
@@ -2038,6 +2023,20 @@
   (quickrun-focus-p . t)
   :config
   (quickrun-set-default "c++" "c++/g++"))
+
+(leaf go-translate
+  :straight t
+  :require t
+  :config
+  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
+  (setq gts-default-translator
+        (gts-translator
+         :picker (gts-prompt-picker)
+         :engines (list
+                   (gts-bing-engine)
+                   (gts-google-engine)
+                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
+         :render (gts-buffer-render))))
 
 (leaf docker
   :straight t)
