@@ -3656,6 +3656,16 @@ TODO: setup lsp ui tools
     (add-to-list 'devdocs-browser-major-mode-docs-alist
                  '(lisp-interaction-mode "elisp")))
 #+end_src
+** COMMENT devdocs
+#+begin_src emacs-lisp
+  (leaf devdocs
+    :straight t
+    :bind
+    (("C-c d" . devdocs-lookup)
+     (:devdocs-mode-map
+      ("C-c h" . devdocs-go-back)
+      ("C-c l" . devdocs-go-forward))))
+#+end_src
 * Screencasting
 ** gif-screencast
 #+begin_src emacs-lisp
