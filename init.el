@@ -260,7 +260,7 @@
            :fixed-pitch-serif-family nil ; falls back to :default-family
            :fixed-pitch-serif-weight nil ; falls back to :default-weight
            :fixed-pitch-serif-height 1.0
-           :variable-pitch-family "Migu 1P"
+           :variable-pitch-family "Iosevka"
            :variable-pitch-weight nil
            :variable-pitch-height 1.0
            :bold-family nil ; use whatever the underlying face has
@@ -853,6 +853,7 @@
      '("w k" . move-or-create-window-above)
      '("w h" . move-or-create-window-left)
      '("w l" . move-or-create-window-right)
+     '("w w" . window-swap-states)
      ;; code folding map
      '("f" . "s-f")
      ;; version control operations
@@ -1014,6 +1015,7 @@
                             (help-mode . normal)
                             (Man-mode . normal)
                             (eww-mode . normal)
+                            (devdocs-mode . normal)
                             (vterm-mode . insert)
                             (eshell-mode . insert)))
 
@@ -1335,15 +1337,10 @@
          :render (gts-buffer-render))))
 
 ;; flycheck syntax checking
-(leaf
-  flycheck
+(leaf flycheck
   :straight t
   :require t
   :global-minor-mode global-flycheck-mode
-  :init
-  (leaf flycheck-inline
-    :straight t
-    :hook (flycheck-mode-hook . flycheck-inline-mode))
   :custom
   (flycheck-display-errors-delay . 0.1)
   :config
@@ -1385,6 +1382,10 @@
     :overlay-category 'flycheck-info-overlay
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
     :fringe-face 'flycheck-fringe-info))
+
+(leaf flycheck-inline
+  :straight t
+  :hook (flycheck-mode-hook . flycheck-inline-mode))
 
 (leaf flyspell
   :blackout (flyspell-mode flyspell-prog-mode)
@@ -2106,6 +2107,8 @@
 (leaf devdocs-browser
   :straight t
   :bind
+  (("C-c d" . devdocs-browser-open))
+  (("C-c D" . devdocs-browser-open-in))
   ((:eww-mode-map
     ("C-c h" . eww-back-url)
     ("C-c l" . eww-forward-url)))
