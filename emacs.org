@@ -1194,7 +1194,7 @@ names, e.g. #0000ff is displayed in white with a blue background.
     (zoom-size . '(0.618 . 0.618))
     (zoom-ignored-major-modes . '(dirvish-mode)))
 #+end_src
-*** centered-cursor-mode
+** centered-cursor-mode
 #+begin_src emacs-lisp
 (leaf centered-cursor-mode
   :straight t
