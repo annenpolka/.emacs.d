@@ -721,6 +721,10 @@
    (highlight-indent-guides-auto-enabled . t)
    (highlight-indent-guides-responsive . t)))
 
+(leaf color-identifiers-mode
+  :straight t
+  :global-minor-mode global-color-identifiers-mode)
+
 (leaf rainbow-delimiters
   :straight t
   :hook ((prog-mode-hook org-mode-hook) . rainbow-delimiters-mode))
@@ -1861,9 +1865,6 @@
   :commands
   (friendly-remote-shell))
 
-(leaf shelldon
-  :straight t)
-
 (leaf parinfer-rust-mode
   :straight t
   :hook (emacs-lisp-mode-hook . parinfer-rust-mode)
@@ -1892,7 +1893,8 @@
   ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
   (c++-mode-hook . lsp-deferred)
   :custom
-  (lsp-idle-delay . 0.5)
+  (lsp-idle-delay . 0.3)
+  (lsp-response-timeout . 5)
   (lsp-log-io . t)
   (lsp-auto-guess-root . t)
   (lsp-completion-provider . :capf)
