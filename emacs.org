@@ -320,9 +320,10 @@ package-archivesのURL設定と、straight.elとleaf.elのインストールを�
     persistent-scratch
     :doc "keep scratch buffer state across sessions"
     :straight t
-    :defun (persistent-scratch-setup-default)
+    :after no-littering
+    :defun (persistent-scratch-autosave-mode)
     :config
-    (persistent-scratch-setup-default))
+    (persistent-scratch-autosave-mode))
 #+end_src
 
 ** COMMENT Automatic Tangling (orgファイル→init.elへの書き出し)
@@ -498,7 +499,6 @@ DEPRECATED: 現在はfontaineを使っている
 #+begin_src emacs-lisp
   (leaf fontaine
     :straight t
-    :require t
     :init
     (setq fontaine-presets
           '((tiny
@@ -613,7 +613,16 @@ DEPRECATED: 現在はfontaineを使っている
 #+begin_src emacs-lisp
   (leaf emojify
     :straight t
-    :hook (after-init-hook . global-emojify-mode))
+    :hook (after-init-hook . global-emojify-mode)
+    :config
+    ;; set emoji font for symbol
+    (when (member "Noto Color Emoji" (font-family-list))
+      (progn
+        (setq use-default-font-for-symbols nil)
+        (set-fontset-font
+         t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
+    :custom
+    (emojify-display-style . 'unicode))
 #+end_src
 * Themes
 ** COMMENT Modus Themes
@@ -1235,41 +1244,39 @@ names, e.g. #0000ff is displayed in white with a blue background.
 #+end_src
 ** move-or-create-window
 #+begin_src emacs-lisp
-(leaf move-or-create-window
-  :doc "focus.nvim in emacs"
-  :config
-  (defun move-or-create-window-above nil
-    (interactive)
-    (if (window-in-direction 'above)
-        (windmove-up)
-      (progn
-        (split-window-below)
-        (windmove-up))))
+  (leaf move-or-create-window
+    :doc "focus.nvim in emacs"
+    :config
+    (defun move-or-create-window-above nil
+      (interactive)
+      (if (window-in-direction 'above)
+          (windmove-up)
+        (progn
+          (split-window-below)
+          (windmove-up))))
 
-  (defun move-or-create-window-below nil
-    (interactive)
-    (if (window-in-direction 'below)
-        (windmove-down)
-      (progn
-        (split-window-below)
-        (windmove-down))))
+    (defun move-or-create-window-below nil
+      (interactive)
+      (if (window-in-direction 'below)
+          (windmove-down)
+        (progn
+          (split-window-below)
+          (windmove-down))))
+    (defun move-or-create-window-left nil
+      (interactive)
+      (if (window-in-direction 'left)
+          (windmove-left)
+        (progn
+          (split-window-right)
+          (windmove-left))))
 
-  (defun move-or-create-window-left nil
-    (interactive)
-    (if (window-in-direction 'left)
-        (windmove-left)
-      (progn
-        (split-window-right)
-        (windmove-left))))
-
-  (defun move-or-create-window-right nil
-    (interactive)
-    (if (window-in-direction 'right)
-        (windmove-right)
-      (progn
-        (split-window-right)
-        (windmove-right)))))
-
+    (defun move-or-create-window-right nil
+      (interactive)
+      (if (window-in-direction 'right)
+          (windmove-right)
+        (progn
+          (split-window-right)
+          (windmove-right)))))
 #+end_src
 * Editing
 ** COMMENT Evil Modal Setup
@@ -2389,29 +2396,27 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
                               company-yasnippet
                               ;; company-dabbrev
                               company-dabbrev-code
-                              company-same-mode-buffers
+                              ;; company-same-mode-buffers
                               company-semantic
                               company-gtags
                               company-etags
                               ;; company-wordfreq
                               company-oddmuse
                               company-bbdb)
-
+                             ;; no lsp completion
                              (company-keywords
                               company-yasnippet
                               ;; company-dabbrev
                               company-dabbrev-code
-                              company-same-mode-buffers
+                              ;; company-same-mode-buffers
                               company-semantic
                               company-gtags
                               company-etags
                               ;; company-wordfreq
                               company-oddmuse
                               company-bbdb)
-
                              company-files
                              company-dabbrev
-                             company-same-mode-buffers
                              company-wordfreq
                              company-bbdb
                              company-oddmuse))
@@ -2511,23 +2516,24 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
      (compleiton-category-overrides . nil)
      (fussy-filter-fn . 'fussy-filter-default)
      (fussy-score-fn . 'fussy-fuz-bin-score)
-     (fussy-fuz-use-skim-p . t))
+     (fussy-fuz-use-skim-p . t)
+     (fussy-use-cache . t))
     :config
     ;; integrate with company
     (defun j-company-capf (f &rest args)
       "Manage `completion-styles'."
       (let ((fussy-max-candidate-limit 5000)
             (fussy-default-regex-fn 'fussy-pattern-first-letter)
-            (fussy-prefer-prefix nil))
-        (apply f args)))
-
+            (fussy-prefer-prefix nil)))
+      (apply f args))
     (defun j-company-transformers (f &rest args)
       "Manage `company-transformers'."
       (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-        (apply f args)))
-
-    (advice-add 'company--transform-candidates :around 'j-company-transformers)
-    (advice-add 'company-capf :around 'j-company-capf))
+        (apply f args))))
+  (advice-add 'company--transform-candidates :around 'j-company-transformers)
+  (advice-add 'company-capf :around 'j-company-capf)
+  ;; For cache functionality.
+  (advice-add 'company-auto-begin :before 'fussy-wipe-cache)
 #+end_src
 *** yasnippet
 **** yasnippet
@@ -2582,7 +2588,7 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
     :require t
     :global-minor-mode global-flycheck-mode
     :custom
-    (flycheck-display-errors-delay . 0.1)
+    (flycheck-display-errors-delay . 0.2)
     :config
     ;; tweak fringe icons
     (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
@@ -2628,6 +2634,31 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
   (leaf flycheck-inline
     :straight t
     :hook (flycheck-mode-hook . flycheck-inline-mode))
+#+end_src
+*** COMMENT flycheck-posframe
+#+begin_src emacs-lisp
+  (leaf flycheck-posframe
+    :straight t
+    :after flycheck
+    :hook (flycheck-mode-hook . flycheck-posframe-mode)
+    :custom
+    ;; (flycheck-posframe-position . 'window-top-right-corner)
+    :config
+    (flycheck-posframe-configure-pretty-defaults))
+#+end_src
+*** COMMENT sideline
+複数行のメッセージでレイアウトが崩れる
+#+begin_src emacs-lisp
+  (leaf sideline
+    :straight t
+    :hook (flycheck-mode-hook . sideline-mode)
+    :init
+    (leaf sideline-flycheck :straight t :hook (flycheck-mode-hook . sideline-flycheck-setup))
+    (leaf sideline-lsp :straight t)
+    (setq sideline-backends-right '((sideline-lsp      . up)
+                                    (sideline-flycheck . down)))
+    :custom
+    (sideline-delay . 0.1))
 #+end_src
 ** flyspell (with flyspell-correct)
 *** flyspell
@@ -2943,12 +2974,14 @@ projectile integration
     ;; create persp and cd before consult-projectile
     (consult-customize
      consult-projectile--source-projectile-file
+     consult-projectile--choose-file
      :preview-key '(:debounce 0.3 any))
     (defun kurumi-consult-projectile--project-persp-action (dir)
       (persp-switch (projectile-project-name dir))
       (cd (projectile-project-root dir))
       ;; HACK: dirvish's preview duplicates consult's one by, so disable it temporarily
       (dirvish-peek-mode -1)
+      ;; FIXME: should set preview-key :debounce on consult-projectile--file
       (consult-projectile--file dir)
       (dirvish-peek-mode 1)))
 #+end_src
@@ -3268,137 +3301,132 @@ fish-like history suggestion
 **** lsp-mode
 ***** lsp-mode
 #+begin_src emacs-lisp
-  ;;; lsp
-(leaf
-  lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (defun my/lsp-mode-setup-completion ()
-    (setf
-     (alist-get
-      'styles
-      (alist-get 'lsp-capf completion-category-defaults))
-     '(orderless))) ;; Configure orderless
-  :hook
-  ;; (lsp-mode . lsp-enable-which-key-integration)
-  ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-  (c++-mode-hook . lsp-deferred)
-  :custom
-  (lsp-idle-delay . 0.5)
-  (lsp-log-io . t)
-  (lsp-auto-guess-root . t)
-  (lsp-completion-provider . :capf)
-  (lsp-keymap-prefix . "s-l"))
+  (leaf lsp-mode
+    :commands (lsp lsp-deferred)
+    :init
+    (defun my/lsp-mode-setup-completion ()
+      (setf
+       (alist-get
+        'styles
+        (alist-get 'lsp-capf completion-category-defaults))
+       '(orderless))) ;; Configure orderless
+    :hook
+    ;; (lsp-mode . lsp-enable-which-key-integration)
+    ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
+    (c++-mode-hook . lsp-deferred)
+    :custom
+    (lsp-idle-delay . 0.5)
+    (lsp-log-io . t)
+    (lsp-auto-guess-root . t)
+    (lsp-completion-provider . :capf)
+    (lsp-keymap-prefix . "s-l"))
 #+end_src
 ***** lsp-ui
-TODO: setup lsp ui tools
 #+begin_src emacs-lisp
-(leaf lsp-ui
-  :doc "UI modules for lsp-mode"
-  :url "https://github.com/emacs-lsp/lsp-ui"
-  :straight t
-  :after lsp-mode
-  :bind
-  (:lsp-ui-mode-map
-   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-   ([remap xref-find-references] . lsp-ui-peek-find-references))
+  (leaf lsp-ui
+    :doc "UI modules for lsp-mode"
+    :url "https://github.com/emacs-lsp/lsp-ui"
+    :straight t
+    :after lsp-mode
+    :bind
+    (:lsp-ui-mode-map
+     ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+     ([remap xref-find-references] . lsp-ui-peek-find-references))
 
-  :custom
-  ((lsp-ui-doc-enable . t)
-   (lsp-ui-doc-deley . 0.5)
-   (lsp-ui-doc-header . t)
-   (lsp-ui-doc-include-signature . t)
-   (lsp-ui-doc-position . 'at-point)
-   (lsp-ui-doc-max-width . 150)
-   (lsp-ui-doc-max-height . 30)
-   (lsp-ui-doc-use-childframe . nil)
-   (lsp-ui-doc-use-webkit . nil)
-   (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
-   (lsp-ui-sideline-show-hover . nil)
-   (lsp-ui-sideline-show-code-actions . t)
-   (lsp-ui-flycheck-enable . t)
-   (lsp-ui-peek-enable . t)
-   (lsp-ui-peek-peek-height . 20)
-   (lsp-ui-peek-list-width . 50)
-   (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
+    :custom
+    ((lsp-ui-doc-enable . t)
+     (lsp-ui-doc-deley . 0.5)
+     (lsp-ui-doc-header . t)
+     (lsp-ui-doc-include-signature . t)
+     (lsp-ui-doc-position . 'at-point)
+     (lsp-ui-doc-max-width . 150)
+     (lsp-ui-doc-max-height . 30)
+     (lsp-ui-doc-use-childframe . nil)
+     (lsp-ui-doc-use-webkit . nil)
+     (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
+     (lsp-ui-sideline-show-hover . nil)
+     (lsp-ui-sideline-show-code-actions . t)
+     (lsp-ui-flycheck-enable . t)
+     (lsp-ui-peek-enable . t)
+     (lsp-ui-peek-peek-height . 20)
+     (lsp-ui-peek-list-width . 50)
+     (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
 
-  :hook ((lsp-mode-hook . lsp-ui-mode)))
+    :hook ((lsp-mode-hook . lsp-ui-mode)))
 #+end_src
 **** COMMENT eglot
 #+begin_src emacs-lisp
-(leaf eglot
-  :straight t
-  :hook
-  (c++-mode-hook . eglot-ensure)
-  (rust-mode-hook . eglot-ensure)
-  :custom
-  (eglot-confirm-server-initiated-edits . nil)
-  (rustic-lsp-client . 'eglot)
-  :init
-  ;; flycheck integration
-  (defvar-local +lsp--flycheck-eglot--current-errors nil)
-  (defun +lsp--flycheck-eglot-init (checker callback)
-    "CHECKER is the checker (eglot).
-       CALLBACK is the function that we need to call when we are done, on all the errors."
-    (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
-    (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
+  (leaf eglot
+    :straight t
+    :hook
+    (c++-mode-hook . eglot-ensure)
+    (rust-mode-hook . eglot-ensure)
+    :custom
+    (eglot-confirm-server-initiated-edits . nil)
+    (rustic-lsp-client . 'eglot))
+  ;; :init
+  ;; ;; flycheck integration
+  ;; (defvar-local +lsp--flycheck-eglot--current-errors nil)
+  ;; (defun +lsp--flycheck-eglot-init (checker callback)
+  ;;   "CHECKER is the checker (eglot).
+  ;;      CALLBACK is the function that we need to call when we are done, on all the errors."
+  ;;   (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
+  ;;   (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
 
-  (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
-    (cl-labels
-        ((flymake-diag->flycheck-err
-          (diag)
-          (with-current-buffer (flymake--diag-buffer diag)
-            (flycheck-error-new-at-pos
-             (flymake--diag-beg diag)
-             (pcase (flymake--diag-type diag)
-               ('eglot-note 'info)
-               ('eglot-warning 'warning)
-               ('eglot-error 'error)
-               (_ (error "Unknown diagnostic type, %S" diag)))
-             (flymake--diag-text diag)
-             :end-pos (flymake--diag-end diag)
-             :checker 'eglot
-             :buffer (current-buffer)
-             :filename (buffer-file-name)))))
-      (setq +lsp--flycheck-eglot--current-errors
-            (mapcar #'flymake-diag->flycheck-err diags))
-      ;; Call Flycheck to update the diagnostics annotations
-      (flycheck-buffer-deferred)))
+  ;; (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
+  ;;   (cl-labels
+  ;;       ((flymake-diag->flycheck-err
+  ;;         (diag)
+  ;;         (with-current-buffer (flymake--diag-buffer diag)
+  ;;           (flycheck-error-new-at-pos
+  ;;            (flymake--diag-beg diag)
+  ;;            (pcase (flymake--diag-type diag)
+  ;;              ('eglot-note 'info)
+  ;;              ('eglot-warning 'warning)
+  ;;              ('eglot-error 'error)
+  ;;              (_ (error "Unknown diagnostic type, %S" diag)))
+  ;;            (flymake--diag-text diag)
+  ;;            :end-pos (flymake--diag-end diag)
+  ;;            :checker 'eglot
+  ;;            :buffer (current-buffer)
+  ;;            :filename (buffer-file-name)))))
+  ;;     (setq +lsp--flycheck-eglot--current-errors
+  ;;           (mapcar #'flymake-diag->flycheck-err diags))
+  ;;     ;; Call Flycheck to update the diagnostics annotations
+  ;;     (flycheck-buffer-deferred)))
 
-  (defun +lsp--flycheck-eglot-available-p ()
-    (bound-and-true-p eglot--managed-mode))
+  ;; (defun +lsp--flycheck-eglot-available-p ()
+  ;;   (bound-and-true-p eglot--managed-mode))
 
-  (flycheck-define-generic-checker 'eglot
-    "Report `eglot' diagnostics using `flycheck'."
-    :start #'+lsp--flycheck-eglot-init
-    :predicate #'+lsp--flycheck-eglot-available-p
-    :modes '(prog-mode text-mode))
+  ;; (flycheck-define-generic-checker 'eglot
+  ;;   "Report `eglot' diagnostics using `flycheck'."
+  ;;   :start #'+lsp--flycheck-eglot-init
+  ;;   :predicate #'+lsp--flycheck-eglot-available-p
+  ;;   :modes '(prog-mode text-mode))
 
-  (push 'eglot flycheck-checkers)
+  ;; (push 'eglot flycheck-checkers)
 
-  (defun +lsp-eglot-prefer-flycheck-h ()
-    (when eglot--managed-mode
-      (flymake-mode -1)
-      (when-let ((current-checker (flycheck-get-checker-for-buffer)))
-        (unless (equal current-checker 'eglot)
-          (flycheck-add-next-checker 'eglot current-checker)))
-      (flycheck-add-mode 'eglot major-mode)
-      (flycheck-mode 1)
-      ;; Call flycheck on initilization to make sure to display initial
-      ;; errors
-      (flycheck-buffer-deferred)))
+  ;; (defun +lsp-eglot-prefer-flycheck-h ()
+  ;;   (when eglot--managed-mode
+  ;;     (flymake-mode -1)
+  ;;     (when-let ((current-checker (flycheck-get-checker-for-buffer)))
+  ;;       (unless (equal current-checker 'eglot)
+  ;;         (flycheck-add-next-checker 'eglot current-checker)))
+  ;;     (flycheck-add-mode 'eglot major-mode)
+  ;;     (flycheck-mode 1)
+  ;;     ;; Call flycheck on initilization to make sure to display initial
+  ;;     ;; errors
+  ;;     (flycheck-buffer-deferred)))
 
-  (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
+  ;; (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
 
-  :config
-  ;; (with-eval-after-load
-  (when (and
-         (not (fboundp 'flymake--diag-buffer))
-         (fboundp 'flymake--diag-locus))
-    (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
-  ;; )
-
-
+  ;; :config
+  ;; ;; (with-eval-after-load
+  ;; (when (and
+  ;;        (not (fboundp 'flymake--diag-buffer))
+  ;;        (fboundp 'flymake--diag-locus))
+  ;;   (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
+  ;; ;; )
 #+end_src
 *** Lua Mode
 #+begin_src emacs-lisp

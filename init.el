@@ -119,9 +119,10 @@
   persistent-scratch
   :doc "keep scratch buffer state across sessions"
   :straight t
-  :defun (persistent-scratch-setup-default)
+  :after no-littering
+  :defun (persistent-scratch-autosave-mode)
   :config
-  (persistent-scratch-setup-default))
+  (persistent-scratch-autosave-mode))
 
 (leaf gcmh
   :straight t
@@ -224,7 +225,6 @@
 
 (leaf fontaine
   :straight t
-  :require t
   :init
   (setq fontaine-presets
         '((tiny
@@ -302,7 +302,16 @@
 
 (leaf emojify
   :straight t
-  :hook (after-init-hook . global-emojify-mode))
+  :hook (after-init-hook . global-emojify-mode)
+  :config
+  ;; set emoji font for symbol
+  (when (member "Noto Color Emoji" (font-family-list))
+    (progn
+      (setq use-default-font-for-symbols nil)
+      (set-fontset-font
+       t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
+  :custom
+  (emojify-display-style . 'unicode))
 
 (leaf doom-themes
   :straight t
@@ -765,7 +774,6 @@
       (progn
         (split-window-below)
         (windmove-down))))
-
   (defun move-or-create-window-left nil
     (interactive)
     (if (window-in-direction 'left)
@@ -1185,29 +1193,27 @@
                             company-yasnippet
                             ;; company-dabbrev
                             company-dabbrev-code
-                            company-same-mode-buffers
+                            ;; company-same-mode-buffers
                             company-semantic
                             company-gtags
                             company-etags
                             ;; company-wordfreq
                             company-oddmuse
                             company-bbdb)
-
+                           ;; no lsp completion
                            (company-keywords
                             company-yasnippet
                             ;; company-dabbrev
                             company-dabbrev-code
-                            company-same-mode-buffers
+                            ;; company-same-mode-buffers
                             company-semantic
                             company-gtags
                             company-etags
                             ;; company-wordfreq
                             company-oddmuse
                             company-bbdb)
-
                            company-files
                            company-dabbrev
-                           company-same-mode-buffers
                            company-wordfreq
                            company-bbdb
                            company-oddmuse))
@@ -1293,23 +1299,24 @@
    (compleiton-category-overrides . nil)
    (fussy-filter-fn . 'fussy-filter-default)
    (fussy-score-fn . 'fussy-fuz-bin-score)
-   (fussy-fuz-use-skim-p . t))
+   (fussy-fuz-use-skim-p . t)
+   (fussy-use-cache . t))
   :config
   ;; integrate with company
   (defun j-company-capf (f &rest args)
     "Manage `completion-styles'."
     (let ((fussy-max-candidate-limit 5000)
           (fussy-default-regex-fn 'fussy-pattern-first-letter)
-          (fussy-prefer-prefix nil))
-      (apply f args)))
-
+          (fussy-prefer-prefix nil)))
+    (apply f args))
   (defun j-company-transformers (f &rest args)
     "Manage `company-transformers'."
     (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args)))
-
-  (advice-add 'company--transform-candidates :around 'j-company-transformers)
-  (advice-add 'company-capf :around 'j-company-capf))
+      (apply f args))))
+(advice-add 'company--transform-candidates :around 'j-company-transformers)
+(advice-add 'company-capf :around 'j-company-capf)
+;; For cache functionality.
+(advice-add 'company-auto-begin :before 'fussy-wipe-cache)
 
 (leaf
   yasnippet
@@ -1321,13 +1328,25 @@
   :straight t
   :after yasnippet)
 
+(leaf writeroom-mode
+  :straight t
+  :custom
+  (writeroom-major-modes . '(text-mode
+                             prog-mode
+                             org-mode))
+  :bind
+  (:writeroom-mode-map
+   ("C-M-<" . writeroom-decrease-width)
+   ("C-M->" . writeroom-increase-width)
+   ("C-M-=" . writeroom-adjust-width)))
+
 ;; flycheck syntax checking
 (leaf flycheck
   :straight t
   :require t
   :global-minor-mode global-flycheck-mode
   :custom
-  (flycheck-display-errors-delay . 0.1)
+  (flycheck-display-errors-delay . 0.2)
   :config
   ;; tweak fringe icons
   (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
@@ -1647,12 +1666,14 @@
   ;; create persp and cd before consult-projectile
   (consult-customize
    consult-projectile--source-projectile-file
+   consult-projectile--choose-file
    :preview-key '(:debounce 0.3 any))
   (defun kurumi-consult-projectile--project-persp-action (dir)
     (persp-switch (projectile-project-name dir))
     (cd (projectile-project-root dir))
     ;; HACK: dirvish's preview duplicates consult's one by, so disable it temporarily
     (dirvish-peek-mode -1)
+    ;; FIXME: should set preview-key :debounce on consult-projectile--file
     (consult-projectile--file dir)
     (dirvish-peek-mode 1)))
 
@@ -1813,12 +1834,10 @@
   (setq eshell-last-command-name "catt")
   (eshell-did-you-mean-output-filter "catt: command not found"))
 
-(leaf eshell-prompt-extras
+(leaf eshell-git-prompt
   :straight t
-  :commands (epe-theme-lambda)
-  :custom
-  (eshell-highlight-prompt . nil)
-  (eshell-prompt-function . #'epe-theme-lambda))
+  :config
+  (eshell-git-prompt-use-theme 'git-radar))
 
 (leaf eshell-vterm
   :straight t
@@ -1859,9 +1878,7 @@
   :commands
   (suggest suggest-update))
 
-;;; lsp
-(leaf
-  lsp-mode
+(leaf lsp-mode
   :commands (lsp lsp-deferred)
   :init
   (defun my/lsp-mode-setup-completion ()
