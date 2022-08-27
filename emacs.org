@@ -765,6 +765,8 @@ DEPRECATED: 現在はfontaineを使っている
     :custom
     (centaur-tabs-style . "bar")
     (centaur-tabs-set-icons . t)
+    (centaur-tabs-set-close-button . nil)
+    (centaur-tabs-show-new-tab-button . nil)
     (centaur-tabs-cycle-scope . 'tabs)
     :bind
     ("C-<tab>" . centaur-tabs-forward)
@@ -774,8 +776,9 @@ DEPRECATED: 現在はfontaineを使っている
 #+begin_src emacs-lisp
   (leaf tabspaces
     :straight t
-    :hook (after-init . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
-    :commands (tabspaces-switch-or-create-workspace
+    :hook (after-init-hook . tabspaces-mode) ;; use this only if you want the minor-mode loaded at startup.
+    :commands (tabspaces-mode
+               tabspaces-switch-or-create-workspace
                tabspaces-open-or-create-project-and-workspace)
     :custom
     (tabspaces-use-filtered-buffers-as-default . t)
@@ -794,7 +797,8 @@ DEPRECATED: 現在はfontaineを使っている
 #+begin_src emacs-lisp
   (leaf bufler
     :straight t
-    :require t
+    :custom
+    (tab-line-switch-cycling . t)
     :config
     (bufler-mode)
     (bufler-tabs-mode))
