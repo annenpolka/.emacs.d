@@ -2760,16 +2760,25 @@ aspellなどのスペルチェッカーを利用したspellcorect的なやつ。
 
 #+end_src
 ** eldoc
+*** eldoc
 #+begin_src emacs-lisp
-(leaf
-  eldoc
-  :doc "hovered element documentation"
-  :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
-  :blackout t
-  :preface
-  (defun my:shutup-eldoc-message (f &optional string)
-    (unless (active-minibuffer-window) (funcall f string)))
-  :advice (:around eldoc-message my:shutup-eldoc-message))
+  (leaf eldoc
+    :doc "hovered element documentation"
+    :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
+    :blackout t
+    :custom
+    (eldoc-current-idle-delay . 0.2)
+    :preface
+    (defun my:shutup-eldoc-message-on-minibuffer (f &optional string)
+      (unless (active-minibuffer-window) (funcall f string)))
+    :advice (:around eldoc-message-on-minibuffer my:shutup-eldoc-message-on-minibuffer))
+#+end_src
+*** COMMENT eldoc-overlay
+#+begin_src emacs-lisp
+  (leaf eldoc-overlay
+    :straight t
+    :hook
+    (eldoc-mode-hook . eldoc-overlay-mode))
 #+end_src
 
 ** format-all
