@@ -307,7 +307,7 @@
   ;; set emoji font for symbol
   (when (member "Noto Color Emoji" (font-family-list))
     (progn
-      (setq use-default-font-for-symbols nil)
+      ;; (setq use-default-font-for-symbols nil)
       (set-fontset-font
        t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
   :custom
@@ -392,6 +392,8 @@
   :custom
   (centaur-tabs-style . "bar")
   (centaur-tabs-set-icons . t)
+  (centaur-tabs-set-close-button . nil)
+  (centaur-tabs-show-new-tab-button . nil)
   (centaur-tabs-cycle-scope . 'tabs)
   :bind
   ("C-<tab>" . centaur-tabs-forward)
@@ -1456,15 +1458,16 @@
          ;;  ("zg" . flyspell-correct-at-point)
          ;;  )
 
-(leaf
-  eldoc
+(leaf eldoc
   :doc "hovered element documentation"
   :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
   :blackout t
+  :custom
+  (eldoc-current-idle-delay . 0.2)
   :preface
-  (defun my:shutup-eldoc-message (f &optional string)
+  (defun my:shutup-eldoc-message-on-minibuffer (f &optional string)
     (unless (active-minibuffer-window) (funcall f string)))
-  :advice (:around eldoc-message my:shutup-eldoc-message))
+  :advice (:around eldoc-message-on-minibuffer my:shutup-eldoc-message-on-minibuffer))
 
 ;; formatter bindings
 (leaf format-all
