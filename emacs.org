@@ -618,7 +618,7 @@ DEPRECATED: 現在はfontaineを使っている
     ;; set emoji font for symbol
     (when (member "Noto Color Emoji" (font-family-list))
       (progn
-        (setq use-default-font-for-symbols nil)
+        ;; (setq use-default-font-for-symbols nil)
         (set-fontset-font
          t 'symbol (font-spec :family "Noto Color Emoji") nil 'prepend)))
     :custom
