@@ -440,7 +440,7 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
 ** kurumi-utility-map
 #+begin_src emacs-lisp
   ;; my utility keymap
-  (leaf kurumi-utility
+  (leaf kurumi-utility-map
     :init
     (defvar kurumi-utility-map)
     (setq kurumi-utility-map (make-sparse-keymap))
@@ -453,6 +453,15 @@ Emacs Lispのマクロを展開し、式を確認してデバッグできる。
                ("q" . flycheck-list-errors)
                ("d o" . devdocs-browser-open)
                ("d i" . devdocs-browser-open-in)))
+#+end_src
+** kurumi-common-functions
+#+begin_src emacs-lisp
+  (leaf kurumi-common-functions
+    :init
+    (defun name-of-the-file nil
+      "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
+      (interactive)
+      (buffer-file-name (window-buffer (minibuffer-selected-window)))))
 #+end_src
 * Input Method
 ** mozc
@@ -3683,46 +3692,6 @@ fish-like history suggestion
     :global-minor-mode direnv-mode)
 #+end_src
 * External Tools/Services Integration
-** cpbooster
-#+begin_src emacs-lisp
-  (leaf cpbooster
-    :ensure-system-package
-    (cpbooster . "npm install cpbooster -g")
-    :init
-    (defun name-of-the-file nil
-      "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
-      (interactive)
-      (buffer-file-name (window-buffer (minibuffer-selected-window))))
-
-    (defun cpb-clone nil
-      "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
-      (interactive)
-      (friendly-shell-command-async
-       (mapconcat #'shell-quote-argument
-                  (list "cpbooster" "clone")
-                  " ")
-       :output-buffer "*cpb clone*"))
-
-    (defun cpb-test (&optional cpb-file-name)
-      "Test current cpp-task with cpbooster."
-      (interactive)
-      (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
-        (friendly-shell-command-async
-         (mapconcat #'shell-quote-argument
-                    (list "cpbooster" "test" (expand-file-name cpb-file-name))
-                    " ")
-         :output-buffer "*cpb test*")))
-
-    (defun cpb-submit (&optional cpb-file-name)
-      "Submit current cpp-task with cpbooster."
-      (interactive)
-      (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
-        (friendly-shell-command-async
-         (mapconcat #'shell-quote-argument
-                    (list "cpbooster" "submit" (expand-file-name cpb-file-name))
-                    " ")
-         :output-buffer "*cpb submit*"))))
-#+end_src
 ** w3m
 #+begin_src emacs-lisp
   (leaf w3m
@@ -3756,7 +3725,7 @@ fish-like history suggestion
     (setq todoist-token (getenv "TODOIST_TOKEN")))
 #+end_src
 * Devdocs Browsing
-** devdocs-browser
+** COMMENT devdocs-browser
 #+begin_src emacs-lisp
   (leaf devdocs-browser
     :straight t
@@ -3770,7 +3739,7 @@ fish-like history suggestion
     (add-to-list 'devdocs-browser-major-mode-docs-alist
                  '(lisp-interaction-mode "elisp")))
 #+end_src
-** COMMENT devdocs
+** devdocs
 #+begin_src emacs-lisp
   (leaf devdocs
     :straight t
@@ -3780,6 +3749,73 @@ fish-like history suggestion
       ("C-c h" . devdocs-go-back)
       ("C-c l" . devdocs-go-forward))))
 #+end_src
+* Competitive Programming
+** cpbooster
+#+begin_src emacs-lisp
+  (leaf cpbooster
+    :ensure-system-package
+    (cpbooster . "npm install cpbooster -g")
+    :init
+    (defun cpb-clone nil
+      "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
+      (interactive)
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cpbooster" "clone")
+                  " ")
+       :output-buffer "*cpb clone*"))
+
+    (defun cpb-test (&optional cpb-file-name)
+      "Test current cpp-task with cpbooster."
+      (interactive)
+      (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
+        (friendly-shell-command-async
+         (mapconcat #'shell-quote-argument
+                    (list "cpbooster" "test" (expand-file-name cpb-file-name))
+                    " ")
+         :output-buffer "*cpb test*")))
+
+    (defun cpb-submit (&optional cpb-file-name)
+      "Submit current cpp-task with cpbooster."
+      (interactive)
+      (let ((cpb-file-name (or cpb-file-name (name-of-the-file))))
+        (friendly-shell-command-async
+         (mapconcat #'shell-quote-argument
+                    (list "cpbooster" "submit" (expand-file-name cpb-file-name))
+                    " ")
+         :output-buffer "*cpb submit*"))))
+#+end_src
+** TODO cargo-compete
+#+begin_src emacs-lisp
+  (leaf cargo-compete
+    :ensure-system-package
+    (cargo-compete . "cargo install cargo-compete")
+    :init
+    (defvar cargo-compete-directory (expand-file-name "~/Contests/"))
+    (defvar cargo-compete-online-judge "atcoder")
+    ;; functions
+    (defun cargo-compete-new (name)
+      "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
+      (interactive
+       (list (read-string
+              (format "Contest name (shortcode like `1349' or `1349/A' for %s, or URL): " cargo-compete-online-judge))))
+      ;; init if not done
+      ;; FIXME: can't interact `cargo compete init' prompt
+      (when (not (file-exists-p (concat cargo-compete-directory "compete.toml")))
+        (friendly-shell-command
+         (mapconcat #'shell-quote-argument
+                    (list "cargo" "compete" "init")
+                    " ")
+         :path cargo-compete-directory
+         :output-buffer "*cargo compete init*"))
+
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cargo" "compete" "new" name)
+                  " ")
+       :path cargo-compete-directory
+       :output-buffer "*cargo compete new*")))
+       #+end_src
 * Screencasting
 ** gif-screencast
 #+begin_src emacs-lisp

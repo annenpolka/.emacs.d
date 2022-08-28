@@ -190,7 +190,7 @@
             search-web-default-browser 'browse-url-generic))))
 
 ;; my utility keymap
-(leaf kurumi-utility
+(leaf kurumi-utility-map
   :init
   (defvar kurumi-utility-map)
   (setq kurumi-utility-map (make-sparse-keymap))
@@ -203,6 +203,13 @@
              ("q" . flycheck-list-errors)
              ("d o" . devdocs-browser-open)
              ("d i" . devdocs-browser-open-in)))
+
+(leaf kurumi-common-functions
+  :init
+  (defun name-of-the-file nil
+    "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
+    (interactive)
+    (buffer-file-name (window-buffer (minibuffer-selected-window)))))
 
 ;; mozc ime
 (leaf mozc
@@ -537,6 +544,9 @@
 (leaf git-timemachine
   :straight t
   :commands (git-timemachine git-timemachine-toggle))
+
+(leaf gitignore-templates
+  :straight t)
 
 (leaf
   autorevert
@@ -1894,7 +1904,6 @@
   :hook
   ;; (lsp-mode . lsp-enable-which-key-integration)
   ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-  (c++-mode-hook . lsp-deferred)
   :custom
   (lsp-idle-delay . 0.3)
   (lsp-response-timeout . 5)
@@ -1933,6 +1942,10 @@
    (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
 
   :hook ((lsp-mode-hook . lsp-ui-mode)))
+
+(leaf c++-mode
+  :hook
+  (c++-mode-hook . lsp-deferred))
 
 (leaf lua-mode
   :straight t
@@ -2068,15 +2081,37 @@
   :ensure-system-package (direnv)
   :global-minor-mode direnv-mode)
 
+(leaf w3m
+  :straight t)
+
+(leaf npm
+  :straight t)
+
+(leaf open-in-editor
+  :config
+  (defun open-in-vscode nil
+    "Open current file in VSCode keeping cursor position."
+    (interactive)
+    (friendly-shell-command-async
+     (format "code -r %s -g %s:%d:%d"
+             (projectile-project-root default-directory)
+             (buffer-file-name)
+             (line-number-at-pos)
+             (current-column))
+     :kill-buffer t)))
+
+(leaf devdocs
+  :straight t
+  :bind
+  (("C-c d" . devdocs-lookup)
+   (:devdocs-mode-map
+    ("C-c h" . devdocs-go-back)
+    ("C-c l" . devdocs-go-forward))))
+
 (leaf cpbooster
   :ensure-system-package
   (cpbooster . "npm install cpbooster -g")
   :init
-  (defun name-of-the-file nil
-    "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
-    (interactive)
-    (buffer-file-name (window-buffer (minibuffer-selected-window))))
-
   (defun cpb-clone nil
     "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
     (interactive)
@@ -2106,36 +2141,34 @@
                   " ")
        :output-buffer "*cpb submit*"))))
 
-(leaf w3m
-  :straight t)
+(leaf cargo-compete
+  :ensure-system-package
+  (cargo-compete . "cargo install cargo-compete")
+  :init
+  (defvar cargo-compete-directory (expand-file-name "~/Contests/"))
+  (defvar cargo-compete-online-judge "atcoder")
+  ;; functions
+  (defun cargo-compete-new (name)
+    "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
+    (interactive
+     (list (read-string
+            (format "Contest name (shortcode like `1349' or `1349/A' for %s, or URL): " cargo-compete-online-judge))))
+    ;; init if not done
+    ;; FIXME: can't interact `cargo compete init' prompt
+    (when (not (file-exists-p (concat cargo-compete-directory "compete.toml")))
+      (friendly-shell-command
+       (mapconcat #'shell-quote-argument
+                  (list "cargo" "compete" "init")
+                  " ")
+       :path cargo-compete-directory
+       :output-buffer "*cargo compete init*"))
 
-(leaf npm
-  :straight t)
-
-(leaf open-in-editor
-  :config
-  (defun open-in-vscode nil
-    "Open current file in VSCode keeping cursor position."
-    (interactive)
     (friendly-shell-command-async
-     (format "code -r %s -g %s:%d:%d"
-             (projectile-project-root default-directory)
-             (buffer-file-name)
-             (line-number-at-pos)
-             (current-column))
-     :kill-buffer t)))
-
-(leaf devdocs-browser
-  :straight t
-  :bind
-  (("C-c d" . devdocs-browser-open))
-  (("C-c D" . devdocs-browser-open-in))
-  ((:eww-mode-map
-    ("C-c h" . eww-back-url)
-    ("C-c l" . eww-forward-url)))
-  :config
-  (add-to-list 'devdocs-browser-major-mode-docs-alist
-               '(lisp-interaction-mode "elisp")))
+     (mapconcat #'shell-quote-argument
+                (list "cargo" "compete" "new" name)
+                " ")
+     :path cargo-compete-directory
+     :output-buffer "*cargo compete new*")))
 
 (leaf gif-screencast
   :straight t
