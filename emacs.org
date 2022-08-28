@@ -3357,7 +3357,6 @@ fish-like history suggestion
     :hook
     ;; (lsp-mode . lsp-enable-which-key-integration)
     ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-    (c++-mode-hook . lsp-deferred)
     :custom
     (lsp-idle-delay . 0.3)
     (lsp-response-timeout . 5)
@@ -3472,6 +3471,12 @@ fish-like history suggestion
   ;;        (fboundp 'flymake--diag-locus))
   ;;   (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
   ;; ;; )
+#+end_src
+*** C++ Mode
+#+begin_src emacs-lisp
+  (leaf c++-mode
+    :hook
+    (c++-mode-hook . lsp-deferred))
 #+end_src
 *** Lua Mode
 #+begin_src emacs-lisp
