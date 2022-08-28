@@ -3049,6 +3049,14 @@ projectile integration
           consult-flyspell-always-check-buffer t))
 
 #+end_src
+*** consult-tramp
+#+begin_src emacs-lisp
+  (leaf consult-tramp
+    :straight (consult-tramp
+               :type git
+               :host github
+               :repo "Ladicle/consult-tramp"))
+#+end_src
 ** embark
 #+begin_src emacs-lisp
   ;;; embark
