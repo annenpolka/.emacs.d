@@ -964,6 +964,11 @@ Diredをオーバーホールするファイラ。
     :straight t
     :commands (git-timemachine git-timemachine-toggle))
 #+end_src
+** gitignore-templates
+#+begin_src emacs-lisp
+  (leaf gitignore-templates
+    :straight t)
+#+end_src
 * Projects/Sessions Management
 ** autorevert (バッファの再読込)
 
