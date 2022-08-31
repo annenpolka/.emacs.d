@@ -3799,7 +3799,7 @@ fish-like history suggestion
     :ensure-system-package
     (cargo-compete . "cargo install cargo-compete")
     :init
-    (defvar cargo-compete-atcoder-submit-mode 2) ;; use crate but no binary sujbmit
+    (defvar cargo-compete-atcoder-submit-mode 2) ; use crate but no binary submit
 
     (defun cargo-compete-init (dir sitename)
       "Initialize cargo-compete project on selected directory."
