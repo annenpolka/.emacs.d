@@ -207,7 +207,7 @@
 (leaf kurumi-common-functions
   :init
   (defun name-of-the-file nil
-    "Gets the name of the file the current buffer is based on. Can be used for interactive commands using file name."
+    "Gets the name of the file the current buffer is based on. Can be used for commands using file name."
     (interactive)
     (buffer-file-name (window-buffer (minibuffer-selected-window)))))
 
@@ -733,6 +733,11 @@
    (highlight-indent-guides-auto-enabled . t)
    (highlight-indent-guides-responsive . t)))
 
+(leaf rainbow-identifiers
+  :straight t
+  :hook
+  (prog-mode-hook . rainbow-identifiers-mode))
+
 (leaf color-identifiers-mode
   :straight t
   :global-minor-mode global-color-identifiers-mode)
@@ -891,7 +896,8 @@
      '("K" . helpful-at-point)
      ;; consult search operations
      '("SPC" . consult-buffer)
-     '("s p" . consult-ripgrep)
+     '("s f" . affe-find)
+     '("s p" . affe-grep)
      ;; Use SPC (0-9) for digit arguments.
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
@@ -1328,11 +1334,11 @@
   (defun j-company-transformers (f &rest args)
     "Manage `company-transformers'."
     (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args))))
-(advice-add 'company--transform-candidates :around 'j-company-transformers)
-(advice-add 'company-capf :around 'j-company-capf)
-;; For cache functionality.
-(advice-add 'company-auto-begin :before 'fussy-wipe-cache)
+      (apply f args)))
+  (advice-add 'company--transform-candidates :around 'j-company-transformers)
+  (advice-add 'company-capf :around 'j-company-capf)
+  ;; For cache functionality.
+  (advice-add 'company-auto-begin :before 'fussy-wipe-cache))
 
 (leaf
   yasnippet
@@ -1701,6 +1707,12 @@
   (setq consult-flyspell-select-function 'flyspell-correct-at-point
         consult-flyspell-set-point-after-word t
         consult-flyspell-always-check-buffer t))
+
+(leaf consult-tramp
+  :straight (consult-tramp
+             :type git
+             :host github
+             :repo "Ladicle/consult-tramp"))
 
 ;;; embark
 (leaf embark
@@ -2145,30 +2157,55 @@
   :ensure-system-package
   (cargo-compete . "cargo install cargo-compete")
   :init
-  (defvar cargo-compete-directory (expand-file-name "~/Contests/"))
-  (defvar cargo-compete-online-judge "atcoder")
-  ;; functions
-  (defun cargo-compete-new (name)
-    "Clone a cpp-task from competitive compnion plugin using cpbooster as server."
-    (interactive
-     (list (read-string
-            (format "Contest name (shortcode like `1349' or `1349/A' for %s, or URL): " cargo-compete-online-judge))))
-    ;; init if not done
-    ;; FIXME: can't interact `cargo compete init' prompt
-    (when (not (file-exists-p (concat cargo-compete-directory "compete.toml")))
-      (friendly-shell-command
-       (mapconcat #'shell-quote-argument
-                  (list "cargo" "compete" "init")
-                  " ")
-       :path cargo-compete-directory
-       :output-buffer "*cargo compete init*"))
+  (defvar cargo-compete-atcoder-submit-mode 1)
 
+  (defun cargo-compete-init (dir sitename)
+    "Initialize cargo-compete project on selected directory."
+    (interactive
+     (list
+      (read-directory-name "Directory Name: ")
+      (completing-read
+       "Select site: "
+       '(("atcoder" 1) ("codeforces" 2) ("yukicoder" 3)))))
+    (make-directory dir :parents)
+    (friendly-shell-command
+     (mapconcat (function (lambda (s) (format "%s" s)))
+                (list "yes" cargo-compete-atcoder-submit-mode "|" "cargo" "compete" "init" sitename)
+                " ")
+     :path dir
+     :output-buffer "*cargo compete init*"))
+
+  (defun cargo-compete-new (contest-id)
+    "Clone the Contest's problems."
+    (interactive
+     (list (read-string "Contest name (shortcode like `1349' or `1349/A', or URL): ")))
     (friendly-shell-command-async
      (mapconcat #'shell-quote-argument
-                (list "cargo" "compete" "new" name)
+                (list "cargo" "compete" "new" contest-id)
                 " ")
-     :path cargo-compete-directory
-     :output-buffer "*cargo compete new*")))
+     :path default-directory
+     :output-buffer "*cargo compete new*"))
+
+  (defun cargo-compete-submit nil
+    "Test and submit current problem's answer."
+    (interactive)
+    (let ((problem-name (file-name-base (name-of-the-file))))
+      (friendly-shell-command-async
+       (mapconcat #'shell-quote-argument
+                  (list "cargo" "compete" "submit" problem-name)
+                  " ")
+       :path default-directory
+       :output-buffer "*cargo compete submit*")))
+
+  (defun cargo-compete-open nil
+    "Open current problem's page."
+    (interactive)
+    (let ((problem-name (file-name-base (name-of-the-file))))
+      (friendly-shell-command-to-string
+       (mapconcat #'shell-quote-argument
+                  (list "cargo" "compete" "open" "--bin" problem-name)
+                  " ")
+       :path default-directory))))
 
 (leaf gif-screencast
   :straight t
