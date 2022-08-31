@@ -1628,7 +1628,7 @@
      consult--source-buffer
      consult--source-hidden-buffer
      consult--source-recent-file)))
-
+  (consult-project-function . (lambda (_) (projectile-project-root)))
   :config
   ;; don't set sources on top
   (consult-customize consult--source-buffer persp-consult-source :default nil)
@@ -1737,8 +1737,7 @@
   :global-minor-mode marginalia-mode)
 
 ;; affe fuzzy-finder
-(leaf
-  affe
+(leaf affe
   :straight t
   :commands (affe-grep affe-find)
   :init
