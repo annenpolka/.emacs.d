@@ -1090,8 +1090,7 @@
 (leaf expand-region
     :straight t)
 
-(leaf
-  smartparens
+(leaf smartparens
   :straight t
   :require smartparens-config
   :blackout t
@@ -1192,8 +1191,7 @@
 
   :global-minor-mode global-company-mode
   :custom
-  (
-   (company-idle-delay . 0.1)
+  ((company-idle-delay . 0.1)
    (company-minimum-prefix-length . 2)
    (company-selection-wrap-around . t)
    (company-tooltip-align-annotations . t)
@@ -2156,7 +2154,7 @@
   :ensure-system-package
   (cargo-compete . "cargo install cargo-compete")
   :init
-  (defvar cargo-compete-atcoder-submit-mode 1)
+  (defvar cargo-compete-atcoder-submit-mode 2) ; use crate but no binary submit
 
   (defun cargo-compete-init (dir sitename)
     "Initialize cargo-compete project on selected directory."
