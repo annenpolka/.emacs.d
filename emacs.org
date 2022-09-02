@@ -1211,6 +1211,12 @@ to distinguish from other, not-so-important buffers.
     :global-minor-mode hl-indent-scope-mode)
 
 #+end_src
+** volatile-highlights
+#+begin_src emacs-lisp
+  (leaf volatile-highlights
+    :straight t
+    :global-minor-mode volatile-highlights-mode)
+#+end_src
 ** rainbow-identifiers
 #+begin_src emacs-lisp
   (leaf rainbow-identifiers
