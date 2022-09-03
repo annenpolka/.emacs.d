@@ -733,6 +733,10 @@
    (highlight-indent-guides-auto-enabled . t)
    (highlight-indent-guides-responsive . t)))
 
+(leaf volatile-highlights
+  :straight t
+  :global-minor-mode volatile-highlights-mode)
+
 (leaf rainbow-identifiers
   :straight t
   :hook
@@ -1586,8 +1590,7 @@
   ;;                               (dtrt-indent-mode)
   ;;                               (dtrt-indent-adapt)))
 
-(leaf
-  vertico
+(leaf vertico
   :straight t
   :global-minor-mode vertico-mode
   :custom ((vertico-cycle . t))
@@ -1618,8 +1621,8 @@
     .
     '
     (
-     consult-projectile--source-projectile-buffer
      persp-consult-source
+     consult-projectile--source-projectile-buffer
      consult--source-bookmark
      consult-projectile--source-projectile-project
      consult-projectile--source-projectile-recentf
@@ -1992,7 +1995,7 @@
   :init
   :hook (python-mode-hook . (lambda ()
                               (require 'lsp-pyright)
-                              (direnv-update-directory-environment) ; use direnv for venv
+                              ;; (direnv-update-directory-environment) ; use direnv for venv
                               (lsp-deferred))))  ; or lsp-deferred
 
 (leaf yaml-mode
@@ -2085,10 +2088,25 @@
 (leaf docker
   :straight t)
 
-(leaf direnv
+(leaf envrc
   :straight t
   :ensure-system-package (direnv)
-  :global-minor-mode direnv-mode)
+  :init
+  ;; A globalized minor mode triggers on `after-change-major-mode-hook'
+  ;; normally, which runs after a major mode's body and hooks. If those hooks do
+  ;; any initialization work that's sensitive to environmental state set up by
+  ;; direnv, then you're gonna have a bad time, so I move the trigger to
+  ;; `change-major-mode-after-body-hook' instead. This runs before said hooks
+  ;; (but not the body; fingers crossed that no major mode does important env
+  ;; initialization there).
+  (defun direnv-init-global-mode-earlier-h ()
+    (let ((fn #'envrc-global-mode-enable-in-buffers))
+      (if (not envrc-global-mode)
+          (remove-hook 'change-major-mode-after-body-hook fn)
+        (remove-hook 'after-change-major-mode-hook fn)
+        (add-hook 'change-major-mode-after-body-hook fn 100))))
+  :global-minor-mode envrc-global-mode
+  :hook (envrc-global-mode-hook . direnv-init-global-mode-earlier-h))
 
 (leaf w3m
   :straight t)
