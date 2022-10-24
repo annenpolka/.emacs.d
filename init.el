@@ -104,7 +104,9 @@
   (defalias 'yes-or-no-p 'y-or-n-p)
   (define-key key-translation-map [?\C-h] [?\C-?])
   (global-set-key (kbd "C-?") 'help-for-help)
-  (define-key input-decode-map [?\C-i] [C-i]))
+  (define-key input-decode-map [?\C-i] [C-i])
+  ;; HACK: don't check files managed by VCS on find-file (since it's so slow)
+  (remove-hook 'find-file-hooks 'vc-find-file-hook))
 
 (leaf
   cus-edit
@@ -414,23 +416,17 @@
    :repo "alexluigit/dirvish")
   :custom
   ;; Go back home? Just press `bh'
-  (dirvish-bookmark-entries
-   .
-   '
-   (("h" "~/" "Home")
-    ("d" "~/Downloads/" "Downloads")
-    ("e" "~/.emacs.d/" "Emacs")
-    ("t" "~/.local/share/Trash/files/" "TrashCan")))
+  (dirvish-bookmark-entries . '(("h" "~/" "Home")
+                                ("d" "~/Downloads/" "Downloads")
+                                ("e" "~/.emacs.d/" "Emacs")
+                                ("t" "~/.local/share/Trash/files/" "TrashCan")))
   ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
   (dirvish-mode-line-format ; it's ok to place string inside
-   .
-   '
-   (:left
-    (sort file-time " " file-size symlink)
-    :right (omit yank index)))
+   . '(:left
+       (sort file-time " " file-size symlink)
+       :right (omit yank index)))
   (dirvish-attributes
-   .
-   '(subtree-state all-the-icons collapse file-size vc-state git-msg))
+   . '(subtree-state all-the-icons collapse file-size vc-state git-msg))
   ;; (dirvish-attributes '(file-size vscode-icon)) ; Feel free to try different combination
   ;; Maybe the icons are too big to your eyes
   (dirvish-all-the-icons-height . 0.8)
@@ -444,19 +440,17 @@
   ;; Make sure to use the long name of flags when exists
   ;; eg. use "--almost-all" instead of "-A"
   ;; Otherwise some commands won't work properly
-  (dired-listing-switches .
-                          "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+  (dired-listing-switches . "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
   ;; (dirvish-fd-switches . "") ;; "--hidden"
 
   :init
   ;; Place this line under :init to ensure the overriding at startup, see #22
   (dirvish-override-dired-mode)
-  ;; (dirvish-peek-mode)
-  ;; (evil-make-overriding-map dired-mode-map)
+  (dirvish-peek-mode)
   :hook
   ;; show file preview in minibuffer browsing
   ;; HACK: enabling dirvish-peek-mode in :init somehow won't show preview correctly
-  (emacs-startup-hook . dirvish-peek-mode)
+  ;; (emacs-startup-hook . dirvish-peek-mode)
   :bind
   (
    (:dirvish-mode-map
@@ -1212,7 +1206,6 @@
   (setq company-backends '(
                            ;; get lsp completion first when available
                            (company-capf
-                            :with
                             company-keywords
                             company-yasnippet
                             ;; company-dabbrev
@@ -1326,21 +1319,27 @@
    (fussy-fuz-use-skim-p . t)
    (fussy-use-cache . t))
   :config
-  ;; integrate with company
   (defun j-company-capf (f &rest args)
     "Manage `completion-styles'."
-    (let ((fussy-max-candidate-limit 5000)
-          (fussy-default-regex-fn 'fussy-pattern-first-letter)
-          (fussy-prefer-prefix nil)))
-    (apply f args))
+    (if (length= company-prefix 0)
+        ;; Don't use `company' for 0 length prefixes.
+        (let ((completion-styles (remq 'fussy completion-styles)))
+          (apply f args))
+      (let ((fussy-max-candidate-limit 5000)
+            (fussy-default-regex-fn 'fussy-pattern-first-letter)
+            (fussy-prefer-prefix nil))
+        (apply f args))))
+
   (defun j-company-transformers (f &rest args)
     "Manage `company-transformers'."
-    (let ((company-transformers '(fussy-company-sort-by-completion-score)))
-      (apply f args)))
+    (if (length= company-prefix 0)
+        ;; Don't use `company' for 0 length prefixes.
+        (apply f args)
+      (let ((company-transformers '(fussy-company-sort-by-completion-score)))
+        (apply f args))))
+  (advice-add 'company-auto-begin :before 'fussy-wipe-cache)
   (advice-add 'company--transform-candidates :around 'j-company-transformers)
-  (advice-add 'company-capf :around 'j-company-capf)
-  ;; For cache functionality.
-  (advice-add 'company-auto-begin :before 'fussy-wipe-cache))
+  (advice-add 'company-capf :around 'j-company-capf))
 
 (leaf
   yasnippet
@@ -1404,12 +1403,22 @@
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
     :fringe-face 'flycheck-fringe-warning)
 
-
   (flycheck-define-error-level 'info
     :severity 0
     :overlay-category 'flycheck-info-overlay
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-info))
+    :fringe-face 'flycheck-fringe-info)
+
+  ;; disable flymake highlights when loaded
+  (with-eval-after-load 'flymake
+    (custom-set-variables
+     '(flymake-error-bitmap nil)
+     '(flymake-note-bitmap nil)
+     '(flymake-warning-bitmap nil))
+
+    (set-face-underline 'flymake-error nil)
+    (set-face-underline 'flymake-note nil)
+    (set-face-underline 'flymake-warning nil)))
 
 (leaf flycheck-inline
   :straight t
@@ -1486,89 +1495,6 @@
   (defun my:shutup-eldoc-message-on-minibuffer (f &optional string)
     (unless (active-minibuffer-window) (funcall f string)))
   :advice (:around eldoc-message-on-minibuffer my:shutup-eldoc-message-on-minibuffer))
-
-;; formatter bindings
-(leaf format-all
-  :straight t
-  :blackout t
-  :hook
-  ;; (prog-mode-hook . format-all-mode)
-  ;; (prog-mode-hook . format-all-ensure-formatter)
-  (emacs-lisp-mode-hook . format-all-mode)
-  (emacs-lisp-mode-hook . format-all-ensure-formatter)
-  :custom
-  (format-all-default-formatters .
-                                 '(("Assembly" asmfmt)
-                                   ("ATS" atsfmt)
-                                   ("Bazel" buildifier)
-                                   ("BibTeX" emacs-bibtex)
-                                   ("C" clang-format)
-                                   ("C#" clang-format)
-                                   ("C++" clang-format)
-                                   ("Cabal Config" cabal-fmt)
-                                   ("Clojure" zprint)
-                                   ("CMake" cmake-format)
-                                   ("Crystal" crystal)
-                                   ("CSS" prettier)
-                                   ("Cuda" clang-format)
-                                   ("D" dfmt)
-                                   ("Dart" dart-format)
-                                   ("Dhall" dhall)
-                                   ("Dockerfile" dockfmt)
-                                   ("Elixir" mix-format)
-                                   ("Elm" elm-format)
-                                   ("Emacs Lisp" emacs-lisp)
-                                   ("Erlang" efmt)
-                                   ("F#" fantomas)
-                                   ("Fish" fish-indent)
-                                   ("Fortran Free Form" fprettify)
-                                   ("GLSL" clang-format)
-                                   ("Go" gofmt)
-                                   ("GraphQL" prettier)
-                                   ("Haskell" brittany)
-                                   ("HTML" html-tidy)
-                                   ("HTML+ERB" erb-format)
-                                   ("Java" clang-format)
-                                   ("JavaScript" prettier)
-                                   ("JSON" prettier)
-
-                                   ("Jsonnet" jsonnetfmt)
-                                   ("JSX" prettier)
-                                   ("Kotlin" ktlint)
-                                   ("LaTeX" latexindent)
-                                   ("Less" prettier)
-                                   ("Literate Haskell" brittany)
-                                   ("Lua" stylua)
-                                   ("Markdown" prettier)
-                                   ("Nix" nixpkgs-fmt)
-                                   ("Objective-C" clang-format)
-                                   ("OCaml" ocp-indent)
-                                   ("Perl" perltidy)
-                                   ("PHP" prettier)
-                                   ("Protocol Buffer" clang-format)
-                                   ("PureScript" purty)
-                                   ("Python" black)
-                                   ("R" styler)
-                                   ("Reason" bsrefmt)
-                                   ("ReScript" rescript)
-                                   ("Ruby" rufo)
-                                   ("Rust" rustfmt)
-                                   ("Scala" scalafmt)
-                                   ("SCSS" prettier)
-                                   ("Shell" shfmt)
-                                   ("Solidity" prettier)
-                                   ("SQL" sqlformat)
-                                   ("Svelte" prettier)
-                                   ("Swift" swiftformat)
-                                   ("Terraform" terraform-fmt)
-                                   ("TOML" prettier)
-                                   ("TSX" prettier)
-                                   ("TypeScript" prettier)
-                                   ("V" v-fmt)
-                                   ("Verilog" istyle-verilog)
-                                   ("Vue" prettier)
-                                   ("XML" html-tidy)
-                                   ("YAML" prettier))))
 
 (leaf apheleia
   :straight t
@@ -1696,10 +1622,9 @@
     (persp-switch (projectile-project-name dir))
     (cd (projectile-project-root dir))
     ;; HACK: dirvish's preview duplicates consult's one by, so disable it temporarily
-    (dirvish-peek-mode -1)
+    ;; (dirvish-peek-mode -1)
     ;; FIXME: should set preview-key :debounce on consult-projectile--file
-    (consult-projectile--file dir)
-    (dirvish-peek-mode 1)))
+    (consult-projectile--file dir)))
 
 (leaf consult-flyspell
   :straight (consult-flyspell :type git :host gitlab :repo "OlMon/consult-flyspell" :branch "master")
@@ -1953,7 +1878,7 @@
    (lsp-ui-peek-list-width . 50)
    (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
 
-  :hook ((lsp-mode-hook . lsp-ui-mode)))
+  :hook ((lsp-mode-hook . lsp-ui-mode))) ;
 
 (leaf c++-mode
   :hook
@@ -2086,6 +2011,9 @@
          :render (gts-buffer-render))))
 
 (leaf docker
+  :straight t)
+
+(leaf docker-tramp
   :straight t)
 
 (leaf envrc
@@ -2221,10 +2149,6 @@
                   (list "cargo" "compete" "open" "--bin" problem-name)
                   " ")
        :path default-directory))))
-
-(leaf gif-screencast
-  :straight t
-  :ensure-system-package (scrot convert gifsicle))
 
 ;; ╭──────────────────────────────────────────────────────────╮
 ;; │                       boilerplate                        │
