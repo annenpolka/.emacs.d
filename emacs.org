@@ -2662,18 +2662,19 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
       :severity 0
       :overlay-category 'flycheck-info-overlay
       :fringe-bitmap 'flycheck-fringe-bitmap-ball
-      :fringe-face 'flycheck-fringe-info)
+      :fringe-face 'flycheck-fringe-info))
 
     ;; disable flymake highlights when loaded
-    (with-eval-after-load 'flymake
-      (custom-set-variables
-       '(flymake-error-bitmap nil)
-       '(flymake-note-bitmap nil)
-       '(flymake-warning-bitmap nil))
+    ;; (with-eval-after-load 'flymake
+    ;;   (custom-set-variables
+    ;;    '(flymake-error-bitmap nil)
+    ;;    '(flymake-note-bitmap nil)
+    ;;    '(flymake-warning-bitmap nil))
 
-      (set-face-underline 'flymake-error nil)
-      (set-face-underline 'flymake-note nil)
-      (set-face-underline 'flymake-warning nil)))
+    ;;   (set-face-underline 'flymake-error nil)
+    ;;   (set-face-underline 'flymake-note nil)
+    ;;   (set-face-underline 'flymake-warning nil))
+  
 #+end_src
 *** flycheck-inline
 #+begin_src emacs-lisp
@@ -2705,23 +2706,24 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
   (leaf sideline
     :straight t
     :hook
-    (flycheck-mode-hook . sideline-mode)
+    ;; (flycheck-mode-hook . sideline-mode)
     (flymake-mode-hook . sideline-mode)
     :init
-    (leaf sideline-flycheck :straight t :hook (flycheck-mode-hook . sideline-flycheck-setup))
+    ;; (leaf sideline-flycheck :straight t :hook (flycheck-mode-hook . sideline-flycheck-setup))
     (leaf sideline-flymake :straight t)
-    (leaf sideline-lsp :straight t)
-    (setq sideline-backends-right '(sideline-flymake))
+    ;;
+    (setq sideline-backends-left '(sideline-flymake))
+    ;; (setq sideline-backends-right '(sideline-flymake))
     :custom
     (sideline-delay . 0.1))
 #+end_src
-** COMMENT flymake
+** flymake
 *** flymake-diagnostic-at-point
 #+begin_src emacs-lisp
   (leaf flymake-diagnostic-at-point
     :straight t
     :custom
-    (flymake-diagnostic-at-point-timer-delay . 0.1)
+    (flymake-diagnostic-at-point-timer-delay . 0.01)
     :hook
     (flymake-mode-hook . flymake-diagnostic-at-point-mode))
 #+end_src
@@ -3173,6 +3175,7 @@ projectile integration
       ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
 
     :custom
+    (vterm-timer-delay . 0.01)
     (vterm-max-scrollback . 10000))
 #+end_src
 *** eshell
@@ -3376,7 +3379,7 @@ fish-like history suggestion
     (suggest suggest-update))
 #+end_src
 *** LSP Mode
-**** lsp-mode
+**** COMMENT lsp-mode
 ***** lsp-mode
 #+begin_src emacs-lisp
   (leaf lsp-mode
@@ -3432,81 +3435,81 @@ fish-like history suggestion
 
     :hook ((lsp-mode-hook . lsp-ui-mode))) ;
 #+end_src
-**** COMMENT eglot
+**** eglot
 #+begin_src emacs-lisp
-  (leaf eglot
-    ;; :straight t
-    ;; :straight     input! {}
-(eglot :type built-in)
-    :hook
-    (c++-mode-hook . eglot-ensure)
-    (rust-mode-hook . eglot-ensure)
-    :custom
-    (eglot-confirm-server-initiated-edits . nil)
-    (rustic-lsp-client . 'eglot))
-  ;; :init
-  ;; ;; flycheck integration
-  ;; (defvar-local +lsp--flycheck-eglot--current-errors nil)
-  ;; (defun +lsp--flycheck-eglot-init (checker callback)
-  ;;   "CHECKER is the checker (eglot).
-  ;;      CALLBACK is the function that we need to call when we are done, on all the errors."
-  ;;   (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
-  ;;   (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
+    (leaf eglot
+      :straight t
+      ;; :straight     input! {}
+     ;; (eglot :type built-in)
+     :hook
+     (c++-mode-hook . eglot-ensure)
+     (rust-mode-hook . eglot-ensure)
+     :custom
+     (eglot-confirm-server-initiated-edits . nil)
+     (rustic-lsp-client . 'eglot))
+    ;; :init
+    ;; ;; flycheck integration
+    ;; (defvar-local +lsp--flycheck-eglot--current-errors nil)
+    ;; (defun +lsp--flycheck-eglot-init (checker callback)
+    ;;   "CHECKER is the checker (eglot).
+    ;;      CALLBACK is the function that we need to call when we are done, on all the errors."
+    ;;   (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
+    ;;   (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
 
-  ;; (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
-  ;;   (cl-labels
-  ;;       ((flymake-diag->flycheck-err
-  ;;         (diag)
-  ;;         (with-current-buffer (flymake--diag-buffer diag)
-  ;;           (flycheck-error-new-at-pos
-  ;;            (flymake--diag-beg diag)
-  ;;            (pcase (flymake--diag-type diag)
-  ;;              ('eglot-note 'info)
-  ;;              ('eglot-warning 'warning)
-  ;;              ('eglot-error 'error)
-  ;;              (_ (error "Unknown diagnostic type, %S" diag)))
-  ;;            (flymake--diag-text diag)
-  ;;            :end-pos (flymake--diag-end diag)
-  ;;            :checker 'eglot
-  ;;            :buffer (current-buffer)
-  ;;            :filename (buffer-file-name)))))
-  ;;     (setq +lsp--flycheck-eglot--current-errors
-  ;;           (mapcar #'flymake-diag->flycheck-err diags))
-  ;;     ;; Call Flycheck to update the diagnostics annotations
-  ;;     (flycheck-buffer-deferred)))
+    ;; (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
+    ;;   (cl-labels
+    ;;       ((flymake-diag->flycheck-err
+    ;;         (diag)
+    ;;         (with-current-buffer (flymake--diag-buffer diag)
+    ;;           (flycheck-error-new-at-pos
+    ;;            (flymake--diag-beg diag)
+    ;;            (pcase (flymake--diag-type diag)
+    ;;              ('eglot-note 'info)
+    ;;              ('eglot-warning 'warning)
+    ;;              ('eglot-error 'error)
+    ;;              (_ (error "Unknown diagnostic type, %S" diag)))
+    ;;            (flymake--diag-text diag)
+    ;;            :end-pos (flymake--diag-end diag)
+    ;;            :checker 'eglot
+    ;;            :buffer (current-buffer)
+    ;;            :filename (buffer-file-name)))))
+    ;;     (setq +lsp--flycheck-eglot--current-errors
+    ;;           (mapcar #'flymake-diag->flycheck-err diags))
+    ;;     ;; Call Flycheck to update the diagnostics annotations
+    ;;     (flycheck-buffer-deferred)))
 
-  ;; (defun +lsp--flycheck-eglot-available-p ()
-  ;;   (bound-and-true-p eglot--managed-mode))
+    ;; (defun +lsp--flycheck-eglot-available-p ()
+    ;;   (bound-and-true-p eglot--managed-mode))
 
-  ;; (flycheck-define-generic-checker 'eglot
-  ;;   "Report `eglot' diagnostics using `flycheck'."
-  ;;   :start #'+lsp--flycheck-eglot-init
-  ;;   :predicate #'+lsp--flycheck-eglot-available-p
-  ;;   :modes '(prog-mode text-mode))
+    ;; (flycheck-define-generic-checker 'eglot
+    ;;   "Report `eglot' diagnostics using `flycheck'."
+    ;;   :start #'+lsp--flycheck-eglot-init
+    ;;   :predicate #'+lsp--flycheck-eglot-available-p
+    ;;   :modes '(prog-mode text-mode))
 
-  ;; (push 'eglot flycheck-checkers)
+    ;; (push 'eglot flycheck-checkers)
 
-  ;; (defun +lsp-eglot-prefer-flycheck-h ()
-  ;;   (when eglot--managed-mode
-  ;;     (flymake-mode -1)
-  ;;     (when-let ((current-checker (flycheck-get-checker-for-buffer)))
-  ;;       (unless (equal current-checker 'eglot)
-  ;;         (flycheck-add-next-checker 'eglot current-checker)))
-  ;;     (flycheck-add-mode 'eglot major-mode)
-  ;;     (flycheck-mode 1)
-  ;;     ;; Call flycheck on initilization to make sure to display initial
-  ;;     ;; errors
-  ;;     (flycheck-buffer-deferred)))
+    ;; (defun +lsp-eglot-prefer-flycheck-h ()
+    ;;   (when eglot--managed-mode
+    ;;     (flymake-mode -1)
+    ;;     (when-let ((current-checker (flycheck-get-checker-for-buffer)))
+    ;;       (unless (equal current-checker 'eglot)
+    ;;         (flycheck-add-next-checker 'eglot current-checker)))
+    ;;     (flycheck-add-mode 'eglot major-mode)
+    ;;     (flycheck-mode 1)
+    ;;     ;; Call flycheck on initilization to make sure to display initial
+    ;;     ;; errors
+    ;;     (flycheck-buffer-deferred)))
 
-  ;; (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
+    ;; (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
 
-  ;; :config
-  ;; ;; (with-eval-after-load
-  ;; (when (and
-  ;;        (not (fboundp 'flymake--diag-buffer))
-  ;;        (fboundp 'flymake--diag-locus))
-  ;;   (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
-  ;; ;; )
+    ;; :config
+    ;; ;; (with-eval-after-load
+    ;; (when (and
+    ;;        (not (fboundp 'flymake--diag-buffer))
+    ;;        (fboundp 'flymake--diag-locus))
+    ;;   (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
+    ;; ;; )
 #+end_src
 *** C++ Mode
 #+begin_src emacs-lisp
