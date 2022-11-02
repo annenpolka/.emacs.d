@@ -1407,22 +1407,29 @@
     :severity 0
     :overlay-category 'flycheck-info-overlay
     :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-info)
+    :fringe-face 'flycheck-fringe-info))
 
   ;; disable flymake highlights when loaded
-  (with-eval-after-load 'flymake
-    (custom-set-variables
-     '(flymake-error-bitmap nil)
-     '(flymake-note-bitmap nil)
-     '(flymake-warning-bitmap nil))
+  ;; (with-eval-after-load 'flymake
+  ;;   (custom-set-variables
+  ;;    '(flymake-error-bitmap nil)
+  ;;    '(flymake-note-bitmap nil)
+  ;;    '(flymake-warning-bitmap nil))
 
-    (set-face-underline 'flymake-error nil)
-    (set-face-underline 'flymake-note nil)
-    (set-face-underline 'flymake-warning nil)))
+  ;;   (set-face-underline 'flymake-error nil)
+  ;;   (set-face-underline 'flymake-note nil)
+  ;;   (set-face-underline 'flymake-warning nil))
 
 (leaf flycheck-inline
   :straight t
   :hook (flycheck-mode-hook . flycheck-inline-mode))
+
+(leaf flymake-diagnostic-at-point
+  :straight t
+  :custom
+  (flymake-diagnostic-at-point-timer-delay . 0.01)
+  :hook
+  (flymake-mode-hook . flymake-diagnostic-at-point-mode))
 
 (leaf flyspell
   :blackout (flyspell-mode flyspell-prog-mode)
@@ -1712,6 +1719,7 @@
     ("<C-w>" . (lambda () (interactive) (vterm-send-key (kbd "C-w"))))))
 
   :custom
+  (vterm-timer-delay . 0.01)
   (vterm-max-scrollback . 10000))
 
 (leaf eshell
@@ -1829,56 +1837,79 @@
   :commands
   (suggest suggest-update))
 
-(leaf lsp-mode
-  :commands (lsp lsp-deferred)
-  :init
-  (defun my/lsp-mode-setup-completion ()
-    (setf
-     (alist-get
-      'styles
-      (alist-get 'lsp-capf completion-category-defaults))
-     '(orderless))) ;; Configure orderless
-  :hook
-  ;; (lsp-mode . lsp-enable-which-key-integration)
-  ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
-  :custom
-  (lsp-idle-delay . 0.3)
-  (lsp-response-timeout . 5)
-  (lsp-log-io . t)
-  (lsp-auto-guess-root . t)
-  (lsp-completion-provider . :capf)
-  (lsp-keymap-prefix . "s-l"))
-
-(leaf lsp-ui
-  :doc "UI modules for lsp-mode"
-  :url "https://github.com/emacs-lsp/lsp-ui"
+(leaf eglot
   :straight t
-  :after lsp-mode
-  :bind
-  (:lsp-ui-mode-map
-   ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
-   ([remap xref-find-references] . lsp-ui-peek-find-references))
+  ;; :straight     input! {}
+ ;; (eglot :type built-in)
+ :hook
+ (c++-mode-hook . eglot-ensure)
+ (rust-mode-hook . eglot-ensure)
+ :custom
+ (eglot-confirm-server-initiated-edits . nil)
+ (rustic-lsp-client . 'eglot))
+;; :init
+;; ;; flycheck integration
+;; (defvar-local +lsp--flycheck-eglot--current-errors nil)
+;; (defun +lsp--flycheck-eglot-init (checker callback)
+;;   "CHECKER is the checker (eglot).
+;;      CALLBACK is the function that we need to call when we are done, on all the errors."
+;;   (eglot-flymake-backend #'+lsp--flycheck-eglot--on-diagnostics)
+;;   (funcall callback 'finished +lsp--flycheck-eglot--current-errors))
 
-  :custom
-  ((lsp-ui-doc-enable . t)
-   (lsp-ui-doc-deley . 0.5)
-   (lsp-ui-doc-header . t)
-   (lsp-ui-doc-include-signature . t)
-   (lsp-ui-doc-position . 'at-point)
-   (lsp-ui-doc-max-width . 150)
-   (lsp-ui-doc-max-height . 30)
-   (lsp-ui-doc-use-childframe . nil)
-   (lsp-ui-doc-use-webkit . nil)
-   (lsp-ui-sideline-show-diagnostics . nil) ;; use flycheck-inline
-   (lsp-ui-sideline-show-hover . nil)
-   (lsp-ui-sideline-show-code-actions . t)
-   (lsp-ui-flycheck-enable . t)
-   (lsp-ui-peek-enable . t)
-   (lsp-ui-peek-peek-height . 20)
-   (lsp-ui-peek-list-width . 50)
-   (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
+;; (defun +lsp--flycheck-eglot--on-diagnostics (diags &rest _)
+;;   (cl-labels
+;;       ((flymake-diag->flycheck-err
+;;         (diag)
+;;         (with-current-buffer (flymake--diag-buffer diag)
+;;           (flycheck-error-new-at-pos
+;;            (flymake--diag-beg diag)
+;;            (pcase (flymake--diag-type diag)
+;;              ('eglot-note 'info)
+;;              ('eglot-warning 'warning)
+;;              ('eglot-error 'error)
+;;              (_ (error "Unknown diagnostic type, %S" diag)))
+;;            (flymake--diag-text diag)
+;;            :end-pos (flymake--diag-end diag)
+;;            :checker 'eglot
+;;            :buffer (current-buffer)
+;;            :filename (buffer-file-name)))))
+;;     (setq +lsp--flycheck-eglot--current-errors
+;;           (mapcar #'flymake-diag->flycheck-err diags))
+;;     ;; Call Flycheck to update the diagnostics annotations
+;;     (flycheck-buffer-deferred)))
 
-  :hook ((lsp-mode-hook . lsp-ui-mode))) ;
+;; (defun +lsp--flycheck-eglot-available-p ()
+;;   (bound-and-true-p eglot--managed-mode))
+
+;; (flycheck-define-generic-checker 'eglot
+;;   "Report `eglot' diagnostics using `flycheck'."
+;;   :start #'+lsp--flycheck-eglot-init
+;;   :predicate #'+lsp--flycheck-eglot-available-p
+;;   :modes '(prog-mode text-mode))
+
+;; (push 'eglot flycheck-checkers)
+
+;; (defun +lsp-eglot-prefer-flycheck-h ()
+;;   (when eglot--managed-mode
+;;     (flymake-mode -1)
+;;     (when-let ((current-checker (flycheck-get-checker-for-buffer)))
+;;       (unless (equal current-checker 'eglot)
+;;         (flycheck-add-next-checker 'eglot current-checker)))
+;;     (flycheck-add-mode 'eglot major-mode)
+;;     (flycheck-mode 1)
+;;     ;; Call flycheck on initilization to make sure to display initial
+;;     ;; errors
+;;     (flycheck-buffer-deferred)))
+
+;; (add-hook 'eglot-managed-mode-hook '+lsp-eglot-prefer-flycheck-h)
+
+;; :config
+;; ;; (with-eval-after-load
+;; (when (and
+;;        (not (fboundp 'flymake--diag-buffer))
+;;        (fboundp 'flymake--diag-locus))
+;;   (defalias 'flymake--diag-buffer 'flymake--diag-locus)))
+;; ;; )
 
 (leaf c++-mode
   :hook
