@@ -3392,6 +3392,9 @@ fish-like history suggestion
         (alist-get 'lsp-capf completion-category-defaults))
        '(orderless))) ;; Configure orderless
     :hook
+    (lua-mode-hook . lsp-deferred)
+    (go-mode-hook . lsp-deferred)
+    (c++-mode-hook . lsp-deferred)
     ;; (lsp-mode . lsp-enable-which-key-integration)
     ;; (lsp-completion-mode . my/lsp-mode-setup-completion)
     :custom
@@ -3434,6 +3437,16 @@ fish-like history suggestion
      (lsp-ui-peek-fontify . 'on-demand)) ;; never, on-demand, or always
 
     :hook ((lsp-mode-hook . lsp-ui-mode))) ;
+#+end_src
+***** lsp-pyright
+#+begin_src emacs-lisp
+  (leaf lsp-pyright
+    :straight t
+    :init
+    :hook (python-mode-hook . (lambda ()
+                                (require 'lsp-pyright)
+                                ;; (direnv-update-directory-environment) ; use direnv for venv
+                                (lsp-deferred))))  ; or lsp-deferred
 #+end_src
 **** eglot
 #+begin_src emacs-lisp
@@ -3514,14 +3527,14 @@ fish-like history suggestion
 *** C++ Mode
 #+begin_src emacs-lisp
   (leaf c++-mode
-    :hook
-    (c++-mode-hook . lsp-deferred))
+    :hook)
+    ;; (c++-mode-hook . lsp-deferred)
+  
 #+end_src
 *** Lua Mode
 #+begin_src emacs-lisp
-(leaf lua-mode
-  :straight t
-  :hook (lua-mode-hook . lsp-deferred))
+  (leaf lua-mode
+    :straight t)
 #+end_src
 *** Typescript Mode
 #+begin_src emacs-lisp
@@ -3559,16 +3572,6 @@ fish-like history suggestion
     (go-mode-hook . lsp-deferred))
 #+end_src
 *** Python Mode
-**** lsp-pyright
-#+begin_src emacs-lisp
-  (leaf lsp-pyright
-    :straight t
-    :init
-    :hook (python-mode-hook . (lambda ()
-                                (require 'lsp-pyright)
-                                ;; (direnv-update-directory-environment) ; use direnv for venv
-                                (lsp-deferred))))  ; or lsp-deferred
-#+end_src
 **** COMMENT pipenv.el
 2022/08/19時点ではdirenvで済ませている
 #+begin_src emacs-lisp
@@ -3692,19 +3695,18 @@ fish-like history suggestion
 #+end_src
 ** go-translate
 #+begin_src emacs-lisp
-(leaf go-translate
-  :straight t
-  :require t
-  :config
-  (setq gts-translate-list '(("en" "ja") ("ja" "en")))
-  (setq gts-default-translator
-        (gts-translator
-         :picker (gts-prompt-picker)
-         :engines (list
-                   (gts-bing-engine)
-                   (gts-google-engine)
-                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
-         :render (gts-buffer-render))))
+  (leaf go-translate
+    :straight t
+    :require t
+    :config
+    (setq gts-translate-list '(("en" "ja") ("ja" "en")))
+    (setq gts-default-translator
+          (gts-translator
+           :picker (gts-prompt-picker)
+           :engines (list
+                     (gts-bing-engine)
+                     (gts-google-engine))
+           :render (gts-buffer-render))))
 
 #+end_src
 * Virtual Environment/Containers
@@ -3776,13 +3778,6 @@ envrcのほうがバッファローカルで動く点で好ましいと判断
                (current-column))
        :kill-buffer t)))
 #+end_src
-** COMMENT todoist
-#+begin_src emacs-lisp
-  (leaf todoist
-    :straight t
-    :init
-    (setq todoist-token (getenv "TODOIST_TOKEN")))
-#+end_src
 * Devdocs Browsing
 ** COMMENT devdocs-browser
 #+begin_src emacs-lisp
@@ -3803,7 +3798,7 @@ envrcのほうがバッファローカルで動く点で好ましいと判断
   (leaf devdocs
     :straight t
     :bind
-    (("C-c d" . devdocs-lookup)
+    (("C-h d" . devdocs-lookup)
      (:devdocs-mode-map
       ("C-c h" . devdocs-go-back)
       ("C-c l" . devdocs-go-forward))))

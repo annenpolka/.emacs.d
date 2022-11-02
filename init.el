@@ -1912,12 +1912,11 @@
 ;; ;; )
 
 (leaf c++-mode
-  :hook
-  (c++-mode-hook . lsp-deferred))
+  :hook)
+  ;; (c++-mode-hook . lsp-deferred)
 
 (leaf lua-mode
-  :straight t
-  :hook (lua-mode-hook . lsp-deferred))
+  :straight t)
 
 (leaf typescript-mode
   :straight t
@@ -1945,14 +1944,6 @@
   :straight t
   :hook
   (go-mode-hook . lsp-deferred))
-
-(leaf lsp-pyright
-  :straight t
-  :init
-  :hook (python-mode-hook . (lambda ()
-                              (require 'lsp-pyright)
-                              ;; (direnv-update-directory-environment) ; use direnv for venv
-                              (lsp-deferred))))  ; or lsp-deferred
 
 (leaf yaml-mode
   :straight t)
@@ -2037,8 +2028,7 @@
          :picker (gts-prompt-picker)
          :engines (list
                    (gts-bing-engine)
-                   (gts-google-engine)
-                   (gts-deepl-engine :auth-key (getenv "DEEPL_TOKEN") :pro nil))
+                   (gts-google-engine))
          :render (gts-buffer-render))))
 
 (leaf docker
@@ -2089,7 +2079,7 @@
 (leaf devdocs
   :straight t
   :bind
-  (("C-c d" . devdocs-lookup)
+  (("C-h d" . devdocs-lookup)
    (:devdocs-mode-map
     ("C-c h" . devdocs-go-back)
     ("C-c l" . devdocs-go-forward))))
