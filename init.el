@@ -1364,66 +1364,10 @@
    ("C-M->" . writeroom-increase-width)
    ("C-M-=" . writeroom-adjust-width)))
 
-;; flycheck syntax checking
-(leaf flycheck
-  :straight t
-  :require t
-  :global-minor-mode global-flycheck-mode
-  :custom
-  (flycheck-display-errors-delay . 0.2)
-  :config
-  ;; tweak fringe icons
-  (define-fringe-bitmap 'flycheck-fringe-bitmap-ball
-    (vector #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00111000
-            #b01111100
-            #b11111110
-            #b11111110
-            #b01111100
-            #b00111000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000
-            #b00000000))
-
-  (flycheck-define-error-level 'error
-    :severity 2
-    :overlay-category 'flycheck-error-overlay
-    :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-error)
-
-  (flycheck-define-error-level 'warning
-    :severity 1
-    :overlay-category 'flycheck-warning-overlay
-    :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-warning)
-
-  (flycheck-define-error-level 'info
-    :severity 0
-    :overlay-category 'flycheck-info-overlay
-    :fringe-bitmap 'flycheck-fringe-bitmap-ball
-    :fringe-face 'flycheck-fringe-info))
-
-  ;; disable flymake highlights when loaded
-  ;; (with-eval-after-load 'flymake
-  ;;   (custom-set-variables
-  ;;    '(flymake-error-bitmap nil)
-  ;;    '(flymake-note-bitmap nil)
-  ;;    '(flymake-warning-bitmap nil))
-
-  ;;   (set-face-underline 'flymake-error nil)
-  ;;   (set-face-underline 'flymake-note nil)
-  ;;   (set-face-underline 'flymake-warning nil))
-
-(leaf flycheck-inline
-  :straight t
-  :hook (flycheck-mode-hook . flycheck-inline-mode))
+(leaf flymake
+  :straight (flymake :type built-in)
+  :hook
+  (prog-mode-hook . flymake-mode))
 
 (leaf flymake-diagnostic-at-point
   :straight t
@@ -1583,16 +1527,6 @@
 ;;   ("C-f" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-line))))
 ;;   ("<leader>SPC" . 'consult-buffer)
 ;;   ))
-
-;; flycheck integration
-(leaf consult-flycheck
-  :straight t
-  :after consult flycheck
-  :bind
-  ())
-   ;; (:evil-normal-state-map
-   ;;       ("<leader>q" . (lambda () (interactive)(if (switch-to-minibuffer) nil (consult-flycheck))))
-   ;;       )
 
 ;; dir extension
 (leaf

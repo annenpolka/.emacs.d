@@ -4,7 +4,7 @@
 
 My configuration managed by leaf.el + straight.el
 
-* Greeeting Documentation
+* Greeting Documentation
 #+begin_src emacs-lisp
 
   ;;; init.el --- My init.el  -*- lexical-binding: t; -*-
@@ -32,7 +32,7 @@ My configuration managed by leaf.el + straight.el
 
 #+end_src
 * early-init.el Configuration
-** Sane Dafaults
+** Sane Defaults
 #+begin_src emacs-lisp :tangle ./early-init.el
   ;;; early-init --- Early initialization file  -*- lexical-binding: t; -*-
 
@@ -2615,7 +2615,7 @@ Evilに統合して・合わせて設定をしているので、他の編集モ�
 
 #+end_src
 * Syntax Check/Formatting
-** flycheck
+** COMMENT flycheck
 *** flycheck
 非同期で文法などのチェックを行う。
 #+begin_src emacs-lisp
@@ -3008,7 +3008,7 @@ vim-sleuth like automatic indent guessing/adjusting
   ;;   ("<leader>SPC" . 'consult-buffer)
   ;;   ))
 #+end_src
-*** consult-flycheck
+*** COMMENT consult-flycheck
 #+begin_src emacs-lisp
   ;; flycheck integration
   (leaf consult-flycheck
