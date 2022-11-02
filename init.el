@@ -490,6 +490,7 @@
   :straight t
   :bind
   (:magit-status-mode-map
+   ("p" . magit-pull)
    ("x" . magit-delete-thing))
   :pretty-hydra
   (my-git-actions
@@ -2078,6 +2079,10 @@
 
 (leaf devdocs
   :straight t
+  :hook
+  (emacs-lisp-mode-hook . (lambda () (setq-local devdocs-current-docs '("elisp"))))
+  (c++-mode-hook . (lambda () (setq-local devdocs-current-docs '("cpp"))))
+  (rustic-mode-hook . (lambda () (setq-local devdocs-current-docs '("rust"))))
   :bind
   (("C-h d" . devdocs-lookup)
    (:devdocs-mode-map
