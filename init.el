@@ -490,6 +490,7 @@
   :straight t
   :bind
   (:magit-status-mode-map
+   ("p" . magit-pull)
    ("x" . magit-delete-thing))
   :pretty-hydra
   (my-git-actions
