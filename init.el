@@ -2057,6 +2057,10 @@
 
 (leaf devdocs
   :straight t
+  :hook
+  (emacs-lisp-mode-hook . (lambda () (setq-local devdocs-current-docs '("elisp"))))
+  (c++-mode-hook . (lambda () (setq-local devdocs-current-docs '("cpp"))))
+  (rustic-mode-hook . (lambda () (setq-local devdocs-current-docs '("rust"))))
   :bind
   (("C-c d" . devdocs-lookup)
    (:devdocs-mode-map
