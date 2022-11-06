@@ -996,7 +996,7 @@
      '("C-f" . consult-line)
      ;; '("C-p" . affe-find)
      ;; '("C-e" . find-file)
-     '("C-t" . affe-find-command)
+     '("C-t" . burly-perspective-init-project-persp)
      '("C-s" . save-buffer)
      '("C-w" . kill-this-buffer)
      ;; '("TAB" . origami-toggle-node)
@@ -1084,8 +1084,8 @@
   (meow-setup)
   ;; vim-way cursor
   ;; Must set before enable `meow-global-mode`
-  (setq meow-use-cursor-position-hack t
-        meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
+  ;; (setq meow-use-cursor-position-hack t
+  ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
   (meow-global-mode 1))
 
 (leaf expand-region
@@ -1625,8 +1625,8 @@
     (cons input (lambda (str) (orderless--highlight input str))))
   (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)
   :custom
-  ;; show hidden files in fuzzy-find (no .gitignored files)
-  (affe-find-command . "rg --color=never --files --hidden"))
+  ;; show hidden files in fuzzy-find (w/ no .git/ + gitignored files)
+  (affe-find-command . "rg --color=never --files --hidden -g !.git/"))
 
 (leaf
   savehist
