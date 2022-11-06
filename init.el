@@ -996,7 +996,7 @@
      '("C-f" . consult-line)
      ;; '("C-p" . affe-find)
      ;; '("C-e" . find-file)
-     '("C-t" . burly-perspective-init-project-persp)
+     '("C-t" . affe-find-command)
      '("C-s" . save-buffer)
      '("C-w" . kill-this-buffer)
      ;; '("TAB" . origami-toggle-node)
@@ -1084,8 +1084,8 @@
   (meow-setup)
   ;; vim-way cursor
   ;; Must set before enable `meow-global-mode`
-  ;; (setq meow-use-cursor-position-hack t
-  ;;       meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
+  (setq meow-use-cursor-position-hack t
+        meow-use-enhanced-selection-effect t)  ;; optional, for visual effect
   (meow-global-mode 1))
 
 (leaf expand-region
@@ -1298,62 +1298,6 @@
   (setq company-wordfreq-path
         (no-littering-expand-var-file-name "wordfreq-dicts/")))
 
-(leaf company-pcomplete
-  :init
- (defgroup company-pcomplete nil
-   "Completion backend using pcomplete."
-   :group 'company)
-
- (defvar company-pcomplete-available 'unknown)
-
- (defun company-pcomplete--prefix ()
-   (let* ((pcomplete-stub)
-          pcomplete-seen
-          pcomplete-norm-func
-          pcomplete-args
-          pcomplete-last pcomplete-index
-          (pcomplete-autolist pcomplete-autolist)
-          (pcomplete-suffix-list pcomplete-suffix-list))
-     (pcomplete-completions)
-     (buffer-substring (pcomplete-begin) (point))))
-
- (defun company-pcomplete--candidates ()
-   (let* ((pcomplete-stub)
-          (pcomplete-show-list t)
-          pcomplete-seen pcomplete-norm-func
-          pcomplete-args pcomplete-last pcomplete-index
-          (pcomplete-autolist pcomplete-autolist)
-          (pcomplete-suffix-list pcomplete-suffix-list)
-          (candidates (pcomplete-completions))
-          (prefix (buffer-substring (pcomplete-begin) (point)))
-          ;; Collect all possible completions for the current stub
-          (cnds (all-completions pcomplete-stub candidates))
-          (bnds (completion-boundaries pcomplete-stub candidates nil ""))
-          (skip (- (length pcomplete-stub) (car bnds))))
-     ;; Replace the stub at the beginning of each candidate by the prefix
-     (mapcar #'(lambda (cand) (concat prefix (substring cand skip))) cnds)))
-
- (defun company-pcomplete-available ()
-   (when (eq company-pcomplete-available 'unknown)
-     (condition-case _err
-         (progn
-           (company-pcomplete--candidates)
-           (setq company-pcomplete-available t))
-       (error
-        (message "Company: pcomplete not found")
-        (setq company-pcomplete-available nil))))
-   company-pcomplete-available)
-
- (defun company-pcomplete (command &optional _arg &rest ignored)
-   "`company-mode' completion backend using `pcomplete'."
-   (interactive (list 'interactive))
-   (cl-case command
-     (interactive (company-begin-backend 'company-pcomplete))
-     (prefix (when (company-pcomplete-available)
-               (company-pcomplete--prefix)))
-     (candidates (company-pcomplete--candidates))
-     (sorted t))))
-
 ;; completion style
 (leaf fussy
   :straight t
@@ -1430,7 +1374,7 @@
 (leaf flymake-diagnostic-at-point
   :straight t
   :custom
-  (flymake-diagnostic-at-point-timer-delay . 0.01)
+  (flymake-diagnostic-at-point-timer-delay . 0.1)
   :hook
   (flymake-mode-hook . flymake-diagnostic-at-point-mode))
 
@@ -1500,11 +1444,18 @@
   :hook (emacs-lisp-mode-hook . turn-on-eldoc-mode)
   :blackout t
   :custom
-  (eldoc-current-idle-delay . 0.2)
+  (eldoc-idle-delay . 0.1)
   :preface
   (defun my:shutup-eldoc-message-on-minibuffer (f &optional string)
     (unless (active-minibuffer-window) (funcall f string)))
   :advice (:around eldoc-message-on-minibuffer my:shutup-eldoc-message-on-minibuffer))
+
+(leaf eldoc-box
+  :straight t
+  :hook (eldoc-mode-hook . eldoc-box-hover-mode)
+  :custom
+  (eldoc-idle-delay . 0.1)
+  (eldoc-box-cleanup-interval . 0.2))
 
 (leaf apheleia
   :straight t
@@ -1672,7 +1623,10 @@
   (defun affe-orderless-regexp-compiler (input _type _ignorecase)
     (setq input (orderless-pattern-compiler input))
     (cons input (lambda (str) (orderless--highlight input str))))
-  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler))
+  (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)
+  :custom
+  ;; show hidden files in fuzzy-find (no .gitignored files)
+  (affe-find-command . "rg --color=never --files --hidden"))
 
 (leaf
   savehist
@@ -1759,92 +1713,6 @@
 (leaf esh-autosuggest
   :straight t
   :hook (eshell-mode-hook . esh-autosuggest-mode))
-
-(leaf fish-completion
-  :unless IS-WINDOWS
-  :straight t
-  :hook (eshell-mode-hook . fish-completion-mode)
-  :bind
-  (:eshell-mode-map
-     ("<Tab>" . +eshell/pcomplete))
-  :custom
-  (fish-completion-fallback-on-bash-p . t)
-  :config
-  ;; HACK Even with `fish-completion-fallback-on-bash-p' non-nil,
-  ;;      `fish-completion--list-completions-with-desc' will throw an error if
-  ;;      fish isn't installed (and so, will fail to fall back to bash), so we
-  ;;      advise it to fail silently.
-  (defun +eshell--fallback-to-bash-a (&rest _)
-    (unless (executable-find "fish") ""))
-  (advice-add '+eshell--fallback-to-bash-a :before #'fish-completion--list-completions-with-desc)
-
-  ;; pcomplete-company setting
-  (defgroup company-pcomplete nil
-    "Completion backend using pcomplete."
-    :group 'company)
-
-  (defvar company-pcomplete-available 'unknown)
-
-  (defun company-pcomplete--prefix ()
-    (let* ((pcomplete-stub)
-           pcomplete-seen
-           pcomplete-norm-func
-           pcomplete-args
-           pcomplete-last pcomplete-index
-           (pcomplete-autolist pcomplete-autolist)
-           (pcomplete-suffix-list pcomplete-suffix-list))
-      (pcomplete-completions)
-      (buffer-substring (pcomplete-begin) (point))))
-
-  (defun company-pcomplete--candidates ()
-    (let* ((pcomplete-stub)
-           (pcomplete-show-list t)
-           pcomplete-seen pcomplete-norm-func
-           pcomplete-args pcomplete-last pcomplete-index
-           (pcomplete-autolist pcomplete-autolist)
-           (pcomplete-suffix-list pcomplete-suffix-list)
-           (candidates (pcomplete-completions))
-           (prefix (buffer-substring (pcomplete-begin) (point)))
-           ;; Collect all possible completions for the current stub
-           (cnds (all-completions pcomplete-stub candidates))
-           (bnds (completion-boundaries pcomplete-stub candidates nil ""))
-           (skip (- (length pcomplete-stub) (car bnds))))
-      ;; Replace the stub at the beginning of each candidate by the prefix
-      (mapcar #'(lambda (cand) (concat prefix (substring cand skip))) cnds)))
-
-  (defun company-pcomplete-available ()
-    (when (eq company-pcomplete-available 'unknown)
-      (condition-case _err
-          (progn
-            (company-pcomplete--candidates)
-            (setq company-pcomplete-available t))
-        (error
-         (message "Company: pcomplete not found")
-         (setq company-pcomplete-available nil))))
-    company-pcomplete-available)
-
-  (defun company-pcomplete (command &optional _arg &rest ignored)
-    "`company-mode' completion backend using `pcomplete'."
-    (interactive (list 'interactive))
-    (cl-case command
-      (interactive (company-begin-backend 'company-pcomplete))
-      (prefix (when (company-pcomplete-available)
-                (company-pcomplete--prefix)))
-      (candidates (company-pcomplete--candidates))
-      (sorted t)))
-
-  (defun +eshell/pcomplete ()
-    "Use pcomplete with completion-in-region backend instead of popup window at
-bottom. This ties pcomplete into ivy or helm, if they are enabled."
-    (interactive)
-    (require 'pcomplete)
-    (if (and (bound-and-true-p company-mode)
-             (or company-candidates
-                 (and (company-pcomplete-available)
-                      (company-pcomplete--prefix)
-                      (company-pcomplete--candidates))))
-        (call-interactively #'company-pcomplete)
-      (ignore-errors (pcomplete-std-complete)))))
 
 (leaf eshell-syntax-highlighting
   :straight t
