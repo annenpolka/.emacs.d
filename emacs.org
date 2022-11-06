@@ -1120,7 +1120,9 @@ Diredをオーバーホールするファイラ。
     (defun burly-perspective--windows-set-before-advice (&rest _ignore)
       "Create or Switch perspective before setting burly windows."
       (persp-new burly-opened-bookmark-name)
-      (persp-switch burly-opened-bookmark-name))
+      (persp-switch burly-opened-bookmark-name)
+      ;; kill "main" perspective
+      (persp-kill persp-initial-frame-name))
     (advice-add #'burly--windows-set :before #'burly-perspective--windows-set-before-advice))
 #+end_src
 * Interface Enhancement/Eyecandies
