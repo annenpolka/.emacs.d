@@ -3143,8 +3143,8 @@ projectile integration
       (cons input (lambda (str) (orderless--highlight input str))))
     (setq affe-regexp-compiler #'affe-orderless-regexp-compiler)
     :custom
-    ;; show hidden files in fuzzy-find (no .gitignored files)
-    (affe-find-command . "rg --color=never --files --hidden"))
+    ;; show hidden files in fuzzy-find (w/ no .git/ + gitignored files)
+    (affe-find-command . "rg --color=never --files --hidden -g !.git/"))
 #+end_src
 ** savehist
 #+begin_src emacs-lisp
