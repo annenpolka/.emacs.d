@@ -15,6 +15,7 @@ url/
 data/
 /history
 places
+projects
 
 # Org-mode
 .org-id-locations
