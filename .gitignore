@@ -16,6 +16,7 @@ data/
 /history
 places
 projects
+.last-package-update-day
 
 # Org-mode
 .org-id-locations
