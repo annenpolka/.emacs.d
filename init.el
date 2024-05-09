@@ -28,9 +28,6 @@
 (use-package use-package
   :config
   (setq use-package-always-ensure t)
-  (unless (package-installed-p 'vc-use-package)
-    (package-vc-install "https://github.com/slotThe/vc-use-package"))
-  (require 'vc-use-package)
   )
 (use-package auto-package-update
   :config
