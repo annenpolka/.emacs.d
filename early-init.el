@@ -2,6 +2,9 @@
 ;;; Commentary:
 ;;; Code: Annenpolka
 
+;; throw away custom files
+(setq custom-file (make-temp-file "emacs-custom-"))
+
 ;; Optimizations/QoL improvements
 (setq frame-resize-pixelwise t
       frame-inhibit-implied-resize t
