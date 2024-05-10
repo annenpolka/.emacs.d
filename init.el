@@ -98,6 +98,8 @@
         (expand-file-name "data/" user-emacs-directory))
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+;; hide minor-modes ------------------------------------------
+(use-package diminish)
 ;; Windows hacks ---------------------------------------------
 (when IS-WINDOWS
   ;; shift-jisよりcp932を優先させる
