@@ -1,4 +1,4 @@
-;;; early-init.el - Annenpolka's emacs early-init.el
+;;; Annenpolka early-init.el -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Code: Annenpolka
 
