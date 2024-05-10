@@ -106,6 +106,14 @@
                               'iso-2022-jp
                               'cp932)
   (setq-default default-process-coding-system '(utf-8-unix . japanese-cp932-dos)))
+;; =======================================================================================
+;; Linting/Formatting
+;; =======================================================================================
+;; formatter
+(use-package apheleia
+  :diminish apheleia-mode
+  :config
+  (apheleia-global-mode t))
 
 ;; =======================================================================================
 ;; Editor
