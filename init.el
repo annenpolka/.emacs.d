@@ -168,6 +168,110 @@
   (global-auto-revert-mode 1))
 
 ;; =======================================================================================
+;; minibuffer
+;; =======================================================================================
+;; vertical completion minibuffer ui
+(use-package vertico
+  :init
+  (setq vertico-cycle t)
+  :config
+  (vertico-mode t)
+  ;; Use `consult-completion-in-region' if Vertico is enabled.
+  ;; Otherwise use the default `completion--in-region' function.
+  (setq completion-in-region-function
+        (lambda (&rest args)
+          (apply (if vertico-mode
+                     #'consult-completion-in-region
+                   #'completion--in-region)
+                 args))))
+
+;; Enable rich annotations using the Marginalia package
+(use-package marginalia
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+	      ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode))
+
+(use-package embark
+  :bind*
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim))        ;; good alternative: M-.
+  :bind
+  ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Show the Embark target at point via Eldoc. You may adjust the
+  ;; Eldoc strategy, if you want to see the documentation from
+  ;; multiple providers. Beware that using this can be a little
+  ;; jarring since the message shown in the minibuffer can be more
+  ;; than one line, causing the modeline to move up and down:
+
+  ;; (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+  ;; (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		 nil
+		 (window-parameters (mode-line-format . none)))))
+
+;; Consult users will also want the embark-consult package.
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+;; complition-styles
+(use-package orderless
+  :config
+  (icomplete-mode)
+  (defun orderless-migemo (component)
+    (let ((pattern (migemo-get-pattern component)))
+      (condition-case nil
+          (progn (string-match-p pattern "") pattern)
+        (invalid-regexp nil))))
+
+  (orderless-define-completion-style orderless-default-style
+    (orderless-matching-styles '(orderless-initialism
+				 orderless-literal
+                                 orderless-regexp)))
+
+  (orderless-define-completion-style orderless-migemo-style
+    (orderless-matching-styles '(orderless-initialism
+				 orderless-literal
+                                 orderless-regexp
+                                 orderless-migemo)))
+
+  (orderless-define-completion-style orderless-fuzzy-style
+    (orderless-matching-styles '(orderless-initialism
+				 orderless-literal
+				 orderless-flex
+                                 orderless-regexp
+                                 orderless-migemo)))
+  (setq completion-category-overrides
+        '((command (styles orderless-default-style))
+          (file (styles orderless-migemo-style))
+          (buffer (styles orderless-migemo-style))
+          (symbol (styles orderless-default-style))
+          (consult-location (styles orderless-migemo-style)) ; category `consult-location' は `consult-line' などに使われる
+          (consult-multi (styles orderless-migemo-style)) ; category `consult-multi' は `consult-buffer' などに使われる
+          (org-roam-node (styles orderless-migemo-style)) ; category `org-roam-node' は `org-roam-node-find' で使われる
+          (howm-fuzzy (styles orderless-fuzzy-style))
+          (unicode-name (styles orderless-migemo-style))
+          (variable (styles orderless-default-style))))
+
+  ;;
+  (add-to-list 'marginalia-prompt-categories '("\\<Keyword\\>" . howm-fuzzy))
+  ;; (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
+  :custom
+  (completion-styles '(orderless basic))
+  )
+;; =======================================================================================
 ;; Linting/Formatting
 ;; =======================================================================================
 ;; formatter
