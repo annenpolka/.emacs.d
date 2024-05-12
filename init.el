@@ -281,6 +281,63 @@
   (apheleia-global-mode t))
 
 ;; =======================================================================================
+;; Visual/Interfaces
+;; =======================================================================================
+;; focus.nvim-like move-or-create-window -------------------------------------------------
+(use-package emacs
+  :ensure nil
+  :init
+  (defun move-or-create-window-above nil
+    "Move to the window above the current one, or create a new split if none exists."
+    (interactive)
+    (unless (window-in-direction 'above)
+      (split-window-below))
+    (windmove-up))
+
+  (defun move-or-create-window-below nil
+    "Move to the window below the current one, or create a new split if none exists."
+    (interactive)
+    (unless (window-in-direction 'below)
+      (split-window-vertically))
+    (windmove-down))
+
+  (defun move-or-create-window-left nil
+    "Move to the window to the left of the current one, or create a new split if none exists."
+    (interactive)
+    (unless (window-in-direction 'left)
+      (split-window-right))
+    (windmove-left))
+
+  (defun move-or-create-window-right nil
+    "Move to the window to the right of the current one, or create a new split if none exists."
+    (interactive)
+    (unless (window-in-direction 'right)
+      (split-window-horizontally))
+    (windmove-right)))
+
+;; search/narrow ---------------------------------------------------------------------------
+(use-package consult
+  :init
+  ;; *で始まるバッファ名を候補から削除 -> たとえば*scratch*に変えられない副作用
+  ;; (setq ido-ignore-buffers (append '("\\`\\*") ido-ignore-buffers))
+  :custom
+  (consult-buffer-sources
+   '
+   (
+    consult--source-buffer
+    consult--source-hidden-buffer
+    consult--source-recent-file))
+  )
+;; dir extension
+(use-package consult-dir
+  :after consult
+  :bind
+  (("C-x C-d" . consult-dir)
+   (:map vertico-map
+	 ("C-x C-d" . consult-dir)
+	 ("C-x C-j" . consult-dir-jump-file))))
+
+;; =======================================================================================
 ;; Editor
 ;; =======================================================================================
 ;; double-key binding support-------------------------------------
