@@ -12,7 +12,7 @@
 (when (native-comp-available-p)
   (setq native-comp-async-report-warnings-errors 'silent) ; Emacs 28 with native compilation
   (setq native-compile-prune-cache t)) ; Emacs 29
-;; package.el ------------------------------
+;; package.el -----------------------------------------------------------------------------
 (require 'package)
 (add-to-list 'package-archives '("gnu-elpa-devel" . "https://elpa.gnu.org/devel/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
@@ -27,7 +27,7 @@
       package-native-compile t           ; インストール時にnative compileする
       )
 
-;; use-package and related ones -----------------------------
+;; use-package and related ones ---------------------------------------------------------
 (use-package use-package
   :config
   (setq use-package-always-ensure t)
@@ -44,7 +44,7 @@
   (auto-compile-on-load-mode +1)
   (auto-compile-on-save-mode +1))
 
-;; enacs built-in configs----------------------------------------------
+;; enacs built-in configs ---------------------------------------------------------------
 (use-package emacs
   :ensure nil
   :bind* (("M-ESC ESC" . c/redraw-frame)
@@ -59,6 +59,8 @@
   (define-key input-decode-map [?\C-i] [C-i])
   (show-paren-mode 1)
   (global-display-line-numbers-mode 1)
+  (global-so-long-mode +1)
+  (setq-default indent-tabs-mode nil)
   (setq user-full-name "annenpolka"
         user-mail-address "lancelbb@gmail.com"
         user-login-name "annenpolka"
@@ -89,7 +91,7 @@
         show-paren-delay 0
         bookmark-watch-bookmark-file 'silent)
   )
-;; config files to no-littering ------------------------------
+;; config files to no-littering ----------------------------------------------------------
 (use-package no-littering
   :init
   (setq no-littering-etc-directory
@@ -274,7 +276,7 @@
 ;; =======================================================================================
 ;; Linting/Formatting
 ;; =======================================================================================
-;; formatter
+;; formatter -----------------------------------------------------------------------------
 (use-package apheleia
   :diminish apheleia-mode
   :config
@@ -340,7 +342,7 @@
 ;; =======================================================================================
 ;; Editor
 ;; =======================================================================================
-;; double-key binding support-------------------------------------
+;; double-key binding support ------------------------------------------------------------
 (use-package key-chord
   :config
   (setq key-chord-two-keys-delay 0.08
