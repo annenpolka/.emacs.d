@@ -126,6 +126,47 @@
                               'iso-2022-jp
                               'cp932)
   (setq-default default-process-coding-system '(utf-8-unix . japanese-cp932-dos)))
+(when IS-WINDOWS
+  (setq w32-use-native-image-API t))
+(unless IS-MAC
+  (setq command-line-ns-option-alist nil))
+(unless IS-LINUX
+  (setq command-line-x-option-alist nil))
+
+;; =======================================================================================
+;; files
+;; =======================================================================================
+(use-package recentf
+  :ensure nil
+  :init
+  (setq recentf-save-file "~/.emacs.d/recentf"
+        recentf-max-saved-items 2000
+        recentf-auto-cleanup 'never
+	recentf-keep          '(file-remote-p file-readable-p))
+  :config
+  (setq recentf-exclude '("recentf"
+                          "COMMIT_EDITMSG"
+                          "bookmarks"
+                          "\\.gitignore"
+                          "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+                          "^/tmp/"
+                          "^/scp:"
+                          "~/.emacs.d/straight/.*"
+                          "~/howm/.*"
+                          (lambda (file) (file-in-directory-p file package-user-dir))))
+  (recentf-mode 1))
+;; save final place on each file
+(use-package saveplace
+  :ensure nil
+  :config
+  (save-place-mode 1))
+;; "revert buffers when files on disk change"
+(use-package autorevert
+  :ensure nil
+  :custom ((auto-revert-interval 1))
+  :init
+  (global-auto-revert-mode 1))
+
 ;; =======================================================================================
 ;; Linting/Formatting
 ;; =======================================================================================
