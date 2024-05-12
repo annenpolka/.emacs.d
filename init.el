@@ -381,12 +381,13 @@
   (bug-reference-mode 0)
   (forge-add-default-bindings t))
 
-(use-package git-gutter
-  :diminish git-gutter-mode
-  :custom
-  (git-gutter:ask-p nil)
+(use-package diff-hl
+  :hook ((magit-pre-refresh . diff-hl-magit-pre-refresh)
+         (magit-post-refresh . diff-hl-magit-post-refresh)
+         (dired-mode . diff-hl-dired-mode))
   :init
-  (global-git-gutter-mode))
+  (global-diff-hl-mode +1)
+  (global-diff-hl-show-hunk-mouse-mode +1))
 
 (use-package git-auto-commit-mode
   :hook
