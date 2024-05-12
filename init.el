@@ -126,7 +126,16 @@
   (setq key-chord-two-keys-delay 0.08
         key-chord-one-keys-delay 0.2)
   (key-chord-mode 1))
-;; meow keymap-----------------------------------------------------
+;; scroll with cursor ------------------------------------------------------------------
+(use-package centered-cursor-mode
+  :diminish centered-cursor-mode
+  :config
+  (global-centered-cursor-mode t)
+  (setq ccm-step-size 2
+        ccm-recenter-at-end-of-file t)
+  ;; exclude on vterm
+  (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+;; meow keymap ---------------------------------------------------------------------------
 (use-package meow
   :init
   ;; command functions
