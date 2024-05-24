@@ -58,3 +58,4 @@ flycheck_*.el
 /network-security.data
 fontaine-latest-state.eld
 /recentf
+*.ttf
