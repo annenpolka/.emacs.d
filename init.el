@@ -718,6 +718,13 @@
   ;; exclude on vterm
   (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
 
+;; better undo/redo ----------------------------------------------------------------------
+(use-package undo-fu
+  :ensure t
+  :bind
+  ([remap undo] . undo-fu-only-undo)
+  ([remap redo] . undo-fu-only-redo))
+
 ;; vim-like historical locate navigation -------------------------------------------------
 (use-package backward-forward
   :ensure t
