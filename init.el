@@ -1008,6 +1008,116 @@
   (meow-setup)
   (meow-global-mode 1))
 
+;; =======================================================================================
+;; notetaking/writing
+;; =======================================================================================
+;; Markdown major mode -------------------------------------------------------------------
+(use-package markdown-mode
+  :mode ("\\.md\\'" . gfm-mode)
+  :hook ((markdown-mode . turn-off-auto-fill)
+	 (markdown-mode . visual-line-mode))
+  :init
+  (use-package word-wrap-mode
+    :ensure nil
+    :hook (visual-line-mode . word-wrap-whitespace-mode)
+    :config
+    (add-to-list 'word-wrap-whitespace-characters ?\]))
+
+  (use-package visual-fill-column
+    :hook (visual-line-mode . visual-fill-column-mode)
+    :init
+    (setq visual-line-fringe-indicators '(left-curly-arrow nil))
+    :config
+    (setq visual-fill-column-width 120))
+
+  (use-package adaptive-wrap
+    :hook (visual-line-mode . adaptive-wrap-prefix-mode))
+
+  (setq markdown-command "pandoc --from=markdown --to=html5"
+        markdown-fontify-code-blocks-natively t
+        markdown-header-scaling t
+        markdown-hide-url t
+        markdown-hide-markup nil
+	markdown-list-indent-width 4
+        markdown-indent-on-enter 'indent-and-new-item)
+  :bind (:map markdown-mode-map
+	      ("<S-tab>" . markdown-shifttab)))
+
+;; howm Hitori Otegaru Wiki Modoki -------------------------------------------------------
+(use-package howm
+  :init
+  ;; (define-key global-map [katakana] 'howm-menu) ; [カタカナ] キーでメニュー
+  (setq howm-file-name-format "%Y/%m/%Y-%m-%d.md") ; 1 日 1 ファイル
+  (setq howm-keyword-case-fold-search t) ; <<< で大文字小文字を区別しない
+  (setq howm-list-title t) ; 一覧時にタイトルを表示
+  (setq howm-directory "~/howm/")
+  (setq howm-history-file "~/howm/.howm-history")
+  (setq howm-keyword-file "~/howm/.howm-keys")
+
+  ;; Use ripgrep as grep
+  (setq howm-view-use-grep t)
+  (setq howm-view-grep-command "rg")
+  (setq howm-view-grep-option "-nH --no-heading --color never")
+  (setq howm-view-grep-extended-option nil)
+  (setq howm-view-grep-fixed-option "-F")
+  (setq howm-view-grep-expr-option nil)
+  (setq howm-view-grep-file-stdin-option nil)
+  ;; git pull remote's howm
+  (defun howm-pull-origin ()
+    "Pull howm repository remote origin."
+    (interactive)
+    (let ((default-directory howm-directory) ; 固定のディレクトリを設定
+          (display-buffer-alist
+           '(("\\*Git Pull Output\\*.*" display-buffer-no-window . nil)))) ; git pullのバッファを表示しない
+      (async-shell-command "git pull" "*Git Pull Output*" "*Messages*")))
+  ;; keymap
+  (setq howm-default-key-table
+	'(
+	  ;; ("key" func list-mode-p global-p)
+	  ("r" howm-refresh)
+	  ("l" howm-list-recent t t)
+	  ("a" howm-list-all t t)
+	  ("g" howm-list-grep t t)
+	  ("s" howm-list-grep-fixed t t)
+	  ("m" howm-list-migemo t t)
+	  ("t" howm-list-todo t t)
+	  ("y" howm-list-schedule t t)
+	  ("b" howm-list-buffers t t)
+	  ("x" howm-list-mark-ring t t)
+	  ("o" howm-occur t t)
+	  ("c" howm-create t t)
+	  ("e" howm-remember t t)
+	  ("," howm-menu t t)
+	  ("." howm-find-today nil t)
+	  (":" howm-find-yesterday nil t)
+	  ("A" howm-list-around)
+	  ("h" howm-history nil t)
+	  ("D" howm-dup)
+	  ("i" howm-insert-keyword nil t)
+	  ("d" howm-insert-date nil t)
+	  ("T" howm-insert-dtime nil t)
+	  ("K" howm-keyword-to-kill-ring t t)
+	  ("n" action-lock-goto-next-link)
+	  ("p" action-lock-goto-previous-link)
+	  ("Q" howm-kill-all t t)
+	  (" " howm-toggle-buffer nil t)
+	  ("N" howm-next-memo)
+	  ("p" howm-pull-origin t t)
+	  ("P" howm-previous-memo)
+	  ("H" howm-first-memo)
+	  ("L" howm-last-memo)
+	  ("C" howm-create-here nil t)
+	  ("I" howm-create-interactively nil t)
+	  ("w" howm-random-walk nil t)
+	  ("M" howm-open-named-file t t)
+	  )
+	)
+  :config
+  ;; remove some default behaviours on howm-related modes
+  (define-key howm-menu-mode-map "\C-h" nil)
+  (define-key riffle-summary-mode-map "\C-h" nil)
+  (define-key howm-view-contents-mode-map "\C-h" nil)
+  )
 
 ;; =======================================================================================
 ;; git
