@@ -595,8 +595,13 @@
   :bind
   ("C-c F" . fontaine-set-preset))
 
-;; themes --------------------------------------------------------------------------------
-
+;; rainbows ------------------------------------------------------------------------------
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
+(use-package rainbow-identifiers
+  :hook
+  (prog-mode . rainbow-identifiers-mode))
 ;; =======================================================================================
 ;; suggestion/autocompletion
 ;; =======================================================================================
