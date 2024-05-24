@@ -75,6 +75,9 @@
   (show-paren-mode 1)
   (global-display-line-numbers-mode 1)
   (global-so-long-mode +1)
+  (electric-pair-mode 1)
+  (electric-quote-mode 1)
+  (electric-indent-mode 1)
   (setq-default indent-tabs-mode nil)
   (setq user-full-name "annenpolka"
         user-mail-address "lancelbb@gmail.com"
