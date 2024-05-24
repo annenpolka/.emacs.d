@@ -230,6 +230,33 @@
                   (derived-mode . woman-mode)
                   "\\*\\(Man\\|woman\\).*"))
            (display-buffer-same-window)))))
+
+(use-package prot-window
+  :ensure nil
+  :demand t
+  :config
+  (setq window-combination-resize t)
+  (setq even-window-sizes 'height-only)
+  (setq window-sides-vertical nil)
+  (setq switch-to-buffer-in-dedicated-window 'pop)
+  (setq split-height-threshold 80)
+  (setq split-width-threshold 125)
+  (setq window-min-height 3)
+  (setq window-min-width 30))
+
+(use-package prot-window
+  :ensure nil
+  :demand t
+  :hook
+  ((epa-info-mode help-mode custom-mode) . visual-line-mode))
+
+(use-package prot-window
+  :ensure nil
+  :demand t
+  :hook
+  ((world-clock-mode calendar-mode) . prot-common-truncate-lines-silently))
+
+(provide 'prot-emacs-window)
 ;; =======================================================================================
 ;; IME
 ;; =======================================================================================
