@@ -755,24 +755,25 @@
 (use-package hl-block-mode
   :commands (hl-block-mode)
   :config
-  (setq hl-block-color-tint "#020202"
+  (setq hl-block-color-tint "#010101"
 	hl-block-delay 0.1
-	hl-block-single-level t)
+        hl-block-style 'color-tint
+        hl-block-multi-line t
+	hl-block-single-level nil)
   :hook ((prog-mode) . hl-block-mode))
 
 ;; smart soft deletion for parens ------------------------------------------------------
 ;; Use puni-mode globally and disable it for term-mode.
 (use-package puni
   :defer t
+  :bind
+  ([remap kill-line] . puni-kill-line)
   :init
   ;; The autoloads of Puni are set up so you can enable `puni-mode` or
   ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
   ;; any key that calls Puni commands, it's loaded.
   (puni-global-mode)
-  (add-hook 'term-mode-hook #'puni-disable-puni-mode)
-  ;; aliases for built-in commands
-  (defalias 'kill-line 'pu-kill-line))
-
+  (add-hook 'term-mode-hook #'puni-disable-puni-mode))
 
 ;; meow keymap ---------------------------------------------------------------------------
 (use-package meow
