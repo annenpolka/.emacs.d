@@ -78,6 +78,7 @@
   (electric-pair-mode 1)
   (electric-quote-mode 1)
   (electric-indent-mode 1)
+  (delete-selection-mode 1)
   (setq-default indent-tabs-mode nil)
   (setq user-full-name "annenpolka"
         user-mail-address "lancelbb@gmail.com"
@@ -707,7 +708,7 @@
   (setq key-chord-two-keys-delay 0.08
         key-chord-one-keys-delay 0.2)
   (key-chord-mode 1))
-;; scroll with cursor ------------------------------------------------------------------
+;; scroll with cursor --------------------------------------------------------------------
 (use-package centered-cursor-mode
   :diminish centered-cursor-mode
   :config
@@ -716,6 +717,56 @@
         ccm-recenter-at-end-of-file t)
   ;; exclude on vterm
   (add-to-list 'ccm-ignored-commands 'vterm--self-insert))
+
+;; vim-like historical locate navigation -------------------------------------------------
+(use-package backward-forward
+  :ensure t
+  :init
+  ;; reference: https://emacs-china.org/t/emacs/19171/17
+  (defun my/backward-forward-previous-location ()
+    "A `backward-forward-previous-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (< backward-forward-mark-ring-traversal-position (1- (length backward-forward-mark-ring))))
+          (recent (point-marker)))
+      (backward-forward-previous-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-previous-location))))
+
+  (defun my/backward-forward-next-location ()
+    "A `backward-forward-next-location' wrap for skip invalid locations."
+    (interactive)
+    (let ((purge (> backward-forward-mark-ring-traversal-position 0))
+          (recent (point-marker)))
+      (backward-forward-next-location)
+      (when (and (equal recent (point-marker)) purge)
+        (my/backward-forward-next-location))))
+  :config
+  (setq backward-forward-mark-ring-max 100)
+  (backward-forward-mode 1))
+
+;; blockman-like block highlighting ----------------------------------------------------
+(use-package hl-block-mode
+  :commands (hl-block-mode)
+  :config
+  (setq hl-block-color-tint "#020202"
+	hl-block-delay 0.1
+	hl-block-single-level t)
+  :hook ((prog-mode) . hl-block-mode))
+
+;; smart soft deletion for parens ------------------------------------------------------
+;; Use puni-mode globally and disable it for term-mode.
+(use-package puni
+  :defer t
+  :init
+  ;; The autoloads of Puni are set up so you can enable `puni-mode` or
+  ;; `puni-global-mode` before `puni` is actually loaded. Only after you press
+  ;; any key that calls Puni commands, it's loaded.
+  (puni-global-mode)
+  (add-hook 'term-mode-hook #'puni-disable-puni-mode)
+  ;; aliases for built-in commands
+  (defalias 'kill-line 'pu-kill-line))
+
+
 ;; meow keymap ---------------------------------------------------------------------------
 (use-package meow
   :init
