@@ -271,7 +271,7 @@
   (w32-ime-on-hook . (lambda() (key-chord-mode 1)))
   (w32-ime-off-hook . (lambda() (key-chord-mode 1)))
   :config
-  (tr-ime-advanced-install)
+  (tr-ime-advanced-install 'no-confirm)
   (setq default-input-method "W32-IME")
   (modify-all-frames-parameters '((ime-font . "Migu 1P-12")))
   (w32-ime-initialize)
@@ -1043,17 +1043,90 @@
   :bind (:map markdown-mode-map
 	      ("<S-tab>" . markdown-shifttab)))
 
+;;; Org-mode (personal information manager)
+(use-package org
+  :init
+  ;; (setq org-directory (expand-file-name "~/Documents/org/"))
+  (setq org-imenu-depth 7)
+
+  (add-to-list 'safe-local-variable-values '(org-hide-leading-stars . t))
+  (add-to-list 'safe-local-variable-values '(org-hide-macro-markers . t))
+  :bind
+  ( :map global-map
+    ("C-c l" . org-store-link)
+    ("C-c o" . org-open-at-point-global)
+    :map org-mode-map
+    ;; I don't like that Org binds one zillion keys, so if I want one
+    ;; for something more important, I disable it from here.
+    ("C-'" . nil)
+    ("C-," . nil)
+    ("M-;" . nil)
+    ("<C-return>" . nil)
+    ("<C-S-return>" . nil)
+    ("C-M-S-<right>" . nil)
+    ("C-M-S-<left>" . nil)
+    ("C-c ;" . nil)
+    ("C-c M-l" . org-insert-last-stored-link)
+    ("C-c C-M-l" . org-toggle-link-display)
+    ("M-." . org-edit-special) ; alias for C-c ' (mnenomic is global M-. that goes to source)
+    :map org-src-mode-map
+    ("M-," . org-edit-src-exit) ; see M-. above
+    :map narrow-map
+    ("b" . org-narrow-to-block)
+    ("e" . org-narrow-to-element)
+    ("s" . org-narrow-to-subtree)
+    :map ctl-x-x-map
+    ("i" . prot-org-id-headlines)
+    ("h" . prot-org-ox-html))
+  :config
+;;;; general settings
+  (setq org-ellipsis " ")
+  ;; (setq org-adapt-indentation nil)      ; No, non, nein,  χι!
+  (setq org-special-ctrl-a/e nil)
+  (setq org-special-ctrl-k nil)
+  (setq org-M-RET-may-split-line '((default . nil)))
+  (setq org-hide-emphasis-markers nil)
+  (setq org-hide-macro-markers nil)
+  (setq org-hide-leading-stars nil)
+  (setq org-cycle-separator-lines 0)
+  (setq org-structure-template-alist
+        '(("s" . "src")
+          ("e" . "src emacs-lisp")
+          ("E" . "src emacs-lisp :results value code :lexical t")
+          ("t" . "src emacs-lisp :tangle FILENAME")
+          ("T" . "src emacs-lisp :tangle FILENAME :mkdirp yes")
+          ("x" . "example")
+          ("X" . "export")
+          ("q" . "quote")))
+  (setq org-catch-invisible-edits 'show)
+  (setq org-return-follows-link nil)
+  (setq org-loop-over-headlines-in-active-region 'start-level)
+  (setq org-modules '(ol-info ol-eww))
+  (setq org-use-sub-superscripts '{})
+  (setq org-insert-heading-respect-content t)
+  (setq org-read-date-prefer-future 'time)
+  (setq org-highlight-latex-and-related nil) ; other options affect elisp regexp in src blocks
+  (setq org-fontify-quote-and-verse-blocks t)
+  (setq org-fontify-whole-block-delimiter-line t)
+  (setq org-track-ordered-property-with-tag t)
+  (setq org-highest-priority ?A)
+  (setq org-lowest-priority ?C)
+  (setq org-default-priority ?A)
+  (setq org-priority-faces nil)
+  )
+
 ;; howm Hitori Otegaru Wiki Modoki -------------------------------------------------------
 (use-package howm
   :init
   ;; (define-key global-map [katakana] 'howm-menu) ; [カタカナ] キーでメニュー
-  (setq howm-file-name-format "%Y/%m/%Y-%m-%d.md") ; 1 日 1 ファイル
+  (setq howm-file-name-format "%Y/%m/%Y-%m-%d.org") ; 1 日 1 ファイル
   (setq howm-keyword-case-fold-search t) ; <<< で大文字小文字を区別しない
   (setq howm-list-title t) ; 一覧時にタイトルを表示
+  (setq howm-view-title-header "** =")
   (setq howm-directory "~/howm/")
-  (setq howm-history-file "~/howm/.howm-history")
+  (setq howm-history-file "~/howm/.howm-history") 
   (setq howm-keyword-file "~/howm/.howm-keys")
-
+  
   ;; Use ripgrep as grep
   (setq howm-view-use-grep t)
   (setq howm-view-grep-command "rg")
