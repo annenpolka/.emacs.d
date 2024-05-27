@@ -126,7 +126,8 @@
         vc-handled-backends '(Git SVN)
         show-paren-style 'parenthesis
         show-paren-delay 0
-        bookmark-watch-bookmark-file 'silent)
+        bookmark-watch-bookmark-file 'silent
+        ad-redefinition-action 'accept)
   )
 ;; config files to no-littering ----------------------------------------------------------
 (use-package no-littering
@@ -1339,5 +1340,11 @@
   :custom
   (gac-silent-message-p t)
   (gac-automatically-push-p t))
+
+;; =======================================================================================
+;; External/Integrations
+;; =======================================================================================
+(use-package gptel)
+
 (provide 'init)
 ;;; init.el ends herke
