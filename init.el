@@ -27,6 +27,13 @@
       package-native-compile t           ; インストール時にnative compileする
       )
 
+;; quelpa bootstrap ------------------------------------------------------------------------
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
 ;; ローカルのパッケージパスを通す ----------------------------------------------------------
 (mapc
  (lambda (string)
@@ -47,10 +54,21 @@
   :config
   (setq use-package-always-ensure t)
   )
+
+;; quelpa integration
+(setq quelpa-update-melpa-p nil)
+(setq quelpa-self-upgrade-p nil)
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+
 (use-package auto-package-update
   :config
   (setq auto-package-update-interval 7)
   (auto-package-update-maybe))
+
 (use-package auto-compile
   :config
   (setq load-prefer-newer t)
