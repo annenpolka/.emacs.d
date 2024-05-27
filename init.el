@@ -43,7 +43,7 @@
 (use-package prot-common
   :ensure nil
   :functions (prot-common-truncate-lines-silently)
-  :hook ((fundamental-mode text-mode prog-mode) . prot-common-truncate-lines-silently)
+  ;; :hook ((fundamental-mode text-mode prog-mode) . prot-common-truncate-lines-silently)
   :config
   ;; NEVER tell me which key can call a command that I specifically
   ;; invoked with M-x: I have a good reason to use it that way.
@@ -614,6 +614,20 @@
   :bind
   ("C-c F" . fontaine-set-preset))
 
+;; emoji integration ---------------------------------------------------------------------
+(use-package emojify
+  :config
+  (defun set-symbol-font (font-name)
+    "Set the font for symbol characters to the specified FONT-NAME."
+    (when (member font-name (font-family-list))
+      (set-fontset-font t 'symbol (font-spec :family font-name) nil 'prepend)))
+  (set-symbol-font "Segoe UI Emoji")
+  
+  (setq emojify-display-style 'unicode)
+  (setq emojify-emoji-styles '(unicode))
+  ;; (bind-key* (kbd "C-c .") #'emojify-insert-emoji)
+  )
+
 ;; rainbows ------------------------------------------------------------------------------
 (use-package rainbow-delimiters
   :hook
@@ -621,6 +635,18 @@
 (use-package rainbow-identifiers
   :hook
   (prog-mode . rainbow-identifiers-mode))
+
+;; modeline -------------------------------------------------------------------------------
+(use-package doom-modeline
+  :ensure t
+  :hook (after-init . doom-modeline-mode))
+(use-package nerd-icons
+  ;; :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  ;; (nerd-icons-font-family "Symbols Nerd Font Mono")
+  )
 ;; =======================================================================================
 ;; suggestion/autocompletion
 ;; =======================================================================================
@@ -799,7 +825,7 @@
   (puni-global-mode)
   (add-hook 'term-mode-hook #'puni-disable-puni-mode))
 
-;; session management ------------------------------------------------------------------
+;; session management -------------------------------------------------------------------
 (use-package activities
   :init
   (activities-mode)
@@ -1061,19 +1087,20 @@
   :init
   (use-package word-wrap-mode
     :ensure nil
-    :hook (visual-line-mode . word-wrap-whitespace-mode)
+    ;; :hook (visual-line-mode . word-wrap-whitespace-mode)
     :config
     (add-to-list 'word-wrap-whitespace-characters ?\]))
 
   (use-package visual-fill-column
-    :hook (visual-line-mode . visual-fill-column-mode)
+    ;; :hook (visual-line-mode . visual-fill-column-mode)
     :init
     (setq visual-line-fringe-indicators '(left-curly-arrow nil))
     :config
     (setq visual-fill-column-width 120))
 
   (use-package adaptive-wrap
-    :hook (visual-line-mode . adaptive-wrap-prefix-mode))
+    ;; :hook (visual-line-mode . adaptive-wrap-prefix-mode)
+    )
 
   (setq markdown-command "pandoc --from=markdown --to=html5"
         markdown-fontify-code-blocks-natively t
@@ -1084,6 +1111,7 @@
         markdown-indent-on-enter 'indent-and-new-item)
   :bind (:map markdown-mode-map
 	      ("<S-tab>" . markdown-shifttab)))
+
 
 ;;; Org-mode (personal information manager)
 (use-package org
@@ -1187,6 +1215,16 @@
   :hook
   (org-mode . org-modern-mode)
   (org-agenda-finalize . org-modern-agenda))
+
+
+;; Zen Styling -----------------------------------------------------------------
+(use-package writeroom-mode
+  :hook
+  (writeroom-mode-enable . (lambda nil (visual-line-mode 1)))
+  (writeroom-mode-disable . (lambda nil (visual-line-mode -1)))
+  :config
+  (setq writeroom-width 120
+        writeroom-fullscreen-effect nil))
 
 ;; howm Hitori Otegaru Wiki Modoki -------------------------------------------------------
 (use-package howm
