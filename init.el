@@ -743,6 +743,12 @@
   ([remap undo] . undo-fu-only-undo)
   ([remap redo] . undo-fu-only-redo))
 
+;; non-lsp xref source -------------------------------------------------------------------
+(use-package dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  (setq xref-show-definitions-function #'xref-show-definitions-completing-read))
+
 ;; vim-like historical locate navigation -------------------------------------------------
 (use-package backward-forward
   :ensure t
