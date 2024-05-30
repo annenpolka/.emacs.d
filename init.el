@@ -1367,7 +1367,52 @@
 ;; =======================================================================================
 ;; External/Integrations
 ;; =======================================================================================
-(use-package gptel)
+;; LLMs interface
+(use-package ellama
+  :pin melpa
+  :init
+  ;; setup key bindings
+  (setopt ellama-keymap-prefix "C-c e")
+  ;; language you want ellama to translate to
+  (setopt ellama-language "Japanese")
+  ;; could be llm-openai for example
+  (require 'llm-openai)
+  (require 'llm-gemini)
+  (setq llm-warn-on-nonfree nil)
+  (setopt ellama-provider
+          (make-llm-openai
+           ;; this model should be pulled to use it
+           ;; value should be the same as you print in terminal during pull
+           :chat-model "gpt-4o"
+           :key ""
+           ;; :embedding-model "mistral:7b-instruct-v0.2-q6_K"
+           ))
+  ;; Predefined llm providers for interactive switching.
+  ;; You shouldn't add ollama providers here - it can be selected interactively
+  ;; without it. It is just example.
+  (setopt ellama-providers
+          '(("gpt-4o" . (make-llm-openai
+        		 :chat-model "gpt-4o"
+        	         :key ""
+                         ))
+            ("gemini" . (make-llm-gemini
+        		 :chat-model "gemini-1.5-pro-latest"
+                         :key ""
+        		 ))
+            ))
+  ;; Naming new sessions with llm
+  (setopt ellama-naming-provider
+          (make-llm-openai
+           :chat-model "gpt-4o"
+           :key ""
+           ))
+  (setopt ellama-naming-scheme 'ellama-generate-name-by-llm)
+  ;; Translation llm provider
+  (setopt ellama-translation-provider (make-llm-openai
+        			       :chat-model "gpt-4o"
+                                       :key ""
+        			       ))
+  )
 
 (provide 'init)
 ;;; init.el ends herke
