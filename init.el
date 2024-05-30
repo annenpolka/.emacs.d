@@ -175,13 +175,12 @@
 ;; `window', `display-buffer-alist', and related ----------------------------------------
 (use-package prot-window
   :ensure nil
-  :demand t
   :config
   (setq display-buffer-alist
         `(;; no window
           ("\\`\\*Async Shell Command\\*\\'"
            (display-buffer-no-window))
-          ("\\`\\*\\(Warnings\\|Compile-Log\\|Org Links\\)\\*\\'"
+          ("\\`\\*\\(Compile-Log\\|Org Links\\)\\*\\'"
            (display-buffer-no-window)
            (allow-no-window . t))
           ;; bottom side window
@@ -205,7 +204,7 @@
            (window-height . fit-window-to-buffer)
            (window-parameters . ((no-other-window . t)
                                  (mode-line-format . none))))
-          ("\\*\\(Output\\|Register Preview\\).*"
+          ("\\*\\(Warnings\\|Output\\|Register Preview\\).*"
            (display-buffer-reuse-mode-window display-buffer-at-bottom))
           ;; below current window
           ("\\(\\*Capture\\*\\|CAPTURE-.*\\)"
@@ -1039,7 +1038,7 @@
      '("C-k" . move-or-create-window-above)
      '("DEL" . move-or-create-window-left) ; C-h translated to DEL
      '("C-l" . move-or-create-window-right)
-     '("C-f" . consult-line)
+     ;; '("C-f" . consult-line)
      ;; '("C-t" . burly-perspective-init-project-persp)
      '("C-s" . save-buffer)
      '("C-w" . meow-close-window-or-buffer)
