@@ -93,7 +93,6 @@
   (show-paren-mode 1)
   (global-display-line-numbers-mode 1)
   (global-so-long-mode +1)
-  (electric-pair-mode 1)
   (electric-quote-mode 1)
   (electric-indent-mode 1)
   (delete-selection-mode 1)
@@ -759,6 +758,31 @@
   (setq key-chord-two-keys-delay 0.08
         key-chord-one-keys-delay 0.2)
   (key-chord-mode 1))
+
+;; electric-pair-mode ---------------------------------------------------------------------
+(use-package elec-pair
+  :ensure nil
+  :init
+  ;; 各モードごとのペア無効設定を保持するリスト
+  (defvar mode-specific-pair-inhibit-list
+    '((org-mode . (?\<))
+      (python-mode . (?\{)))
+    "Alist of modes and characters to inhibit pairing.")
+
+  (defun inhibit-specific-pairs-in-mode (char)
+    "Check if pairing should be inhibited for CHAR in the current major mode."
+    (let ((mode-settings (assoc major-mode mode-specific-pair-inhibit-list)))
+      (when mode-settings
+        (member char (cdr mode-settings)))))
+
+  (defun setup-electric-pair-mode ()
+    "Set up electric pair mode and mode-specific pairing inhibition."
+    (setq-local electric-pair-inhibit-predicate #'inhibit-specific-pairs-in-mode)
+    (electric-pair-mode 1))
+
+  :hook ((prog-mode . setup-electric-pair-mode)
+         (org-mode . setup-electric-pair-mode)))
+
 ;; scroll with cursor --------------------------------------------------------------------
 (use-package centered-cursor-mode
   :diminish centered-cursor-mode
